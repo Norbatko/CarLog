@@ -33,8 +33,6 @@ migrate_working_dir/
 linux
 windows
 .metadata
-/ios/
-/android/
 /web/
 macos
 
