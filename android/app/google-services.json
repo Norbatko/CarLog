@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "90284857474",
+    "firebase_url": "https://carlog-83cb4-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "carlog-83cb4",
+    "storage_bucket": "carlog-83cb4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:90284857474:android:97a928121c9b0b858f3c9b",
+        "android_client_info": {
+          "package_name": "fi.muni.car_log"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCthL_j2xc6-TV9jcqiA-eVB0u-F7cToY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
