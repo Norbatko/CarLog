@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:car_log/services/auth_service.dart';
-import 'package:car_log/screens/home/home_screen.dart';
+import 'package:car_log/services/user_service.dart';
+import 'package:car_log/services/car_service.dart';
+import 'package:car_log/screens/cars_list/cars_list_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthService authService;
+  final UserService userService;
+  final CarService carService;
 
-  const LoginScreen({super.key, required this.authService});
+  const LoginScreen({
+    super.key,
+    required this.authService,
+    required this.userService,
+    required this.carService,
+  });
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -37,7 +46,20 @@ class _LoginScreenState extends State<LoginScreen> {
   void _onLoginSuccess() {
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => CarListScreen(
+            authService: widget.authService,
+            userService: widget.userService,
+            carService: widget.carService,
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(milliseconds: 1500),
+        ),
       );
     }
   }
