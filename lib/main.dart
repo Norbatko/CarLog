@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'login_screen.dart';
+import 'package:car_log/services/auth_service.dart';
+import 'package:car_log/services/database_service.dart';
+import 'package:car_log/screens/login/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(); // Initialize Firebase
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  final AuthService authService = AuthService(databaseService: DatabaseService());
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Login with Firebase',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginScreen(),
+      title: 'CarLog',
+      home: LoginScreen(authService: authService),
     );
   }
 }
