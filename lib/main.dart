@@ -1,48 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/services/car_service.dart';
-import 'package:car_log/screens/login/login_screen.dart';
 import 'package:car_log/services/database_service.dart';
 import 'package:car_log/model/car_model.dart';
+import 'package:car_log/screens/login/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  final databaseService = DatabaseService();
-  final authService = AuthService(databaseService: databaseService);
-  final userService = UserService(databaseService: databaseService);
-  final carService = CarService(carModel: CarModel());
-
-  runApp(MyApp(
-    authService: authService,
-    userService: userService,
-    carService: carService,
-  ));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final AuthService authService;
-  final UserService userService;
-  final CarService carService;
-
-  const MyApp({
-    super.key,
-    required this.authService,
-    required this.userService,
-    required this.carService,
-  });
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CarLog',
-      home: LoginScreen(
-        authService: authService,
-        userService: userService,
-        carService: carService,
+    return MultiProvider(
+      providers: [
+        Provider(create: (_) => DatabaseService()),
+        Provider(create: (_) => CarModel()),
+
+        // AuthService depends on DatabaseService
+        ProxyProvider<DatabaseService, AuthService>(
+          update: (_, databaseService, __) => AuthService(databaseService: databaseService),
+        ),
+
+        // UserService depends on DatabaseService
+        ProxyProvider<DatabaseService, UserService>(
+          update: (_, databaseService, __) => UserService(databaseService: databaseService),
+        ),
+
+        // CarService depends on CarModel
+        ProxyProvider<CarModel, CarService>(
+          update: (_, carModel, __) => CarService(carModel: carModel),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'CarLog',
+        home: const LoginScreen(),
       ),
     );
   }
