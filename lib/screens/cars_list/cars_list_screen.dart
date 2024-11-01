@@ -7,7 +7,7 @@ import 'package:car_log/model/car.dart';
 import 'package:car_log/screens/cars_list/widgets/car_tile_widget.dart';
 import 'package:car_log/screens/cars_list/widgets/car_app_bar.dart';
 import 'package:car_log/screens/cars_list/widgets/favorite_floating_action_button.dart';
-import '../../model/user.dart';
+import 'package:car_log/model/user.dart';
 
 class CarsListScreen extends StatefulWidget {
   const CarsListScreen({super.key});
@@ -39,7 +39,8 @@ class _CarsListScreenState extends State<CarsListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CarAppBar(title: 'Car List', userDetailRoute: '/user/detail'),
+      appBar:
+          const CarAppBar(title: 'Car List', userDetailRoute: '/user/detail'),
       body: Consumer<CarService>(
         builder: (context, carService, _) {
           return StreamBuilder<List<Car>>(
@@ -50,22 +51,26 @@ class _CarsListScreenState extends State<CarsListScreen> {
           );
         },
       ),
-      floatingActionButton: const FavoriteFloatingActionButton(routeName: '/add-car'),
+      floatingActionButton:
+          const FavoriteFloatingActionButton(routeName: '/add-car'),
     );
   }
 
-  Widget _buildBodyContent(BuildContext context, AsyncSnapshot<List<Car>> snapshot) {
+  Widget _buildBodyContent(
+      BuildContext context, AsyncSnapshot<List<Car>> snapshot) {
     return snapshot.connectionState == ConnectionState.waiting
         ? _buildLoading()
         : snapshot.hasError
-        ? _buildError(snapshot.error)
-        : (!snapshot.hasData || snapshot.data!.isEmpty)
-        ? _buildEmpty()
-        : _buildCarList(_sortCars(snapshot.data!));
+            ? _buildError(snapshot.error)
+            : (!snapshot.hasData || snapshot.data!.isEmpty)
+                ? _buildEmpty()
+                : _buildCarList(_sortCars(snapshot.data!));
   }
+
   Widget _buildLoading() => const Center(child: CircularProgressIndicator());
 
-  Widget _buildError(Object? error) => Center(child: Text('Error loading cars: $error'));
+  Widget _buildError(Object? error) =>
+      Center(child: Text('Error loading cars: $error'));
 
   Widget _buildEmpty() => const Center(child: Text('No cars found'));
 
@@ -76,12 +81,14 @@ class _CarsListScreenState extends State<CarsListScreen> {
         final car = sortedCars[index];
         return Consumer<UserService>(
           builder: (context, userService, _) {
-            final isFavorite = currentUser != null && userService.isFavoriteCar(currentUser!, car.id);
+            final isFavorite = currentUser != null &&
+                userService.isFavoriteCar(currentUser!, car.id);
             return CarTileWidget(
               car: car,
               isFavorite: isFavorite,
               onToggleFavorite: () => _toggleFavorite(car.id),
-              onNavigate: () => Navigator.pushNamed(context, '/car-navigation', arguments: car),
+              onNavigate: () => Navigator.pushNamed(context, '/car-navigation',
+                  arguments: car),
             );
           },
         );
@@ -102,9 +109,15 @@ class _CarsListScreenState extends State<CarsListScreen> {
     final userService = Provider.of<UserService>(context, listen: false);
 
     final favoriteCars = cars
-        .where((car) => currentUser != null && userService.isFavoriteCar(currentUser!, car.id)).toList();
+        .where((car) =>
+            currentUser != null &&
+            userService.isFavoriteCar(currentUser!, car.id))
+        .toList();
     final otherCars = cars
-        .where((car) => currentUser == null || !userService.isFavoriteCar(currentUser!, car.id)).toList();
+        .where((car) =>
+            currentUser == null ||
+            !userService.isFavoriteCar(currentUser!, car.id))
+        .toList();
     return favoriteCars..addAll(otherCars);
   }
 }
