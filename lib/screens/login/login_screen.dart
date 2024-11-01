@@ -1,21 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
+import 'package:provider/provider.dart';
 import 'package:car_log/services/auth_service.dart';
-import 'package:car_log/services/user_service.dart';
-import 'package:car_log/services/car_service.dart';
 import 'package:car_log/screens/cars_list/cars_list_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  final AuthService authService;
-  final UserService userService;
-  final CarService carService;
-
-  const LoginScreen({
-    super.key,
-    required this.authService,
-    required this.userService,
-    required this.carService,
-  });
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -23,38 +13,34 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   Future<String?> _authenticateUser(LoginData data) async {
-    return await widget.authService.authUser(data);
+    final authService = Provider.of<AuthService>(context, listen: false);
+    return await authService.authUser(data);
   }
 
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
+      title: "CarLog",
       onLogin: (LoginData data) async {
         final resultStatus = await _authenticateUser(data);
-        if (resultStatus != null) {
-          return resultStatus;
-        }
+        if (resultStatus != null) { return resultStatus;}
         _onLoginSuccess();
+        return null;
       },
-      title: "CarLog",
-      onSignup: (SignupData data) => widget.authService.signupUser(data),
-      onRecoverPassword: (String name) => widget.authService.recoverPassword(name),
+      onSignup: (SignupData data) => Provider.of<AuthService>(context, listen: false).signupUser(data),
+      onRecoverPassword: (String name) => Provider.of<AuthService>(context, listen: false).recoverPassword(name),
       theme: LoginTheme(primaryColor: Colors.blue),
     );
   }
 
   void _onLoginSuccess() {
-    if (mounted) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => CarListScreen(
-            authService: widget.authService,
-            userService: widget.userService,
-            carService: widget.carService,
-          ),
-          transitionDuration: const Duration(milliseconds: 3000),
-        ),
-      );
-    }
+    Future.delayed(const Duration(milliseconds: 2500), () {
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const CarListScreen()),
+        );
+      }
+    });
   }
+
 }

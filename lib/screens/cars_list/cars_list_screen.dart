@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/user_service.dart';
@@ -9,16 +10,7 @@ import 'package:car_log/screens/cars_list/widgets/favorite_floating_action_butto
 import '../../model/user.dart';
 
 class CarListScreen extends StatefulWidget {
-  const CarListScreen({
-    super.key,
-    required this.authService,
-    required this.userService,
-    required this.carService,
-  });
-
-  final AuthService authService;
-  final UserService userService;
-  final CarService carService;
+  const CarListScreen({super.key});
 
   @override
   _CarListScreenState createState() => _CarListScreenState();
@@ -26,87 +18,93 @@ class CarListScreen extends StatefulWidget {
 
 class _CarListScreenState extends State<CarListScreen> {
   User? currentUser;
-  double _opacity = 0.0; // Start with full transparency
 
   @override
   void initState() {
     super.initState();
     _loadCurrentUser();
-    _triggerFadeIn(); // Start the fade-in animation
   }
 
   Future<void> _loadCurrentUser() async {
-    final user = await widget.authService.getCurrentUser();
-    if (user != null) {
-      currentUser = await widget.userService.getUserData(user.id);
-      setState(() {}); // Update UI after loading user data
-    }
-  }
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final userService = Provider.of<UserService>(context, listen: false);
+    final user = await authService.getCurrentUser();
 
-  void _triggerFadeIn() {
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        setState(() {
-          _opacity = 1.0;
-        });
-      }
-    });
+    if (user != null) {
+      currentUser = await userService.getUserData(user.id);
+      setState(() {}); // Refresh the UI
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedOpacity(
-      opacity: _opacity,
-      duration: const Duration(milliseconds: 10), // Fade-in duration
-      child: Scaffold(
-        appBar: const CarAppBar(title: 'Car List', userDetailRoute: '/user/detail'),
-        body: StreamBuilder<List<Car>>(
-          stream: widget.carService.cars,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error loading cars: ${snapshot.error}'));
-            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No cars found'));
-            } else {
-              final sortedCars = _sortCars(snapshot.data!);
-              return ListView.builder(
-                itemCount: sortedCars.length,
-                itemBuilder: (context, index) {
-                  final car = sortedCars[index];
-                  return CarTileWidget(
-                    car: car,
-                    isFavorite: currentUser != null &&
-                        widget.userService.isFavoriteCar(currentUser!, car.id),
-                    onToggleFavorite: () => _toggleFavorite(car.id),
-                    onNavigate: () =>
-                        Navigator.pushNamed(context, '/car-navigation', arguments: car),
-                  );
-                },
-              );
-            }
-          },
-        ),
-        floatingActionButton: const FavoriteFloatingActionButton(routeName: '/add-car'),
+    return Scaffold(
+      appBar: const CarAppBar(title: 'Car List', userDetailRoute: '/user/detail'),
+      body: Consumer<CarService>(
+        builder: (context, carService, _) {
+          return StreamBuilder<List<Car>>(
+            stream: carService.cars,
+            builder: (context, snapshot) {
+              return _buildBodyContent(context, snapshot);
+            },
+          );
+        },
       ),
+      floatingActionButton: const FavoriteFloatingActionButton(routeName: '/add-car'),
+    );
+  }
+
+  Widget _buildBodyContent(BuildContext context, AsyncSnapshot<List<Car>> snapshot) {
+    return snapshot.connectionState == ConnectionState.waiting
+        ? _buildLoading()
+        : snapshot.hasError
+        ? _buildError(snapshot.error)
+        : (!snapshot.hasData || snapshot.data!.isEmpty)
+        ? _buildEmpty()
+        : _buildCarList(_sortCars(snapshot.data!));
+  }
+  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
+
+  Widget _buildError(Object? error) => Center(child: Text('Error loading cars: $error'));
+
+  Widget _buildEmpty() => const Center(child: Text('No cars found'));
+
+  Widget _buildCarList(List<Car> sortedCars) {
+    return ListView.builder(
+      itemCount: sortedCars.length,
+      itemBuilder: (context, index) {
+        final car = sortedCars[index];
+        return Consumer<UserService>(
+          builder: (context, userService, _) {
+            final isFavorite = currentUser != null && userService.isFavoriteCar(currentUser!, car.id);
+            return CarTileWidget(
+              car: car,
+              isFavorite: isFavorite,
+              onToggleFavorite: () => _toggleFavorite(car.id),
+              onNavigate: () => Navigator.pushNamed(context, '/car-navigation', arguments: car),
+            );
+          },
+        );
+      },
     );
   }
 
   void _toggleFavorite(String carId) async {
+    final userService = Provider.of<UserService>(context, listen: false);
+
     if (currentUser != null) {
-      await widget.userService.toggleFavoriteCar(currentUser!, carId);
+      await userService.toggleFavoriteCar(currentUser!, carId);
       setState(() {});
     }
   }
 
   List<Car> _sortCars(List<Car> cars) {
+    final userService = Provider.of<UserService>(context, listen: false);
+
     final favoriteCars = cars
-        .where((car) => currentUser != null && widget.userService.isFavoriteCar(currentUser!, car.id))
-        .toList();
+        .where((car) => currentUser != null && userService.isFavoriteCar(currentUser!, car.id)).toList();
     final otherCars = cars
-        .where((car) => currentUser == null || !widget.userService.isFavoriteCar(currentUser!, car.id))
-        .toList();
+        .where((car) => currentUser == null || !userService.isFavoriteCar(currentUser!, car.id)).toList();
     return favoriteCars..addAll(otherCars);
   }
 }
