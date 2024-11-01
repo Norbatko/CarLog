@@ -1,8 +1,3 @@
-/// This class is responsible for all CRUD operations related to the Car model.
-/// It is a Singleton class that uses Firebase Realtime Database to store the data.
-/// @Author: Gabriel Biel xbielg00
-/// @modified: Adam Gabrys xgabry01 -- added updateUserFavorites() and getUserById()
-
 import 'package:firebase_database/firebase_database.dart';
 import 'user.dart';
 
@@ -12,8 +7,7 @@ class UserModel {
   UserModel();
 
   Future<void> addUser(User user) async {
-    DatabaseReference userRef = databaseReference.child('users').push();
-    await userRef.set(user.toMap());
+    await databaseReference.child('users').child(user.id).set(user.toMap());
   }
 
   Future<void> deleteUser(String userId) async {
@@ -34,7 +28,7 @@ class UserModel {
         List<User> userList = [];
         data.forEach((key, value) {
           if (value is Map<Object?, Object?>) {
-              userList.add(User.fromMap(key, value.cast<String, dynamic>()));
+            userList.add(User.fromMap(key, value.cast<String, dynamic>()));
           }
         });
         return userList;

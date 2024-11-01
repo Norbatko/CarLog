@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
-import 'package:provider/provider.dart';
-import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/screens/cars_list/cars_list_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_login/flutter_login.dart';
+import 'package:car_log/services/auth_service.dart';
+import 'package:car_log/model/user.dart';
+import 'package:car_log/model/user_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,30 +19,68 @@ class _LoginScreenState extends State<LoginScreen> {
     return await authService.authUser(data);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return FlutterLogin(
-      title: "CarLog",
-      onLogin: (LoginData data) async {
-        final resultStatus = await _authenticateUser(data);
-        if (resultStatus != null) { return resultStatus;}
+  Future<String?> _onSignup(SignupData data) async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final userModel = Provider.of<UserModel>(context, listen: false);
+
+    try {
+      // Only perform Firebase authentication, retrieve userId
+      final userId = await authService.signupUser(data);
+
+      if (userId != null) {
+        // Extract additional signup fields from FlutterLogin
+        String name = data.additionalSignupData?['name'] ?? '';
+        String login = data.additionalSignupData?['login'] ?? data.name?.split('@')[0] ?? '';
+        String phoneNumber = data.additionalSignupData?['phoneNumber'] ?? '';
+
+        // Create and save the user profile in Firebase
+        final newUser = User(
+          id: userId,
+          name: name,
+          login: login,
+          email: data.name!,
+          phoneNumber: phoneNumber,
+          isAdmin: false,
+          favoriteCars: [],
+        );
+        await userModel.addUser(newUser);
         _onLoginSuccess();
-        return null;
-      },
-      onSignup: (SignupData data) => Provider.of<AuthService>(context, listen: false).signupUser(data),
-      onRecoverPassword: (String name) => Provider.of<AuthService>(context, listen: false).recoverPassword(name),
-      theme: LoginTheme(primaryColor: Colors.blue),
-    );
+      }
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
   }
 
   void _onLoginSuccess() {
     Future.delayed(const Duration(milliseconds: 2500), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const CarListScreen()),
+          MaterialPageRoute(builder: (context) => const CarsListScreen()),
         );
       }
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return FlutterLogin(
+      title: "CarLog",
+      onLogin: (LoginData data) async {
+        final result = await _authenticateUser(data);
+        if (result == null) {
+          _onLoginSuccess();
+        }
+        return result;
+      },
+      onSignup: _onSignup,
+      onRecoverPassword: (String name) => Provider.of<AuthService>(context, listen: false).recoverPassword(name),
+      additionalSignupFields: [
+        UserFormField(keyName: 'name', displayName: 'Full Name', icon: Icon(Icons.person)),
+        UserFormField(keyName: 'login', displayName: 'Username', icon: Icon(Icons.account_circle)),
+        UserFormField(keyName: 'phoneNumber', displayName: 'Phone Number', icon: Icon(Icons.phone)),
+      ],
+      theme: LoginTheme(primaryColor: Colors.blue),
+    );
+  }
 }

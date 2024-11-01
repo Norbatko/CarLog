@@ -33,18 +33,7 @@ class AuthService {
         email: data.name!,
         password: data.password!,
       );
-
-      final userId = userCredential.user?.uid;
-      if (userId != null) {
-        // Using the User model for data consistency
-        final newUser = User(
-          id: userId,
-          email: data.name!,
-          login: data.name!.split('@')[0],
-        );
-        await _databaseService.createUserProfile(newUser);
-      }
-      return null;
+      return userCredential.user?.uid; // Return only the userId
     } on firebase_auth.FirebaseAuthException catch (e) {
       return e.message;
     }
