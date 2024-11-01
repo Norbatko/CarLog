@@ -9,14 +9,14 @@ import 'package:car_log/screens/cars_list/widgets/car_app_bar.dart';
 import 'package:car_log/screens/cars_list/widgets/favorite_floating_action_button.dart';
 import '../../model/user.dart';
 
-class CarListScreen extends StatefulWidget {
-  const CarListScreen({super.key});
+class CarsListScreen extends StatefulWidget {
+  const CarsListScreen({super.key});
 
   @override
-  _CarListScreenState createState() => _CarListScreenState();
+  _CarsListScreenState createState() => _CarsListScreenState();
 }
 
-class _CarListScreenState extends State<CarListScreen> {
+class _CarsListScreenState extends State<CarsListScreen> {
   User? currentUser;
 
   @override

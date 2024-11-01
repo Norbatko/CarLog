@@ -17,6 +17,7 @@ class User {
     List<String>? favoriteCars, // Use a nullable list for the initializer
   }) : favoriteCars = favoriteCars ?? []; // Default to an empty list if null
 
+  // Factory constructor for creating a User instance from a map
   factory User.fromMap(String id, Map<String, dynamic> data) {
     return User(
       id: id,
@@ -24,6 +25,7 @@ class User {
       login: data['login'] ?? '',
       email: data['email'] ?? '',
       phoneNumber: data['phoneNumber'] ?? '',
+      isAdmin: data['isAdmin'] ?? false,
       favoriteCars: List<String>.from(data['favoriteCars'] ?? []),
     );
   }
@@ -34,6 +36,7 @@ class User {
       'login': login,
       'email': email,
       'phoneNumber': phoneNumber,
+      'isAdmin': isAdmin,
       'favoriteCars': favoriteCars,
     };
   }

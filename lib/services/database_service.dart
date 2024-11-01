@@ -6,8 +6,10 @@ class DatabaseService {
 
   Future<User?> getUserById(String uid) async {
     try {
+      // Access the user node directly by uid
       final snapshot = await _userRef.child(uid).get();
       if (snapshot.exists) {
+        // Cast the data to Map and use uid as the local id
         final userData = Map<String, dynamic>.from(snapshot.value as Map);
         return User.fromMap(uid, userData);
       } else {

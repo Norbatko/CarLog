@@ -15,26 +15,33 @@ class UserService {
     return user.favoriteCars.contains(carId);
   }
 
-  void addFavoriteCar(User user, String carId) {
-    if (!user.favoriteCars.contains(carId)) {
-      user.favoriteCars.add(carId);
+  Future<List<String>> toggleFavoriteCar(User currentUser, String carId) async {
+    // Toggle favorite status
+    if (isFavoriteCar(currentUser, carId)) {
+      _removeFavoriteCar(currentUser, carId);
+    } else {
+      _addFavoriteCar(currentUser, carId);
     }
-  }
 
-  void removeFavoriteCar(User user, String carId) {
-    user.favoriteCars.remove(carId);
+    // Update favorites in the database
+    await updateUserFavorites(currentUser.id, currentUser.favoriteCars);
+
+    // Return the updated favorites list
+    return currentUser.favoriteCars;
   }
 
   Future<void> updateUserFavorites(String userId, List<String> favoriteCars) async {
     await _databaseService.updateUserFavorites(userId, favoriteCars);
   }
 
-  Future<void> toggleFavoriteCar(User currentUser, String carId) async {
-    if (isFavoriteCar(currentUser, carId)) {
-      removeFavoriteCar(currentUser, carId);
-    } else {
-      addFavoriteCar(currentUser, carId);
+  // Private helper methods for internal use
+  void _addFavoriteCar(User user, String carId) {
+    if (!user.favoriteCars.contains(carId)) {
+      user.favoriteCars.add(carId);
     }
-    await updateUserFavorites(currentUser.id, currentUser.favoriteCars);
+  }
+
+  void _removeFavoriteCar(User user, String carId) {
+    user.favoriteCars.remove(carId);
   }
 }

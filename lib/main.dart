@@ -6,6 +6,7 @@ import 'package:car_log/services/user_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/database_service.dart';
 import 'package:car_log/model/car_model.dart';
+import 'package:car_log/model/user_model.dart'; // Make sure to import UserModel here
 import 'package:car_log/screens/login/login_screen.dart';
 
 void main() async {
@@ -37,6 +38,9 @@ class MyApp extends StatelessWidget {
         ProxyProvider<CarModel, CarService>(
           update: (_, carModel, __) => CarService(carModel: carModel),
         ),
+
+        // Add UserModel as a direct provider
+        Provider(create: (_) => UserModel()),
       ],
       child: MaterialApp(
         title: 'CarLog',
