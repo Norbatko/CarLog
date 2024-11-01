@@ -52,13 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
             userService: widget.userService,
             carService: widget.carService,
           ),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 1500),
+          transitionDuration: const Duration(milliseconds: 3000),
         ),
       );
     }

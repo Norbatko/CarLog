@@ -2,32 +2,39 @@ import 'package:car_log/model/user.dart';
 import 'package:car_log/services/database_service.dart';
 
 class UserService {
-  final DatabaseService _databaseService = DatabaseService();
+  final DatabaseService _databaseService;
 
-  /// Fetches the current user's data
+  UserService({required DatabaseService databaseService})
+      : _databaseService = databaseService;
+
   Future<User?> getUserData(String userId) async {
     return await _databaseService.getUserById(userId);
   }
 
-  /// Checks if a car is in the user's favorites
   bool isFavoriteCar(User user, String carId) {
     return user.favoriteCars.contains(carId);
   }
 
-  /// Adds a car to the user's favorites
   void addFavoriteCar(User user, String carId) {
     if (!user.favoriteCars.contains(carId)) {
       user.favoriteCars.add(carId);
     }
   }
 
-  /// Removes a car from the user's favorites
   void removeFavoriteCar(User user, String carId) {
     user.favoriteCars.remove(carId);
   }
 
-  /// Updates the user's favorites in the database
   Future<void> updateUserFavorites(String userId, List<String> favoriteCars) async {
     await _databaseService.updateUserFavorites(userId, favoriteCars);
+  }
+
+  Future<void> toggleFavoriteCar(User currentUser, String carId) async {
+    if (isFavoriteCar(currentUser, carId)) {
+      removeFavoriteCar(currentUser, carId);
+    } else {
+      addFavoriteCar(currentUser, carId);
+    }
+    await updateUserFavorites(currentUser.id, currentUser.favoriteCars);
   }
 }
