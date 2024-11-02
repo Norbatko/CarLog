@@ -1,4 +1,5 @@
 import 'package:car_log/screens/cars_list/cars_list_screen.dart';
+import 'package:car_log/screens/users_list/users_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_login/flutter_login.dart';
@@ -30,7 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (userId != null) {
         // Extract additional signup fields from FlutterLogin
         String name = data.additionalSignupData?['name'] ?? '';
-        String login = data.additionalSignupData?['login'] ?? data.name?.split('@')[0] ?? '';
+        String login = data.additionalSignupData?['login'] ??
+            data.name?.split('@')[0] ??
+            '';
         String phoneNumber = data.additionalSignupData?['phoneNumber'] ?? '';
 
         // Create and save the user profile in Firebase
@@ -53,19 +56,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _onLoginSuccess() {
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const CarsListScreen()),
-        );
-      }
-    });
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => UsersListScreen()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: "CarLog",
+      logo: AssetImage('assets/images/logo.png'),
       onLogin: (LoginData data) async {
         final result = await _authenticateUser(data);
         if (result == null) {
@@ -74,13 +73,26 @@ class _LoginScreenState extends State<LoginScreen> {
         return result;
       },
       onSignup: _onSignup,
-      onRecoverPassword: (String name) => Provider.of<AuthService>(context, listen: false).recoverPassword(name),
+      onRecoverPassword: (String name) =>
+          Provider.of<AuthService>(context, listen: false)
+              .recoverPassword(name),
       additionalSignupFields: [
-        UserFormField(keyName: 'name', displayName: 'Full Name', icon: Icon(Icons.person)),
-        UserFormField(keyName: 'login', displayName: 'Username', icon: Icon(Icons.account_circle)),
-        UserFormField(keyName: 'phoneNumber', displayName: 'Phone Number', icon: Icon(Icons.phone)),
+        UserFormField(
+            keyName: 'name',
+            displayName: 'Full Name',
+            icon: Icon(Icons.person)),
+        UserFormField(
+            keyName: 'login',
+            displayName: 'Username',
+            icon: Icon(Icons.account_circle)),
+        UserFormField(
+            keyName: 'phoneNumber',
+            displayName: 'Phone Number',
+            icon: Icon(Icons.phone)),
       ],
-      theme: LoginTheme(primaryColor: Colors.blue),
+      theme: LoginTheme(primaryColor: Colors.blueAccent, logoWidth: 150),
+      savedEmail: "miro@mail.co.uk",
+      savedPassword: "123456",
     );
   }
 }
