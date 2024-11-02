@@ -1,11 +1,20 @@
+import 'dart:async';
+
 import 'package:car_log/model/user.dart';
+import 'package:car_log/model/user_model.dart';
 import 'package:car_log/services/database_service.dart';
 
 class UserService {
   final DatabaseService _databaseService;
+  final UserModel userModel;
 
-  UserService({required DatabaseService databaseService})
+  UserService(
+      {required this.userModel, required DatabaseService databaseService})
       : _databaseService = databaseService;
+
+  final StreamController<User> _userStreamController =
+      StreamController<User>.broadcast();
+  Stream<User> get userStream => _userStreamController.stream;
 
   Future<User?> getUserData(String userId) async {
     return await _databaseService.getUserById(userId);
@@ -30,7 +39,8 @@ class UserService {
     return currentUser.favoriteCars;
   }
 
-  Future<void> updateUserFavorites(String userId, List<String> favoriteCars) async {
+  Future<void> updateUserFavorites(
+      String userId, List<String> favoriteCars) async {
     await _databaseService.updateUserFavorites(userId, favoriteCars);
   }
 
@@ -43,5 +53,11 @@ class UserService {
 
   void _removeFavoriteCar(User user, String carId) {
     user.favoriteCars.remove(carId);
+  }
+
+  Stream<List<User>> get users => userModel.getUsers();
+
+  void dispose() {
+    _userStreamController.close();
   }
 }
