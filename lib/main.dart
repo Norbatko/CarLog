@@ -1,3 +1,5 @@
+import 'package:car_log/screens/cars_list/cars_list_screen.dart';
+import 'package:car_log/screens/users_list/users_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -23,15 +25,20 @@ class MyApp extends StatelessWidget {
       providers: [
         Provider(create: (_) => DatabaseService()),
         Provider(create: (_) => CarModel()),
+        Provider(create: (_) => UserModel()),
 
         // AuthService depends on DatabaseService
         ProxyProvider<DatabaseService, AuthService>(
-          update: (_, databaseService, __) => AuthService(databaseService: databaseService),
+          update: (_, databaseService, __) =>
+              AuthService(databaseService: databaseService),
         ),
 
         // UserService depends on DatabaseService
-        ProxyProvider<DatabaseService, UserService>(
-          update: (_, databaseService, __) => UserService(databaseService: databaseService),
+        ProxyProvider2<DatabaseService, UserModel, UserService>(
+          update: (_, databaseService, userModel, __) => UserService(
+            databaseService: databaseService,
+            userModel: userModel,
+          ),
         ),
 
         // CarService depends on CarModel
@@ -44,7 +51,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'CarLog',
-        home: const LoginScreen(),
+        home: LoginScreen(),
       ),
     );
   }
