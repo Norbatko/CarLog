@@ -57,14 +57,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLoginSuccess() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => UsersListScreen()),
+      MaterialPageRoute(builder: (context) => const UsersListScreen()),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      logo: AssetImage('assets/images/logo.png'),
+      logo: const AssetImage('assets/images/logo.png'),
       onLogin: (LoginData data) async {
         final result = await _authenticateUser(data);
         if (result == null) {
@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onRecoverPassword: (String name) =>
           Provider.of<AuthService>(context, listen: false)
               .recoverPassword(name),
-      additionalSignupFields: [
+      additionalSignupFields: const [
         UserFormField(
             keyName: 'name',
             displayName: 'Full Name',
