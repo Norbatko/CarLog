@@ -11,9 +11,11 @@ import 'package:car_log/model/car_model.dart';
 import 'package:car_log/model/user_model.dart'; // Make sure to import UserModel here
 import 'package:car_log/screens/login/login_screen.dart';
 
+import 'firebase_db/firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MyApp());
 }
