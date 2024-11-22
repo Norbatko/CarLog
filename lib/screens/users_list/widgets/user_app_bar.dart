@@ -18,8 +18,11 @@ class UserAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Theme.of(context).colorScheme.secondary,
       actions: [
         IconButton(
-          icon: Icon(Icons.settings,
-              color: Theme.of(context).colorScheme.onSecondary),
+          icon: Icon(
+            Icons.account_circle,
+            color: Theme.of(context).colorScheme.onSecondary,
+            size: 40,
+          ),
           onPressed: () => Navigator.pushNamed(context, userDetailRoute),
         ),
       ],
