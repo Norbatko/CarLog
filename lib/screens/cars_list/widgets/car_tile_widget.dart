@@ -17,7 +17,8 @@ class CarTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.all(8.0),
       padding: const EdgeInsets.all(12.0),
@@ -27,24 +28,34 @@ class CarTileWidget extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.primary),
       ),
       child: ListTile(
-        leading: Icon(Icons.car_rental, color: theme.colorScheme.secondary, size: 36.0),
+        leading: Icon(Icons.car_rental,
+            color: theme.colorScheme.secondary, size: 36.0),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(car.name,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
-                    color: theme.colorScheme.onSecondaryContainer)),
-            Text(car.licensePlate,
-                style: TextStyle(
-                    fontSize: 14.0,
-                    color: theme.colorScheme.onSecondaryContainer)),
+            Text(
+              car.name,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+                color: theme.colorScheme.onSecondaryContainer,
+              ),
+            ),
+            Text(
+              car.licensePlate,
+              style: TextStyle(
+                fontSize: 14.0,
+                color: theme.colorScheme.onSecondaryContainer,
+              ),
+            ),
           ],
         ),
         onTap: onNavigate,
         trailing: IconButton(
-          icon: isFavorite ? const Icon(Icons.favorite, color: Colors.red) : const Icon(Icons.favorite_border),
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: isFavorite ? Colors.red : Colors.grey,
+          ),
           onPressed: onToggleFavorite,
         ),
       ),

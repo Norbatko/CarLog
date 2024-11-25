@@ -3,40 +3,52 @@ import 'dart:async';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/model/user_model.dart';
 import 'package:car_log/services/database_service.dart';
+import 'package:flutter/foundation.dart';
 
-class UserService {
+class UserService with ChangeNotifier {
   final DatabaseService _databaseService;
   final UserModel userModel;
 
-  UserService(
-      {required this.userModel, required DatabaseService databaseService})
-      : _databaseService = databaseService;
+  UserService({
+    required this.userModel,
+    required DatabaseService databaseService,
+  }) : _databaseService = databaseService;
 
+  User? _currentUser;
+  User? get currentUser => _currentUser;
+
+  // StreamController to broadcast user updates
   final StreamController<User> _userStreamController =
-      StreamController<User>.broadcast();
+  StreamController<User>.broadcast();
   Stream<User> get userStream => _userStreamController.stream;
 
   Future<User?> getUserData(String userId) async {
-    return await _databaseService.getUserById(userId);
+    _currentUser = await _databaseService.getUserById(userId);
+    _userStreamController.add(_currentUser!); // Emit updated user
+    notifyListeners(); // Notify listeners about changes
+    return _currentUser;
   }
 
-  bool isFavoriteCar(User user, String carId) {
-    return user.favoriteCars.contains(carId);
+  bool isFavoriteCar(String carId) {
+    return _currentUser?.favoriteCars.contains(carId) ?? false;
   }
 
-  Future<List<String>> toggleFavoriteCar(User currentUser, String carId) async {
-    // Toggle favorite status
-    if (isFavoriteCar(currentUser, carId)) {
-      _removeFavoriteCar(currentUser, carId);
+  Future<void> toggleFavoriteCar(String carId) async {
+    if (_currentUser == null) return;
+
+    // Update local favorites
+    if (isFavoriteCar(carId)) {
+      _currentUser!.favoriteCars.remove(carId);
     } else {
-      _addFavoriteCar(currentUser, carId);
+      _currentUser!.favoriteCars.add(carId);
     }
 
-    // Update favorites in the database
-    await updateUserFavorites(currentUser.id, currentUser.favoriteCars);
+    // Update in the database
+    await updateUserFavorites(_currentUser!.id, _currentUser!.favoriteCars);
 
-    // Return the updated favorites list
-    return currentUser.favoriteCars;
+    // Emit updated user and notify listeners
+    _userStreamController.add(_currentUser!);
+    notifyListeners();
   }
 
   Future<void> updateUserFavorites(
@@ -44,20 +56,11 @@ class UserService {
     await _databaseService.updateUserFavorites(userId, favoriteCars);
   }
 
-  // Private helper methods for internal use
-  void _addFavoriteCar(User user, String carId) {
-    if (!user.favoriteCars.contains(carId)) {
-      user.favoriteCars.add(carId);
-    }
-  }
-
-  void _removeFavoriteCar(User user, String carId) {
-    user.favoriteCars.remove(carId);
-  }
-
   Stream<List<User>> get users => userModel.getUsers();
 
+  @override
   void dispose() {
     _userStreamController.close();
+    super.dispose();
   }
 }

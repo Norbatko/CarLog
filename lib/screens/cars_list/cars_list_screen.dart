@@ -82,7 +82,7 @@ class _CarsListScreenState extends State<CarsListScreen> {
         return Consumer<UserService>(
           builder: (context, userService, _) {
             final isFavorite = currentUser != null &&
-                userService.isFavoriteCar(currentUser!, car.id);
+                userService.isFavoriteCar(car.id);
             return CarTileWidget(
               car: car,
               isFavorite: isFavorite,
@@ -100,7 +100,7 @@ class _CarsListScreenState extends State<CarsListScreen> {
     final userService = Provider.of<UserService>(context, listen: false);
 
     if (currentUser != null) {
-      await userService.toggleFavoriteCar(currentUser!, carId);
+      await userService.toggleFavoriteCar(carId);
       setState(() {});
     }
   }
@@ -111,12 +111,12 @@ class _CarsListScreenState extends State<CarsListScreen> {
     final favoriteCars = cars
         .where((car) =>
             currentUser != null &&
-            userService.isFavoriteCar(currentUser!, car.id))
+            userService.isFavoriteCar(car.id))
         .toList();
     final otherCars = cars
         .where((car) =>
             currentUser == null ||
-            !userService.isFavoriteCar(currentUser!, car.id))
+            !userService.isFavoriteCar(car.id))
         .toList();
     return favoriteCars..addAll(otherCars);
   }
