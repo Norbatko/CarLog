@@ -7,6 +7,8 @@ import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/model/user_model.dart';
 
+import 'package:car_log/widgets/tab_manager.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -57,10 +59,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLoginSuccess() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const UsersListScreen()),
+      MaterialPageRoute(builder: (context) => const TabManager()),
     );
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
