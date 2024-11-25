@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/car_service.dart';
@@ -67,7 +68,9 @@ class _CarsListScreenState extends State<CarsListScreen> {
                 : _buildCarList(_sortCars(snapshot.data!));
   }
 
-  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
+  Widget _buildLoading() => Center(
+      child: Lottie.network(
+          "https://lottie.host/630f73c1-22b6-42aa-8a56-83629d3a1792/TyXDBpswR2.json"));
 
   Widget _buildError(Object? error) =>
       Center(child: Text('Error loading cars: $error'));
@@ -81,8 +84,8 @@ class _CarsListScreenState extends State<CarsListScreen> {
         final car = sortedCars[index];
         return Consumer<UserService>(
           builder: (context, userService, _) {
-            final isFavorite = currentUser != null &&
-                userService.isFavoriteCar(car.id);
+            final isFavorite =
+                currentUser != null && userService.isFavoriteCar(car.id);
             return CarTileWidget(
               car: car,
               isFavorite: isFavorite,
@@ -109,14 +112,12 @@ class _CarsListScreenState extends State<CarsListScreen> {
     final userService = Provider.of<UserService>(context, listen: false);
 
     final favoriteCars = cars
-        .where((car) =>
-            currentUser != null &&
-            userService.isFavoriteCar(car.id))
+        .where(
+            (car) => currentUser != null && userService.isFavoriteCar(car.id))
         .toList();
     final otherCars = cars
-        .where((car) =>
-            currentUser == null ||
-            !userService.isFavoriteCar(car.id))
+        .where(
+            (car) => currentUser == null || !userService.isFavoriteCar(car.id))
         .toList();
     return favoriteCars..addAll(otherCars);
   }
