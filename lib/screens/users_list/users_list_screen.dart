@@ -50,8 +50,6 @@ class _UsersListScreenState extends State<UsersListScreen> {
           );
         },
       ),
-      floatingActionButton:
-          const FavoriteFloatingActionButton(routeName: '/add-user'),
     );
   }
 
