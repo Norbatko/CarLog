@@ -1,3 +1,4 @@
+import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
@@ -52,8 +53,7 @@ class _CarsListScreenState extends State<CarsListScreen> {
           );
         },
       ),
-      floatingActionButton:
-          const FavoriteFloatingActionButton(routeName: '/add-car'),
+      floatingActionButton: CarAddDialog(),
     );
   }
 
