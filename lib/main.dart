@@ -1,4 +1,5 @@
 import 'package:car_log/screens/cars_list/cars_list_screen.dart';
+import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
 import 'package:car_log/screens/users_list/users_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -53,7 +54,11 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'CarLog',
-        home: LoginScreen(),
+        initialRoute: '/login',
+        routes: {
+          // '/': (context) => TabManager(),
+          '/login': (context) => LoginScreen(),
+        },
       ),
     );
   }
