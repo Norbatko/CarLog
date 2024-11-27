@@ -5,6 +5,8 @@ import 'package:car_log/services/user_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/model/car_model.dart';
 import 'package:car_log/model/user_model.dart';
+import 'package:car_log/widgets/theme/theme_setter.dart';
+import 'package:flutter/material.dart';
 
 final get = GetIt.instance;
 
@@ -26,9 +28,15 @@ class SetUpLocator {
         userModel: get<UserModel>(),
       ),
     );
+
     // CarService depends on CarModel
     get.registerLazySingleton<CarService>(
           () => CarService(carModel: get<CarModel>()),
+    );
+
+    // ThemeProvider
+    get.registerSingleton<ThemeProvider>(
+      ThemeProvider(ThemeData.light()),
     );
   }
 }
