@@ -2,76 +2,55 @@ import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/users_list/widgets/user_app_bar.dart';
 import 'package:car_log/screens/users_list/widgets/user_tile_widget.dart';
 import 'package:car_log/set_up_locator.dart';
+import 'package:car_log/widgets/build_future_with_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/user_service.dart';
 
-class UsersListScreen extends StatefulWidget {
+class UsersListScreen extends StatelessWidget {
   const UsersListScreen({super.key});
 
   @override
-  _UsersListScreenState createState() => _UsersListScreenState();
-}
-
-class _UsersListScreenState extends State<UsersListScreen> {
-  final AuthService authService = get<AuthService>();
-  final UserService userService = get<UserService>();
-  User? currentUser;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadCurrentUser();
-  }
-
-  Future<void> _loadCurrentUser() async {
-    final user = await authService.getCurrentUser();
-
-    if (user != null) {
-      currentUser = await userService.getUserData(user.id);
-      setState(() {}); // Refresh the UI
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final AuthService authService = get<AuthService>();
+    final UserService userService = get<UserService>();
+
     return Scaffold(
       appBar:
       const UserAppBar(title: 'User List', userDetailRoute: '/user/detail'),
-      body: StreamBuilder<List<User>>(
+      body: buildFutureWithStream<User?, List<User>>(
+        future: _loadCurrentUser(authService, userService),
         stream: userService.users,
-        builder: (context, snapshot) {
-          return _buildBodyContent(context, snapshot);
-        },
+        loadingWidget: const Center(child: CircularProgressIndicator()),
+        errorWidget: (error) =>
+            Center(child: Text('Error loading data: $error')),
+        onData: (context, currentUser, users) =>
+            _buildBodyContent(context, users),
       ),
     );
   }
 
-  Widget _buildBodyContent(
-      BuildContext context, AsyncSnapshot<List<User>> snapshot) {
-    return snapshot.connectionState == ConnectionState.waiting
-        ? _buildLoading()
-        : snapshot.hasError
-        ? _buildError(snapshot.error)
-        : (!snapshot.hasData || snapshot.data!.isEmpty)
-        ? _buildEmpty()
-        : _buildUserList(snapshot.data!);
+  Future<User?> _loadCurrentUser(
+      AuthService authService, UserService userService) async {
+    final user = await authService.getCurrentUser();
+    if (user != null) {
+      return await userService.getUserData(user.id);
+    }
+    return null;
   }
 
-  Widget _buildLoading() => const Center(child: CircularProgressIndicator());
+  Widget _buildBodyContent(BuildContext context, List<User> users) {
+    if (users.isEmpty) {
+      return const Center(child: Text('No users found'));
+    }
 
-  Widget _buildError(Object? error) =>
-      Center(child: Text('Error loading users: $error'));
-
-  Widget _buildEmpty() => const Center(child: Text('No users found'));
-
-  Widget _buildUserList(List<User> users) {
     return ListView.builder(
       itemCount: users.length,
       itemBuilder: (context, index) {
         final user = users[index];
         return UserTileWidget(
           user: user,
+          // TODO: Navigate to user detail screen
           onNavigate: () => Navigator.pushNamed(context, '/user-navigation',
               arguments: user),
         );
