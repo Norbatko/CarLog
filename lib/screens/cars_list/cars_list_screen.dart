@@ -1,15 +1,14 @@
+import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
+import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:provider/provider.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/model/car.dart';
 import 'package:car_log/screens/cars_list/widgets/car_tile_widget.dart';
 import 'package:car_log/screens/cars_list/widgets/car_app_bar.dart';
-import 'package:car_log/screens/cars_list/widgets/favorite_floating_action_button.dart';
-import 'package:car_log/model/user.dart';
 
 class CarsListScreen extends StatefulWidget {
   const CarsListScreen({super.key});
@@ -19,6 +18,10 @@ class CarsListScreen extends StatefulWidget {
 }
 
 class _CarsListScreenState extends State<CarsListScreen> {
+  final AuthService authService = get<AuthService>();
+  final UserService userService = get<UserService>();
+  final CarService carService = get<CarService>();
+
   User? currentUser;
 
   @override
@@ -28,8 +31,6 @@ class _CarsListScreenState extends State<CarsListScreen> {
   }
 
   Future<void> _loadCurrentUser() async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final userService = Provider.of<UserService>(context, listen: false);
     final user = await authService.getCurrentUser();
 
     if (user != null) {
@@ -43,14 +44,10 @@ class _CarsListScreenState extends State<CarsListScreen> {
     return Scaffold(
       appBar:
           const CarAppBar(title: 'Car List', userDetailRoute: '/user/detail'),
-      body: Consumer<CarService>(
-        builder: (context, carService, _) {
-          return StreamBuilder<List<Car>>(
-            stream: carService.cars,
-            builder: (context, snapshot) {
-              return _buildBodyContent(context, snapshot);
-            },
-          );
+      body: StreamBuilder<List<Car>>(
+        stream: carService.cars,
+        builder: (context, snapshot) {
+          return _buildBodyContent(context, snapshot);
         },
       ),
       floatingActionButton: CarAddDialog(),
@@ -82,26 +79,20 @@ class _CarsListScreenState extends State<CarsListScreen> {
       itemCount: sortedCars.length,
       itemBuilder: (context, index) {
         final car = sortedCars[index];
-        return Consumer<UserService>(
-          builder: (context, userService, _) {
-            final isFavorite =
-                currentUser != null && userService.isFavoriteCar(car.id);
-            return CarTileWidget(
-              car: car,
-              isFavorite: isFavorite,
-              onToggleFavorite: () => _toggleFavorite(car.id),
-              onNavigate: () => Navigator.pushNamed(context, '/car-navigation',
-                  arguments: car),
-            );
-          },
+        final isFavorite =
+            currentUser != null && userService.isFavoriteCar(car.id);
+        return CarTileWidget(
+          car: car,
+          isFavorite: isFavorite,
+          onToggleFavorite: () => _toggleFavorite(car.id),
+          onNavigate: () =>
+              Navigator.pushNamed(context, '/car-navigation', arguments: car),
         );
       },
     );
   }
 
   void _toggleFavorite(String carId) async {
-    final userService = Provider.of<UserService>(context, listen: false);
-
     if (currentUser != null) {
       await userService.toggleFavoriteCar(carId);
       setState(() {});
@@ -109,8 +100,6 @@ class _CarsListScreenState extends State<CarsListScreen> {
   }
 
   List<Car> _sortCars(List<Car> cars) {
-    final userService = Provider.of<UserService>(context, listen: false);
-
     final favoriteCars = cars
         .where(
             (car) => currentUser != null && userService.isFavoriteCar(car.id))

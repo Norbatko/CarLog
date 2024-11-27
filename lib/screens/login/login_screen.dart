@@ -1,13 +1,12 @@
-import 'package:car_log/screens/cars_list/cars_list_screen.dart';
-import 'package:car_log/screens/users_list/users_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/model/user_model.dart';
-
 import 'package:car_log/widgets/tab_manager.dart';
+import 'package:get_it/get_it.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,28 +16,26 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final AuthService authService = GetIt.instance<AuthService>();
+  final UserModel userModel = GetIt.instance<UserModel>();
+
   Future<String?> _authenticateUser(LoginData data) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    return await authService.authUser(data);
+    try {
+      return await authService.authUser(data);
+    } catch (e) {
+      return e.toString();
+    }
   }
 
   Future<String?> _onSignup(SignupData data) async {
-    final authService = Provider.of<AuthService>(context, listen: false);
-    final userModel = Provider.of<UserModel>(context, listen: false);
-
     try {
-      // Only perform Firebase authentication, retrieve userId
       final userId = await authService.signupUser(data);
 
       if (userId != null) {
-        // Extract additional signup fields from FlutterLogin
         String name = data.additionalSignupData?['name'] ?? '';
-        String login = data.additionalSignupData?['login'] ??
-            data.name?.split('@')[0] ??
-            '';
+        String login = data.additionalSignupData?['login'] ?? '';
         String phoneNumber = data.additionalSignupData?['phoneNumber'] ?? '';
 
-        // Create and save the user profile in Firebase
         final newUser = User(
           id: userId,
           name: name,
@@ -48,9 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
           isAdmin: false,
           favoriteCars: [],
         );
+
         await userModel.addUser(newUser);
         _onLoginSuccess();
       }
+
       return null;
     } catch (e) {
       return e.toString();
@@ -62,7 +61,6 @@ class _LoginScreenState extends State<LoginScreen> {
       MaterialPageRoute(builder: (context) => const TabManager()),
     );
   }
-  
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
@@ -80,19 +78,25 @@ class _LoginScreenState extends State<LoginScreen> {
               .recoverPassword(name),
       additionalSignupFields: const [
         UserFormField(
-            keyName: 'name',
-            displayName: 'Full Name',
-            icon: Icon(Icons.person)),
+          keyName: 'name',
+          displayName: 'Full Name',
+          icon: Icon(Icons.person),
+        ),
         UserFormField(
-            keyName: 'login',
-            displayName: 'Username',
-            icon: Icon(Icons.account_circle)),
+          keyName: 'login',
+          displayName: 'Username',
+          icon: Icon(Icons.account_circle),
+        ),
         UserFormField(
-            keyName: 'phoneNumber',
-            displayName: 'Phone Number',
-            icon: Icon(Icons.phone)),
+          keyName: 'phoneNumber',
+          displayName: 'Phone Number',
+          icon: Icon(Icons.phone),
+        ),
       ],
-      theme: LoginTheme(primaryColor: Colors.blueAccent, logoWidth: 150),
+      theme: LoginTheme(
+        primaryColor: Colors.blueAccent,
+        logoWidth: 150,
+      ),
       savedEmail: "miro@mail.co.uk",
       savedPassword: "123456",
     );
