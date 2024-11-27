@@ -2,7 +2,7 @@ import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/users_list/widgets/user_app_bar.dart';
 import 'package:car_log/screens/users_list/widgets/user_tile_widget.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/widgets/build_future_with_stream.dart';
+import 'package:car_log/widgets/builders/build_future_with_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/user_service.dart';
@@ -51,7 +51,7 @@ class UsersListScreen extends StatelessWidget {
         return UserTileWidget(
           user: user,
           // TODO: Navigate to user detail screen
-          onNavigate: () => Navigator.pushNamed(context, '/user-navigation',
+          onNavigate: () => Navigator.pushNamed(context, '/user/detail',
               arguments: user),
         );
       },

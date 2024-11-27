@@ -54,7 +54,9 @@ class _CarsListState extends State<CarsList> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return sortedCars.isEmpty
+        ? const Center(child: Text('No cars available'))
+        : ListView.builder(
       itemCount: sortedCars.length,
       itemBuilder: (context, index) {
         final car = sortedCars[index];
@@ -65,8 +67,11 @@ class _CarsListState extends State<CarsList> {
           car: car,
           isFavorite: isFavorite,
           onToggleFavorite: () => _toggleFavorite(car.id),
-          onNavigate: () =>
-              Navigator.pushNamed(context, '/car-navigation', arguments: car),
+          onNavigate: () => Navigator.pushNamed(
+            context,
+            '/car-navigation',
+            arguments: car,
+          ),
         );
       },
     );

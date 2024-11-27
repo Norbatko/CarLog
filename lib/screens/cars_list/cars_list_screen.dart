@@ -1,7 +1,7 @@
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/widgets/build_future_with_stream.dart';
+import 'package:car_log/widgets/builders/build_future_with_stream.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:car_log/services/auth_service.dart';
@@ -39,10 +39,9 @@ class CarsListScreen extends StatelessWidget {
   Future<User?> _loadCurrentUser(
       AuthService authService, UserService userService) async {
     final user = await authService.getCurrentUser();
-    if (user != null) {
-      return await userService.getUserData(user.id);
-    }
-    return null;
+    return (user != null)
+        ?  await userService.getUserData(user.id)
+        :  null;
   }
 
   Widget _buildLoading() => Center(
