@@ -16,16 +16,13 @@ class UsersListScreen extends StatelessWidget {
     final UserService userService = get<UserService>();
 
     return Scaffold(
-      appBar:
-      const UserAppBar(title: 'User List', userDetailRoute: '/user/detail'),
+      appBar: const UserAppBar(title: 'User List', userDetailRoute: '/user/detail'),
       body: buildFutureWithStream<User?, List<User>>(
         future: _loadCurrentUser(authService, userService),
         stream: userService.users,
         loadingWidget: const Center(child: CircularProgressIndicator()),
-        errorWidget: (error) =>
-            Center(child: Text('Error loading data: $error')),
-        onData: (context, currentUser, users) =>
-            _buildBodyContent(context, users),
+        errorWidget: (error) => Center(child: Text('Error loading data: $error')),
+        onData: (context, currentUser, users) => _buildBodyContent(context, currentUser, users),
       ),
     );
   }
@@ -39,18 +36,20 @@ class UsersListScreen extends StatelessWidget {
     return null;
   }
 
-  Widget _buildBodyContent(BuildContext context, List<User> users) {
+  Widget _buildBodyContent(BuildContext context, User? currentUser, List<User> users) {
     if (users.isEmpty) {
       return const Center(child: Text('No users found'));
     }
 
+    if (currentUser != null) {
+      users.removeWhere((user) => user.id == currentUser.id);
+    }
     return ListView.builder(
       itemCount: users.length,
       itemBuilder: (context, index) {
         final user = users[index];
         return UserTileWidget(
           user: user,
-          // TODO: Navigate to user detail screen
           onNavigate: () => Navigator.pushNamed(context, '/user/detail', arguments: user.id),
         );
       },
