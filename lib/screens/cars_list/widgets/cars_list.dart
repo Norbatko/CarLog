@@ -1,6 +1,7 @@
 import 'package:car_log/model/car.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_tile_widget.dart';
+import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:flutter/material.dart';
 
@@ -69,7 +70,7 @@ class _CarsListState extends State<CarsList> {
                 onToggleFavorite: () => _toggleFavorite(car.id),
                 onNavigate: () => Navigator.pushNamed(
                   context,
-                  '/car-navigation',
+                  Routes.carDetail,
                   arguments: car,
                 ),
               );

@@ -1,4 +1,5 @@
 import 'package:car_log/screens/user_detail/widgets/user_details_card_container.dart';
+import 'package:car_log/services/Routes.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/user_service.dart';
@@ -74,7 +75,7 @@ class UserDetailScreen extends StatelessWidget {
                 LogoutButton(
                   onLogout: () {
                     authService.logOut();
-                    Navigator.pushReplacementNamed(context, '/login');
+                    Navigator.pushReplacementNamed(context, Routes.login);
                   },
                 ),
               ],
