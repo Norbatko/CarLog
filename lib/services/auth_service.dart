@@ -55,9 +55,8 @@ class AuthService {
   Future<User?> getCurrentUser() async {
     final firebaseUser = _auth.currentUser;
     if (firebaseUser != null) {
-      // Retrieve the user's profile data from the database
       return await _databaseService.getUserById(firebaseUser.uid);
     }
-    return null; // No user is currently logged in
+    return null;
   }
 }

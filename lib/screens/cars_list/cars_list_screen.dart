@@ -40,7 +40,7 @@ class CarsListScreen extends StatelessWidget {
       AuthService authService, UserService userService) async {
     final user = await authService.getCurrentUser();
     return (user != null)
-        ?  await userService.getUserData(user.id)
+        ?  await userService.getLoggedInUserData(user.id)
         :  null;
   }
 

@@ -17,15 +17,18 @@ class UserService with ChangeNotifier {
   User? _currentUser;
   User? get currentUser => _currentUser;
 
-  // StreamController to broadcast user updates
   final StreamController<User> _userStreamController =
   StreamController<User>.broadcast();
   Stream<User> get userStream => _userStreamController.stream;
 
   Future<User?> getUserData(String userId) async {
+    return await _databaseService.getUserById(userId);
+  }
+
+  Future<User?> getLoggedInUserData(userId) async {
     _currentUser = await _databaseService.getUserById(userId);
-    _userStreamController.add(_currentUser!); // Emit updated user
-    notifyListeners(); // Notify listeners about changes
+    _userStreamController.add(_currentUser!);
+    notifyListeners();
     return _currentUser;
   }
 
@@ -35,18 +38,11 @@ class UserService with ChangeNotifier {
 
   Future<void> toggleFavoriteCar(String carId) async {
     if (_currentUser == null) return;
+    isFavoriteCar(carId)
+      ?_currentUser!.favoriteCars.remove(carId)
+      :_currentUser!.favoriteCars.add(carId);
 
-    // Update local favorites
-    if (isFavoriteCar(carId)) {
-      _currentUser!.favoriteCars.remove(carId);
-    } else {
-      _currentUser!.favoriteCars.add(carId);
-    }
-
-    // Update in the database
     await updateUserFavorites(_currentUser!.id, _currentUser!.favoriteCars);
-
-    // Emit updated user and notify listeners
     _userStreamController.add(_currentUser!);
     notifyListeners();
   }
