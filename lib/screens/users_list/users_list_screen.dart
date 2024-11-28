@@ -17,7 +17,7 @@ class UsersListScreen extends StatelessWidget {
     final UserService userService = get<UserService>();
 
     return Scaffold(
-      appBar: const UserAppBar(title: 'User List', userDetailRoute: Routes.userDetail),
+      appBar: ApplicationBar(title: 'User List', userDetailRoute: Routes.userDetail),
       body: buildFutureWithStream<User?, List<User>>(
         future: _loadCurrentUser(authService, userService),
         stream: userService.users,
