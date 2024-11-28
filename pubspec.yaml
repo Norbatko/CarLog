@@ -80,6 +80,7 @@ flutter:
     - assets/images/car.png
     - assets/images/logo_with_bigger_road.jpeg
     - assets/icon/icon.png
+    - assets/animations/add_car.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
