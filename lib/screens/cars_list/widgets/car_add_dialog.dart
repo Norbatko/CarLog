@@ -21,6 +21,8 @@ class _CarAddDialogState extends State<CarAddDialog> {
     'Description': TextEditingController(),
   };
 
+  final CarService carService = CarService();
+
   final List<String> _fuelTypes = [
     'Gasoline',
     'Diesel',
@@ -41,6 +43,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
   String _selectedFuelType = 'Gasoline';
 
   final Map<String, String?> _errorMessages = {};
+  final Map<String, String> _carFields = {};
 
   bool _isSubmitting = false;
 
@@ -48,6 +51,16 @@ class _CarAddDialogState extends State<CarAddDialog> {
     setState(() {
       _isSubmitting = true;
     });
+
+    carService.addCar(
+        _carFields['Name']!,
+        _carFields['Alias']!,
+        _selectedFuelType,
+        _carFields['License Plate']!,
+        _carFields['Insurance Contact']!,
+        _carFields['Odometer Status']!,
+        _carFields['Description']!,
+        _selectedCarIcon);
 
     Future.delayed(const Duration(seconds: 2), () {
       _isSubmitting = false;
@@ -146,6 +159,8 @@ class _CarAddDialogState extends State<CarAddDialog> {
         _errorMessages[entry.key] =
             entry.value.text.trim().isEmpty ? '${entry.key} is required' : null;
         isValid = false;
+      } else {
+        _carFields[entry.key] = entry.value.text.trim();
       }
     }
 
