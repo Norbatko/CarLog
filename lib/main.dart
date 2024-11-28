@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:car_log/screens/login/login_screen.dart';
 import 'firebase_db/firebase_options.dart';
+import 'package:car_log/services/Routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,10 +26,10 @@ class MyApp extends StatelessWidget {
             MaterialApp(
               title: 'CarLog',
               theme: themeProvider.themeData,
-              initialRoute: '/login',
+              initialRoute: Routes.login,
               routes: {
-                '/login': (context) => LoginScreen(),
-                '/user/detail': (context) => const UserDetailScreen(),
+                Routes.login: (context) => LoginScreen(),
+                Routes.userDetail: (context) => const UserDetailScreen(),
               },
             );
         }
