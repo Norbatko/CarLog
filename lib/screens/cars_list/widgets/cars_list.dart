@@ -32,13 +32,13 @@ class _CarsListState extends State<CarsList> {
   void _sortCars() {
     final favoriteCars = widget.cars
         .where((car) =>
-    widget.currentUser != null &&
-        widget.userService.isFavoriteCar(car.id))
+            widget.currentUser != null &&
+            widget.userService.isFavoriteCar(car.id))
         .toList();
     final otherCars = widget.cars
         .where((car) =>
-    widget.currentUser == null ||
-        !widget.userService.isFavoriteCar(car.id))
+            widget.currentUser == null ||
+            !widget.userService.isFavoriteCar(car.id))
         .toList();
     sortedCars = favoriteCars..addAll(otherCars);
   }
@@ -54,26 +54,26 @@ class _CarsListState extends State<CarsList> {
 
   @override
   Widget build(BuildContext context) {
+    _sortCars();
     return sortedCars.isEmpty
         ? const Center(child: Text('No cars available'))
         : ListView.builder(
-      itemCount: sortedCars.length,
-      itemBuilder: (context, index) {
-        final car = sortedCars[index];
-        final isFavorite =
-            widget.currentUser != null &&
-                widget.userService.isFavoriteCar(car.id);
-        return CarTileWidget(
-          car: car,
-          isFavorite: isFavorite,
-          onToggleFavorite: () => _toggleFavorite(car.id),
-          onNavigate: () => Navigator.pushNamed(
-            context,
-            '/car-navigation',
-            arguments: car,
-          ),
-        );
-      },
-    );
+            itemCount: sortedCars.length,
+            itemBuilder: (context, index) {
+              final car = sortedCars[index];
+              final isFavorite = widget.currentUser != null &&
+                  widget.userService.isFavoriteCar(car.id);
+              return CarTileWidget(
+                car: car,
+                isFavorite: isFavorite,
+                onToggleFavorite: () => _toggleFavorite(car.id),
+                onNavigate: () => Navigator.pushNamed(
+                  context,
+                  '/car-navigation',
+                  arguments: car,
+                ),
+              );
+            },
+          );
   }
 }
