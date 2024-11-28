@@ -39,6 +39,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
 
   int _selectedCarIcon = 0;
   String _selectedFuelType = 'Gasoline';
+
   final Map<String, String?> _errorMessages = {};
 
   bool _isSubmitting = false;
@@ -57,120 +58,101 @@ class _CarAddDialogState extends State<CarAddDialog> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () => _showAddCarDialog(context),
-      child: const Icon(Icons.add),
+      onPressed: () => {_showAddCarDialog(context)},
+      child: Icon(Icons.add),
       heroTag: 'addCarFAB',
     );
   }
 
   void _showAddCarDialog(BuildContext context) {
     showDialog(
-      context: context,
-      builder: (context) => _buildDialog(context),
-    ).then((_) => _clearAllErrorMessages());
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: _isSubmitting ? Text("New car added") : Text('Add Car'),
+              content: _isSubmitting
+                  ? Lottie.asset('assets/animations/add_car.json',
+                      width: 150, height: 150, repeat: false)
+                  : SingleChildScrollView(
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        ..._controllers.entries.map((entry) {
+                          return CarAddField(
+                            controller: entry.value,
+                            errorMessage: _errorMessages[entry.key],
+                            nameOfField: entry.key,
+                          );
+                        }).toList(),
+                        FuelTypeDropdown(
+                            selectedFuelType: _selectedFuelType,
+                            fuelTypes: _fuelTypes,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedFuelType = newValue!;
+                              });
+                            }),
+                        Row(
+                          children: List.generate(_carIcons.length, (index) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Radio(
+                                  value: index,
+                                  groupValue: _selectedCarIcon,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedCarIcon = value as int;
+                                    });
+                                  },
+                                ),
+                                Icon(_carIcons[index]),
+                              ],
+                            );
+                          }),
+                        )
+                      ]),
+                    ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _clearAllErrorMessages();
+                    _clearAllControllers();
+                  },
+                  child: Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _validateFieldsAndSubmit();
+                    });
+                  },
+                  child: Text('Submit'),
+                ),
+              ],
+            );
+          });
+        }).then((_) {
+      _clearAllErrorMessages();
+      _clearAllControllers();
+    });
   }
 
-  Widget _buildDialog(BuildContext context) {
-    return StatefulBuilder(
-      builder: (context, setState) => AlertDialog(
-        title:
-            _isSubmitting ? const Text("New car added") : const Text('Add Car'),
-        content: _isSubmitting
-            ? Lottie.network(
-                'https://lottie.host/8107173d-621c-4b5f-baa2-546bf1591ae3/Kz1JUIEi3K.json',
-                width: 150,
-                height: 150,
-                repeat: false)
-            : _buildFormContent(),
-        actions: _isSubmitting ? [] : _buildDialogActions(context, setState),
-      ),
-    );
-  }
-
-  Widget _buildFormContent() {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ..._buildCarFields(),
-          _buildFuelTypeDropdown(setState),
-          _buildCarIconSelection(setState),
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _buildCarFields() {
-    return _controllers.entries.map((entry) {
-      return CarAddField(
-        controller: entry.value,
-        errorMessage: _errorMessages[entry.key],
-        nameOfField: entry.key,
-      );
-    }).toList();
-  }
-
-  Widget _buildFuelTypeDropdown(void Function(void Function()) setState) {
-    return FuelTypeDropdown(
-      selectedFuelType: _selectedFuelType,
-      fuelTypes: _fuelTypes,
-      onChanged: (String? newValue) {
-        setState(() {
-          _selectedFuelType = newValue!;
-        });
-      },
-    );
-  }
-
-  Widget _buildCarIconSelection(void Function(void Function()) setState) {
-    return Row(
-      children: List.generate(_carIcons.length, (index) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Radio(
-              value: index,
-              groupValue: _selectedCarIcon,
-              onChanged: (value) {
-                setState(() {
-                  _selectedCarIcon = value as int;
-                });
-              },
-            ),
-            Icon(_carIcons[index]),
-          ],
-        );
-      }),
-    );
-  }
-
-  List<Widget> _buildDialogActions(
-      BuildContext context, void Function(void Function()) setState) {
-    return [
-      TextButton(
-        onPressed: () {
-          _clearAllControllers();
-          _clearAllErrorMessages();
-          Navigator.of(context).pop();
-        },
-        child: const Text('Cancel'),
-      ),
-      TextButton(
-        onPressed: () {
-          setState(_validateFields);
-          _submitForm();
-          _clearAllControllers();
-        },
-        child: const Text('Submit'),
-      ),
-    ];
-  }
-
-  void _validateFields() {
+  void _validateFieldsAndSubmit() {
+    bool isValid = true;
     _clearAllErrorMessages();
     for (var entry in _controllers.entries) {
-      _errorMessages[entry.key] =
-          entry.value.text.trim().isEmpty ? '${entry.key} is required' : null;
+      if (entry.value.text.trim().isEmpty) {
+        _errorMessages[entry.key] =
+            entry.value.text.trim().isEmpty ? '${entry.key} is required' : null;
+        isValid = false;
+      }
+    }
+
+    if (isValid) {
+      setState(() {
+        _submitForm();
+      });
     }
   }
 
