@@ -2,13 +2,13 @@ import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/builders/build_future_with_stream.dart';
+import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/model/car.dart';
-import 'package:car_log/screens/cars_list/widgets/car_app_bar.dart';
 
 import 'widgets/cars_list.dart';
 
@@ -22,15 +22,15 @@ class CarsListScreen extends StatelessWidget {
     final CarService carService = get<CarService>();
 
     return Scaffold(
-      appBar:
-      const CarAppBar(title: 'Car List', userDetailRoute: '/user/detail'),
+      appBar: const ApplicationBar(
+          title: 'Car List', userDetailRoute: '/user/detail'),
       body: buildFutureWithStream<User?, List<Car>>(
         future: _loadCurrentUser(authService, userService),
         stream: carService.cars,
         loadingWidget: _buildLoading(),
         errorWidget: (error) => _buildError(error),
-        onData: (context, currentUser, cars) =>
-            CarsList(cars: cars, currentUser: currentUser, userService: userService),
+        onData: (context, currentUser, cars) => CarsList(
+            cars: cars, currentUser: currentUser, userService: userService),
       ),
       floatingActionButton: const CarAddDialog(),
     );
@@ -40,8 +40,8 @@ class CarsListScreen extends StatelessWidget {
       AuthService authService, UserService userService) async {
     final user = await authService.getCurrentUser();
     return (user != null)
-        ?  await userService.getLoggedInUserData(user.id)
-        :  null;
+        ? await userService.getLoggedInUserData(user.id)
+        : null;
   }
 
   Widget _buildLoading() => Center(
