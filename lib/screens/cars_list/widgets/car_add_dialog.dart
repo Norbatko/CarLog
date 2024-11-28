@@ -125,24 +125,26 @@ class _CarAddDialogState extends State<CarAddDialog> {
                         )
                       ]),
                     ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _clearAllErrorMessages();
-                    _clearAllControllers();
-                  },
-                  child: Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _validateFieldsAndSubmit();
-                    });
-                  },
-                  child: Text('Submit'),
-                ),
-              ],
+              actions: _isSubmitting
+                  ? []
+                  : [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          _clearAllErrorMessages();
+                          _clearAllControllers();
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _validateFieldsAndSubmit();
+                          });
+                        },
+                        child: Text('Submit'),
+                      ),
+                    ],
             );
           });
         }).then((_) {
