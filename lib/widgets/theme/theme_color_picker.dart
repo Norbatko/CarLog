@@ -12,14 +12,9 @@ class ThemeColorPicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Choose Theme:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
         GridView.builder(
           shrinkWrap: true, // Allows GridView inside a column
-          physics: const NeverScrollableScrollPhysics(), // Disables scrolling
+          physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 5, // 5 colors per row
             crossAxisSpacing: 10.0,
