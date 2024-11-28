@@ -42,12 +42,10 @@ class UserDetailScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             children: [
               if (isLoggedInUser) ...[
-                const Text('Choose Theme:', style: TextStyle(fontSize: 20)),
-                const SizedBox(height: 16),
                 const ThemeColorPicker(),
                 const SizedBox(height: 24),
               ],
-              const Text('Profile Details:', style: TextStyle(fontSize: 20)),
+              const Text('Profile Details:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               UserDetailsCard(user: user),
               if (isLoggedInUser) ...[
