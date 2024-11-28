@@ -51,8 +51,7 @@ class UsersListScreen extends StatelessWidget {
         return UserTileWidget(
           user: user,
           // TODO: Navigate to user detail screen
-          onNavigate: () => Navigator.pushNamed(context, '/user/detail',
-              arguments: user),
+          onNavigate: () => Navigator.pushNamed(context, '/user/detail', arguments: user.id),
         );
       },
     );
