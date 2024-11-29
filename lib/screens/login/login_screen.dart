@@ -1,3 +1,4 @@
+import 'package:car_log/screens/login/animated_car_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_login/flutter_login.dart';
@@ -6,7 +7,6 @@ import 'package:car_log/model/user.dart';
 import 'package:car_log/model/user_model.dart';
 import 'package:car_log/widgets/tab_manager.dart';
 import 'package:get_it/get_it.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -58,9 +58,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLoginSuccess() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const TabManager()),
+      MaterialPageRoute(builder: (context) => AnimatedCarScreen()),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(

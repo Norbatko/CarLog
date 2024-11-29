@@ -1,6 +1,7 @@
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/cars_list_screen.dart';
 import 'package:car_log/screens/users_list/users_list_screen.dart';
+import 'package:car_log/widgets/tab_manager.dart';
 import 'package:flutter/material.dart';
 
 class AnimatedCarScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-                UsersListScreen(),
+                TabManager(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               const begin = Offset(0.0, 1.0);
