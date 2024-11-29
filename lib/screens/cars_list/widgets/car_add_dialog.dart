@@ -71,8 +71,9 @@ class _CarAddDialogState extends State<CarAddDialog> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      child: Icon(Icons.add, color: Theme.of(context).colorScheme.onSecondary),
       onPressed: () => {_showAddCarDialog(context)},
-      child: Icon(Icons.add),
       heroTag: 'addCarFAB',
     );
   }

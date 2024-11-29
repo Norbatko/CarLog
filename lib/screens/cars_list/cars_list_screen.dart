@@ -33,11 +33,7 @@ class CarsListScreen extends StatelessWidget {
         onData: (context, currentUser, cars) => CarsList(
             cars: cars, currentUser: currentUser, userService: userService),
       ),
-      floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child:
-              Icon(Icons.add, color: Theme.of(context).colorScheme.onSecondary),
-          onPressed: () => const CarAddDialog()),
+      floatingActionButton: const CarAddDialog(),
     );
   }
 
