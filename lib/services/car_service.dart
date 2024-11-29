@@ -46,6 +46,10 @@ class CarService {
     await carModel.addCar(newCar);
   }
 
+  void setActiveCar(Car car) {
+    activeCar = car;
+  }
+
   // Dispose method to close the StreamController when done
   void dispose() {
     _carStreamController.close();
