@@ -23,16 +23,21 @@ class CarsListScreen extends StatelessWidget {
     final CarService carService = get<CarService>();
 
     return Scaffold(
-      appBar: const ApplicationBar(title: 'Car List', userDetailRoute: Routes.userDetail),
+      appBar: const ApplicationBar(
+          title: 'Car List', userDetailRoute: Routes.userDetail),
       body: buildFutureWithStream<User?, List<Car>>(
         future: _loadCurrentUser(authService, userService),
         stream: carService.cars,
         loadingWidget: _buildLoading(),
         errorWidget: (error) => _buildError(error),
-        onData: (context, currentUser, cars) =>
-            CarsList(cars: cars, currentUser: currentUser, userService: userService),
+        onData: (context, currentUser, cars) => CarsList(
+            cars: cars, currentUser: currentUser, userService: userService),
       ),
-      floatingActionButton: const CarAddDialog(),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          child:
+              Icon(Icons.add, color: Theme.of(context).colorScheme.onSecondary),
+          onPressed: () => const CarAddDialog()),
     );
   }
 
