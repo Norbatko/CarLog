@@ -2,7 +2,9 @@ import 'package:car_log/model/car.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_tile_widget.dart';
 import 'package:car_log/services/Routes.dart';
+import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/user_service.dart';
+import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 
 class CarsList extends StatefulWidget {
@@ -23,6 +25,7 @@ class CarsList extends StatefulWidget {
 
 class _CarsListState extends State<CarsList> {
   late List<Car> sortedCars;
+  final CarService carService = get<CarService>();
 
   @override
   void initState() {
@@ -65,15 +68,17 @@ class _CarsListState extends State<CarsList> {
               final isFavorite = widget.currentUser != null &&
                   widget.userService.isFavoriteCar(car.id);
               return CarTileWidget(
-                car: car,
-                isFavorite: isFavorite,
-                onToggleFavorite: () => _toggleFavorite(car.id),
-                onNavigate: () => Navigator.pushNamed(
-                  context,
-                  Routes.carDetail,
-                  arguments: car,
-                ),
-              );
+                  car: car,
+                  isFavorite: isFavorite,
+                  onToggleFavorite: () => _toggleFavorite(car.id),
+                  onNavigate: () {
+                    carService.setActiveCar(car);
+                    Navigator.pushNamed(
+                      context,
+                      Routes.carDetail,
+                      arguments: car,
+                    );
+                  });
             },
           );
   }
