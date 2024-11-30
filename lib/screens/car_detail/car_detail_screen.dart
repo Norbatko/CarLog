@@ -40,8 +40,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
   @override
   void initState() {
     super.initState();
+    var activeCar = carService.getActiveCar();
     _controllers.addAll({
-      'Name': TextEditingController(text: carService.activeCar.name),
+      'Name': TextEditingController(text: activeCar.name),
       'Alias': TextEditingController(text: carService.activeCar.alias),
       'License Plate':
           TextEditingController(text: carService.activeCar.licensePlate),
@@ -62,23 +63,49 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
           title: 'Car Detail', userDetailRoute: Routes.userDetail),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: CarAddFieldList(
-          controllers: _controllers,
-          errorMessages: _errorMessages,
-          fuelTypes: _fuelTypes,
-          selectedFuelType: _selectedFuelType,
-          carIcons: _carIcons,
-          selectedCarIcon: _selectedCarIcon,
-          onFuelTypeChanged: (newValue) {
-            setState(() {
-              _selectedFuelType = newValue!;
-            });
-          },
-          onCarIconChanged: (value) {
-            setState(() {
-              _selectedCarIcon = value as int;
-            });
-          },
+        child: Column(
+          children: [
+            CarAddFieldList(
+              controllers: _controllers,
+              errorMessages: _errorMessages,
+              fuelTypes: _fuelTypes,
+              selectedFuelType: _selectedFuelType,
+              carIcons: _carIcons,
+              selectedCarIcon: _selectedCarIcon,
+              onFuelTypeChanged: (newValue) {
+                setState(() {
+                  _selectedFuelType = newValue!;
+                });
+              },
+              onCarIconChanged: (value) {
+                setState(() {
+                  _selectedCarIcon = value as int;
+                });
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: null,
+                  style: ElevatedButton.styleFrom(
+                    disabledBackgroundColor: Colors.grey,
+                  ),
+                  child: Text("Update Car Detail"),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      textStyle: TextStyle(color: Colors.black)),
+                  child: Text("Delete Car"),
+                )
+              ],
+            )
+          ],
         ),
       ),
     );
