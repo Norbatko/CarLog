@@ -1,4 +1,5 @@
 import 'package:car_log/screens/cars_list/widgets/car_add_field.dart';
+import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/screens/cars_list/widgets/fuel_type_dropdown.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:flutter/material.dart';
@@ -88,43 +89,23 @@ class _CarAddDialogState extends State<CarAddDialog> {
               content: _isSubmitting
                   ? Lottie.asset('assets/animations/add_car.json',
                       width: 150, height: 150, repeat: false)
-                  : SingleChildScrollView(
-                      child: Column(mainAxisSize: MainAxisSize.min, children: [
-                        ..._controllers.entries.map((entry) {
-                          return CarAddField(
-                            controller: entry.value,
-                            errorMessage: _errorMessages[entry.key],
-                            nameOfField: entry.key,
-                          );
-                        }).toList(),
-                        FuelTypeDropdown(
-                            selectedFuelType: _selectedFuelType,
-                            fuelTypes: _fuelTypes,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedFuelType = newValue!;
-                              });
-                            }),
-                        Row(
-                          children: List.generate(_carIcons.length, (index) {
-                            return Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Radio(
-                                  value: index,
-                                  groupValue: _selectedCarIcon,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedCarIcon = value as int;
-                                    });
-                                  },
-                                ),
-                                Icon(_carIcons[index]),
-                              ],
-                            );
-                          }),
-                        )
-                      ]),
+                  : CarAddFieldList(
+                      controllers: _controllers,
+                      errorMessages: _errorMessages,
+                      fuelTypes: _fuelTypes,
+                      selectedFuelType: _selectedFuelType,
+                      carIcons: _carIcons,
+                      selectedCarIcon: _selectedCarIcon,
+                      onFuelTypeChanged: (newValue) {
+                        setState(() {
+                          _selectedFuelType = newValue!;
+                        });
+                      },
+                      onCarIconChanged: (value) {
+                        setState(() {
+                          _selectedCarIcon = value as int;
+                        });
+                      },
                     ),
               actions: _isSubmitting
                   ? []
