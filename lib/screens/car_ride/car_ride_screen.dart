@@ -11,9 +11,7 @@ class CarRideScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CarService carService = get<CarService>();
     final car = ModalRoute.of(context)?.settings.arguments as Car;
-    carService.setActiveCar(car);
     return Scaffold(
       appBar:
           ApplicationBar(title: car.name, userDetailRoute: Routes.userDetail),
@@ -21,8 +19,7 @@ class CarRideScreen extends StatelessWidget {
         child: Container(
           width: 100,
           height: 100,
-          child: Text(carService.activeCar.name,
-              style: TextStyle(color: Colors.black)),
+          child: Text(car.name, style: TextStyle(color: Colors.black)),
           color: Colors.red,
         ),
       ),

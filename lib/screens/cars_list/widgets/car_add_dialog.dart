@@ -2,6 +2,7 @@ import 'package:car_log/screens/cars_list/widgets/car_add_field.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/screens/cars_list/widgets/fuel_type_dropdown.dart';
 import 'package:car_log/services/car_service.dart';
+import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -22,7 +23,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
     'Description': TextEditingController(),
   };
 
-  final CarService carService = CarService();
+  final CarService carService = get<CarService>();
 
   final List<String> _fuelTypes = [
     'Gasoline',

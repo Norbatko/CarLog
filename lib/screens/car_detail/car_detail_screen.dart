@@ -1,6 +1,7 @@
 import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
+import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class CarDetailScreen extends StatefulWidget {
 }
 
 class _CarDetailScreenState extends State<CarDetailScreen> {
-  final CarService carService = CarService();
+  final CarService carService = get<CarService>();
   final Map<String, TextEditingController> _controllers = {};
 
   final List<String> _fuelTypes = [
@@ -32,10 +33,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
   ];
 
   int _selectedCarIcon = 0;
-  String _selectedFuelType = 'Gasoline';
+  String _selectedFuelType = "Gasoline";
 
   final Map<String, String?> _errorMessages = {};
-  final Map<String, String> _carFields = {};
 
   @override
   void initState() {
@@ -43,17 +43,17 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     var activeCar = carService.getActiveCar();
     _controllers.addAll({
       'Name': TextEditingController(text: activeCar.name),
-      'Alias': TextEditingController(text: carService.activeCar.alias),
-      'License Plate':
-          TextEditingController(text: carService.activeCar.licensePlate),
-      'Insurance': TextEditingController(text: carService.activeCar.insurance),
+      'Alias': TextEditingController(text: activeCar.alias),
+      'License Plate': TextEditingController(text: activeCar.licensePlate),
+      'Insurance': TextEditingController(text: activeCar.insurance),
       'Insurance Contact':
-          TextEditingController(text: carService.activeCar.insuranceContact),
+          TextEditingController(text: activeCar.insuranceContact),
       'Odometer Status (km)':
-          TextEditingController(text: carService.activeCar.odometerStatus),
-      'Description':
-          TextEditingController(text: carService.activeCar.description),
+          TextEditingController(text: activeCar.odometerStatus),
+      'Description': TextEditingController(text: activeCar.description),
     });
+    _selectedFuelType = activeCar.fuelType;
+    _selectedCarIcon = activeCar.icon;
   }
 
   @override
