@@ -50,6 +50,10 @@ class CarService {
     activeCar = car;
   }
 
+  Car getActiveCar() {
+    return activeCar;
+  }
+
   // Dispose method to close the StreamController when done
   void dispose() {
     _carStreamController.close();
