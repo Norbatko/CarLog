@@ -1,8 +1,9 @@
-import 'package:car_log/screens/user_detail/user_detail_screen.dart';
+import 'package:car_log/screens/car_detail/car_detail_screen.dart';
+import 'package:car_log/screens/car_expenses/car_expenses_screen.dart';
+import 'package:car_log/screens/car_history/car_history_screen.dart';
+import 'package:car_log/screens/car_notes/car_notes_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/screens/car_ride/car_ride_screen.dart';
-import 'package:car_log/screens/cars_list/cars_list_screen.dart';
-import 'package:car_log/screens/users_list/users_list_screen.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 class CarTabManager extends StatefulWidget {
@@ -15,11 +16,11 @@ class CarTabManager extends StatefulWidget {
 class _CarTabManagerState extends State<CarTabManager> {
   int _currentIndex = 0;
   final List<Widget> _screens = [
-    UsersListScreen(),
-    CarsListScreen(),
+    CarDetailScreen(),
+    CarExpensesScreen(),
     CarRideScreen(),
-    UsersListScreen(),
-    UserDetailScreen(),
+    CarnHistoryScreen(),
+    CarNotesScreen(),
   ];
 
   @override
@@ -45,45 +46,45 @@ class _CarTabManagerState extends State<CarTabManager> {
 
   Widget _buildBottomNavigationBar() {
     return StylishBottomBar(
-      currentIndex: _currentIndex, // Important!
+      currentIndex: _currentIndex,
       items: [
-        BottomBarItem(
-          icon: const Icon(Icons.house_outlined),
-          selectedIcon: const Icon(Icons.house_rounded),
-          selectedColor: Theme.of(context).colorScheme.primary,
-          unSelectedColor: Colors.grey,
-          title: const Text('Home'),
-        ),
         BottomBarItem(
           icon: const Icon(Icons.directions_car_outlined),
           selectedIcon: const Icon(Icons.directions_car_rounded),
           selectedColor: Theme.of(context).colorScheme.primary,
           unSelectedColor: Colors.grey,
-          title: const Text('Cars'),
+          title: const Text('Detail'),
         ),
         BottomBarItem(
-          icon: const Icon(Icons.people_outline),
-          selectedIcon: const Icon(Icons.people),
+          icon: const Icon(Icons.attach_money_outlined),
+          selectedIcon: const Icon(Icons.attach_money_rounded),
           selectedColor: Theme.of(context).colorScheme.primary,
           unSelectedColor: Colors.grey,
-          title: const Text('Users'),
+          title: const Text('Expenses'),
         ),
         BottomBarItem(
-          icon: const Icon(Icons.settings_outlined),
-          selectedIcon: const Icon(Icons.settings),
+          icon: const Icon(Icons.speed_outlined),
+          selectedIcon: const Icon(Icons.speed_rounded),
           selectedColor: Theme.of(context).colorScheme.primary,
           unSelectedColor: Colors.grey,
-          title: const Text('Settings'),
+          title: const Text('Ride'),
         ),
         BottomBarItem(
-          icon: const Icon(Icons.info_outline),
-          selectedIcon: const Icon(Icons.info),
+          icon: const Icon(Icons.history_outlined),
+          selectedIcon: const Icon(Icons.history_rounded),
           selectedColor: Theme.of(context).colorScheme.primary,
           unSelectedColor: Colors.grey,
-          title: const Text('About'),
+          title: const Text('History'),
+        ),
+        BottomBarItem(
+          icon: const Icon(Icons.message_outlined),
+          selectedIcon: const Icon(Icons.message_rounded),
+          selectedColor: Theme.of(context).colorScheme.primary,
+          unSelectedColor: Colors.grey,
+          title: const Text('Notes'),
           badge: const Text('9+'),
           showBadge: _currentIndex ==
-                  _screens.indexWhere((screen) => screen is UserDetailScreen)
+                  _screens.indexWhere((screen) => screen is CarNotesScreen)
               ? false
               : true,
         ),
