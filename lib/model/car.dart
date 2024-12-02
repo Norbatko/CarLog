@@ -3,7 +3,6 @@ class Car {
   String name;
   String fuelType;
   String licensePlate;
-  String alias;
   String insurance;
   String insuranceContact;
   String odometerStatus;
@@ -12,11 +11,10 @@ class Car {
   int icon;
 
   Car({
-    this.id='',
+    this.id = '',
     this.name = '',
     this.fuelType = '',
     this.licensePlate = '',
-    this.alias = '',
     this.insurance = '',
     this.insuranceContact = '',
     this.odometerStatus = '',
@@ -31,7 +29,6 @@ class Car {
       name: data['name'] ?? '',
       fuelType: data['fuel_type'] ?? '',
       licensePlate: data['licence_plate'] ?? '',
-      alias: data['alias'] ?? '',
       insurance: data['insurance'] ?? '',
       insuranceContact: data['insurance_contact'] ?? '',
       odometerStatus: data['odometer_status'] ?? '',
@@ -46,7 +43,6 @@ class Car {
       'name': name,
       'fuel_type': fuelType,
       'licence_plate': licensePlate,
-      'alias': alias,
       'insurance': insurance,
       'insurance_contact': insuranceContact,
       'odometer_status': odometerStatus,
