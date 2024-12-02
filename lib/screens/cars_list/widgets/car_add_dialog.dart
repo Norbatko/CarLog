@@ -1,3 +1,4 @@
+import 'package:car_log/model/controllers/field_controller.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
@@ -13,14 +14,19 @@ class CarAddDialog extends StatefulWidget {
   @override
   State<CarAddDialog> createState() => _CarAddDialogState();
 }
+
 class _CarAddDialogState extends State<CarAddDialog> {
-  final Map<String, TextEditingController> _controllers = {
-    'Name': TextEditingController(),
-    'Alias': TextEditingController(),
-    'License Plate': TextEditingController(),
-    'Insurance Contact': TextEditingController(),
-    'Odometer Status': TextEditingController(),
-    'Description': TextEditingController(),
+  final Map<String, FieldController> _controllers = {
+    'Name':
+        FieldController(controller: TextEditingController(), isRequired: true),
+    'License Plate':
+        FieldController(controller: TextEditingController(), isRequired: true),
+    'Insurance Contact':
+        FieldController(controller: TextEditingController(), isRequired: true),
+    'Odometer Status':
+        FieldController(controller: TextEditingController(), isRequired: true),
+    'Responsible Person':
+        FieldController(controller: TextEditingController(), isRequired: true),
   };
 
   final CarService carService = get<CarService>();
@@ -56,12 +62,11 @@ class _CarAddDialogState extends State<CarAddDialog> {
 
     carService.addCar(
         _carFields['Name']!,
-        _carFields['Alias']!,
         _selectedFuelType,
         _carFields['License Plate']!,
         _carFields['Insurance Contact']!,
         _carFields['Odometer Status']!,
-        _carFields['Description']!,
+        _carFields['Responsible Person']!,
         _selectedCarIcon);
 
     Future.delayed(const Duration(seconds: 2), () {
@@ -89,7 +94,9 @@ class _CarAddDialogState extends State<CarAddDialog> {
               title: _isSubmitting ? Text("New car added") : Text('Add Car'),
               content: _isSubmitting
                   ? Lottie.asset('assets/animations/add_car.json',
-                      width: _ANIMATION_WIDTH, height: _ANIMATION_HEIGHT, repeat: false)
+                      width: _ANIMATION_WIDTH,
+                      height: _ANIMATION_HEIGHT,
+                      repeat: false)
                   : CarAddFieldList(
                       controllers: _controllers,
                       errorMessages: _errorMessages,
@@ -140,12 +147,13 @@ class _CarAddDialogState extends State<CarAddDialog> {
     bool isValid = true;
     _clearAllErrorMessages();
     for (var entry in _controllers.entries) {
-      if (entry.value.text.trim().isEmpty) {
-        _errorMessages[entry.key] =
-            entry.value.text.trim().isEmpty ? '${entry.key} is required' : null;
+      if (entry.value.controller.text.trim().isEmpty) {
+        _errorMessages[entry.key] = entry.value.controller.text.trim().isEmpty
+            ? '${entry.key} is required'
+            : null;
         isValid = false;
       } else {
-        _carFields[entry.key] = entry.value.text.trim();
+        _carFields[entry.key] = entry.value.controller.text.trim();
       }
     }
 
@@ -161,8 +169,8 @@ class _CarAddDialogState extends State<CarAddDialog> {
   }
 
   void _clearAllControllers() {
-    for (final controller in _controllers.values) {
-      controller.clear();
+    for (final value in _controllers.values) {
+      value.controller.clear();
     }
   }
 }

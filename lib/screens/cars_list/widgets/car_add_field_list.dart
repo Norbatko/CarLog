@@ -1,9 +1,10 @@
+import 'package:car_log/model/controllers/field_controller.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_field.dart';
 import 'package:car_log/screens/cars_list/widgets/fuel_type_dropdown.dart';
 import 'package:flutter/material.dart';
 
 class CarAddFieldList extends StatelessWidget {
-  final Map<String, TextEditingController> controllers;
+  final Map<String, FieldController> controllers;
   final Map<String, String?> errorMessages;
   final List<String> fuelTypes;
   final String selectedFuelType;
@@ -32,9 +33,10 @@ class CarAddFieldList extends StatelessWidget {
         children: [
           ...controllers.entries.map((entry) {
             return CarAddField(
-              controller: entry.value,
+              controller: entry.value.controller,
               errorMessage: errorMessages[entry.key],
               nameOfField: entry.key,
+              isRequired: entry.value.isRequired,
             );
           }).toList(),
           FuelTypeDropdown(
