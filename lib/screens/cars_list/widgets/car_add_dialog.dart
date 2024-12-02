@@ -1,10 +1,11 @@
-import 'package:car_log/screens/cars_list/widgets/car_add_field.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
-import 'package:car_log/screens/cars_list/widgets/fuel_type_dropdown.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+
+const _ANIMATION_WIDTH = 150.0;
+const _ANIMATION_HEIGHT = 150.0;
 
 class CarAddDialog extends StatefulWidget {
   const CarAddDialog({super.key});
@@ -12,7 +13,6 @@ class CarAddDialog extends StatefulWidget {
   @override
   State<CarAddDialog> createState() => _CarAddDialogState();
 }
-
 class _CarAddDialogState extends State<CarAddDialog> {
   final Map<String, TextEditingController> _controllers = {
     'Name': TextEditingController(),
@@ -89,7 +89,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
               title: _isSubmitting ? Text("New car added") : Text('Add Car'),
               content: _isSubmitting
                   ? Lottie.asset('assets/animations/add_car.json',
-                      width: 150, height: 150, repeat: false)
+                      width: _ANIMATION_WIDTH, height: _ANIMATION_HEIGHT, repeat: false)
                   : CarAddFieldList(
                       controllers: _controllers,
                       errorMessages: _errorMessages,

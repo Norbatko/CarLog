@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:car_log/model/car.dart';
 
-class CarTileWidget extends StatelessWidget {
+const _CAR_NAME_FONT_SIZE = 16.0;
+const _LICENSE_PLATE_FONT_SIZE = 14.0;
+const _ICON_SIZE = 36.0;
+const _BORDER_RADIUS = 16.0;
+const _MARGIN = 8.0;
+const _PADDING = 12.0;
+
+  class CarTileWidget extends StatelessWidget {
   final Car car;
   final bool isFavorite;
   final VoidCallback onToggleFavorite;
@@ -20,16 +27,16 @@ class CarTileWidget extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      margin: const EdgeInsets.all(8.0),
-      padding: const EdgeInsets.all(12.0),
+      margin: const EdgeInsets.all(_MARGIN),
+      padding: const EdgeInsets.all(_PADDING),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(_BORDER_RADIUS),
         border: Border.all(color: theme.colorScheme.primary),
       ),
       child: ListTile(
         leading: Icon(Icons.car_rental,
-            color: theme.colorScheme.secondary, size: 36.0),
+            color: theme.colorScheme.secondary, size: _ICON_SIZE),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,14 +44,14 @@ class CarTileWidget extends StatelessWidget {
               car.name,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 16.0,
+                fontSize: _CAR_NAME_FONT_SIZE,
                 color: theme.colorScheme.onSecondaryContainer,
               ),
             ),
             Text(
               car.licensePlate,
               style: TextStyle(
-                fontSize: 14.0,
+                fontSize: _LICENSE_PLATE_FONT_SIZE,
                 color: theme.colorScheme.onSecondaryContainer,
               ),
             ),

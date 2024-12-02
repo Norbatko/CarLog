@@ -2,8 +2,8 @@ import 'package:car_log/services/Routes.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 
-class CarnHistoryScreen extends StatelessWidget {
-  const CarnHistoryScreen({super.key});
+class CarHistoryScreen extends StatelessWidget {
+  const CarHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

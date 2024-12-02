@@ -1,8 +1,15 @@
-import 'package:car_log/model/user.dart';
-import 'package:car_log/screens/cars_list/cars_list_screen.dart';
-import 'package:car_log/screens/users_list/users_list_screen.dart';
 import 'package:car_log/widgets/tab_manager.dart';
 import 'package:flutter/material.dart';
+
+const _ANIMATION_TWEEN_BEGIN = -0.08;
+const _ANIMATION_TWEEN_END = 1.1;
+const _SCALE_TWEEN_BEGIN = 0.3;
+const _SCALE_TWEEN_END = 1.3;
+const _OFFSET_BEGIN = 0.0;
+const _OFFSET_END = 1.0;
+const _DURATION_IN_MS = 100;
+const _IMAGE_WIDTH = 100.0;
+const _IMAGE_HEIGHT = 100.0;
 
 class AnimatedCarScreen extends StatefulWidget {
   @override
@@ -10,10 +17,12 @@ class AnimatedCarScreen extends StatefulWidget {
 }
 
 class _AnimatedCarScreenState extends State<AnimatedCarScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _carAnimation;
-  late Animation<double> _carScaleAnimation;
+  with SingleTickerProviderStateMixin {
+    late AnimationController _controller;
+    late Animation<double> _carAnimation;
+    late Animation<double> _carScaleAnimation;
+
+
 
   @override
   void initState() {
@@ -26,11 +35,11 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
       vsync: this,
     );
 
-    _carAnimation = Tween<double>(begin: -0.08, end: 1.1).animate(
+    _carAnimation = Tween<double>(begin: _ANIMATION_TWEEN_BEGIN, end: _ANIMATION_TWEEN_END).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    _carScaleAnimation = Tween<double>(begin: 0.3, end: 1.3).animate(
+    _carScaleAnimation = Tween<double>(begin: _SCALE_TWEEN_BEGIN, end: _SCALE_TWEEN_END).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
@@ -42,7 +51,7 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
                 TabManager(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              const begin = Offset(0.0, 1.0);
+              const begin = Offset(_OFFSET_BEGIN, _OFFSET_END);
               const end = Offset.zero;
               const curve = Curves.ease;
 
@@ -78,7 +87,7 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
         future: _loadBackgroundImage(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            Future.delayed(Duration(milliseconds: 100), () {
+            Future.delayed(Duration(milliseconds: _DURATION_IN_MS), () {
               if (mounted) _controller.forward();
             });
 
@@ -105,8 +114,8 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
                   },
                   child: Image.asset(
                     'assets/images/car.png',
-                    width: 100,
-                    height: 100,
+                    width: _IMAGE_WIDTH,
+                    height: _IMAGE_HEIGHT,
                   ),
                 ),
               ],

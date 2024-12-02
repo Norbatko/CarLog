@@ -19,7 +19,7 @@ class _CarTabManagerState extends State<CarTabManager> {
     CarDetailScreen(),
     CarExpensesScreen(),
     CarRideScreen(),
-    CarnHistoryScreen(),
+    CarHistoryScreen(),
     CarNotesScreen(),
   ];
 

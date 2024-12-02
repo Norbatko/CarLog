@@ -5,8 +5,9 @@ import 'package:flutter_login/flutter_login.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/model/user_model.dart';
-import 'package:car_log/widgets/tab_manager.dart';
 import 'package:get_it/get_it.dart';
+
+const _LOGO_WIDTH = 150.0;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -96,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
       theme: LoginTheme(
         primaryColor: Colors.blueAccent,
-        logoWidth: 150,
+        logoWidth: _LOGO_WIDTH,
       ),
       savedEmail: "miro@mail.co.uk",
       savedPassword: "123456",

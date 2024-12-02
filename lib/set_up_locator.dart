@@ -16,12 +16,10 @@ class SetUpLocator {
     get.registerSingleton<CarModel>(CarModel());
     get.registerSingleton<UserModel>(UserModel());
 
-    // AuthService depends on DatabaseService
     get.registerLazySingleton<AuthService>(
       () => AuthService(databaseService: get<DatabaseService>()),
     );
 
-    // UserService depends on DatabaseService and UserModel
     get.registerLazySingleton<UserService>(
       () => UserService(
         databaseService: get<DatabaseService>(),
@@ -29,12 +27,10 @@ class SetUpLocator {
       ),
     );
 
-    // CarService depends on CarModel
     get.registerLazySingleton<CarService>(
       () => CarService(),
     );
 
-    // ThemeProvider
     get.registerSingleton<ThemeProvider>(
       ThemeProvider(ThemeData.light()),
     );
