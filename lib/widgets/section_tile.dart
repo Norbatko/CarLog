@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const _SECTION_TITLE_FONT_SIZE = 24.0;
+
 class SectionTitle extends StatelessWidget {
   final String title;
 
@@ -9,7 +11,7 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      style: const TextStyle(fontSize: _SECTION_TITLE_FONT_SIZE, fontWeight: FontWeight.bold),
     );
   }
 }

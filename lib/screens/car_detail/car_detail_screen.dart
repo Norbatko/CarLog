@@ -5,6 +5,9 @@ import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 
+const _EDGE_INSETS = 16.0;
+const _SIZED_BOX_HEIGHT = 20.0;
+
 class CarDetailScreen extends StatefulWidget {
   const CarDetailScreen({super.key});
 
@@ -62,7 +65,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
       appBar: ApplicationBar(
           title: 'Car Detail', userDetailRoute: Routes.userDetail),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(_EDGE_INSETS),
         child: Column(
           children: [
             CarAddFieldList(
@@ -84,7 +87,7 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
               },
             ),
             SizedBox(
-              height: 20,
+              height: _SIZED_BOX_HEIGHT,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
