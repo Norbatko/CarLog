@@ -10,8 +10,10 @@ import 'package:car_log/widgets/theme/theme_color_picker.dart';
 import 'package:car_log/widgets/builders/build_future.dart';
 
 const _SIZED_BOX_HEIGHT = 16.0;
+const _EDGE_INSETS = 16.0;
 const _BIG_SIZED_BOX_HEIGHT = 60.0;
 const _FONT_SIZE = 20.0;
+const _IMAGE_HEIGHT = 80.0;
 
 class UserDetailScreen extends StatelessWidget {
   const UserDetailScreen({super.key});
@@ -96,12 +98,12 @@ class UserDetailScreen extends StatelessWidget {
 
   Widget _buildLogo() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(_EDGE_INSETS),
       child: Column(
         children: [
           Image.asset(
             'assets/images/logo.png',
-            height: 80,
+            height: _IMAGE_HEIGHT,
             fit: BoxFit.contain,
           ),
         ],
