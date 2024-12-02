@@ -14,10 +14,9 @@ class User {
     this.email = '',
     this.phoneNumber = '',
     this.isAdmin = false,
-    List<String>? favoriteCars, // Use a nullable list for the initializer
-  }) : favoriteCars = favoriteCars ?? []; // Default to an empty list if null
+    List<String>? favoriteCars,
+  }) : favoriteCars = favoriteCars ?? [];
 
-  // Factory constructor for creating a User instance from a map
   factory User.fromMap(String id, Map<String, dynamic> data) {
     return User(
       id: id,
