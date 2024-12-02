@@ -49,9 +49,6 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
       'Name': FieldController(
           controller: TextEditingController(text: activeCar.name),
           isRequired: true),
-      'Alias': FieldController(
-          controller: TextEditingController(text: activeCar.alias),
-          isRequired: false),
       'License Plate': FieldController(
           controller: TextEditingController(text: activeCar.licensePlate),
           isRequired: true),

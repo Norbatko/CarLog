@@ -41,6 +41,30 @@ class CarService {
     await carModel.addCar(newCar);
   }
 
+  Future<void> updateCar(
+      String id,
+      String name,
+      String fuelType,
+      String licensePlate,
+      String insurance,
+      String insuranceContact,
+      String odometerStatus,
+      String responsiblePerson,
+      String description,
+      int selectedCarIcon) async {
+    Car updatedCar = Car(
+        name: name,
+        fuelType: fuelType,
+        licensePlate: licensePlate,
+        insurance: insurance,
+        insuranceContact: insuranceContact,
+        odometerStatus: odometerStatus,
+        responsiblePerson: responsiblePerson,
+        description: description,
+        icon: selectedCarIcon);
+    await carModel.updateCar(activeCar.id, updatedCar);
+  }
+
   void setActiveCar(Car car) {
     activeCar = car;
   }
