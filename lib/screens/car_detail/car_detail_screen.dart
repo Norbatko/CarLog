@@ -1,3 +1,4 @@
+import 'package:car_log/model/controllers/field_controller.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
@@ -17,7 +18,7 @@ class CarDetailScreen extends StatefulWidget {
 
 class _CarDetailScreenState extends State<CarDetailScreen> {
   final CarService carService = get<CarService>();
-  final Map<String, TextEditingController> _controllers = {};
+  final Map<String, FieldController> _controllers = {};
 
   final List<String> _fuelTypes = [
     'Gasoline',
@@ -45,15 +46,30 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     super.initState();
     var activeCar = carService.getActiveCar();
     _controllers.addAll({
-      'Name': TextEditingController(text: activeCar.name),
-      'Alias': TextEditingController(text: activeCar.alias),
-      'License Plate': TextEditingController(text: activeCar.licensePlate),
-      'Insurance': TextEditingController(text: activeCar.insurance),
-      'Insurance Contact':
-          TextEditingController(text: activeCar.insuranceContact),
-      'Odometer Status (km)':
-          TextEditingController(text: activeCar.odometerStatus),
-      'Description': TextEditingController(text: activeCar.description),
+      'Name': FieldController(
+          controller: TextEditingController(text: activeCar.name),
+          isRequired: true),
+      'Alias': FieldController(
+          controller: TextEditingController(text: activeCar.alias),
+          isRequired: false),
+      'License Plate': FieldController(
+          controller: TextEditingController(text: activeCar.licensePlate),
+          isRequired: true),
+      'Insurance': FieldController(
+          controller: TextEditingController(text: activeCar.insurance),
+          isRequired: true),
+      'Insurance Contact': FieldController(
+          controller: TextEditingController(text: activeCar.insuranceContact),
+          isRequired: true),
+      'Odometer Status (km)': FieldController(
+          controller: TextEditingController(text: activeCar.odometerStatus),
+          isRequired: true),
+      'Responsible Person': FieldController(
+          controller: TextEditingController(text: activeCar.responsiblePerson),
+          isRequired: true),
+      'Description': FieldController(
+          controller: TextEditingController(text: activeCar.description),
+          isRequired: false),
     });
     _selectedFuelType = activeCar.fuelType;
     _selectedCarIcon = activeCar.icon;

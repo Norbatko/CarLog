@@ -24,21 +24,19 @@ class CarService {
 
   Future<void> addCar(
       String name,
-      String alias,
       String fuelType,
       String licensePlate,
       String insuranceContact,
       String odometerStatus,
-      String description,
+      String responsiblePerson,
       int selectedCarIcon) async {
     Car newCar = Car(
         name: name,
-        alias: alias,
         fuelType: fuelType,
         licensePlate: licensePlate,
         insuranceContact: insuranceContact,
         odometerStatus: odometerStatus,
-        description: description,
+        description: responsiblePerson,
         icon: selectedCarIcon);
     await carModel.addCar(newCar);
   }
