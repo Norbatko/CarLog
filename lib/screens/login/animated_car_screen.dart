@@ -7,7 +7,8 @@ const _SCALE_TWEEN_BEGIN = 0.3;
 const _SCALE_TWEEN_END = 1.3;
 const _OFFSET_BEGIN = 0.0;
 const _OFFSET_END = 1.0;
-const _DURATION_IN_MS = 100;
+const _BG_IMAGE_DURATION_IN_MS = 100;
+const _ANIMATION_DURATION_IN_S = 3;
 const _IMAGE_WIDTH = 100.0;
 const _IMAGE_HEIGHT = 100.0;
 
@@ -22,16 +23,14 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
     late Animation<double> _carAnimation;
     late Animation<double> _carScaleAnimation;
 
-
-
   @override
   void initState() {
     super.initState();
 
-    _loadBackgroundImage(); // Start loading background image
+    _loadBackgroundImage();
 
     _controller = AnimationController(
-      duration: const Duration(seconds: 3), // Shorter animation duration
+      duration: const Duration(seconds: _ANIMATION_DURATION_IN_S),
       vsync: this,
     );
 
@@ -87,7 +86,7 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
         future: _loadBackgroundImage(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            Future.delayed(Duration(milliseconds: _DURATION_IN_MS), () {
+            Future.delayed(Duration(milliseconds: _BG_IMAGE_DURATION_IN_MS), () {
               if (mounted) _controller.forward();
             });
 

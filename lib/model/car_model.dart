@@ -45,7 +45,6 @@ class CarModel {
   }
   
   Future<void> saveCar(Car car) async {
-    // saves new if id is empty & updates if id is not empty
     if (car.id.isEmpty) {
       databaseReference.child('cars').push().child('detail').set(car.toMap());
     } else {
