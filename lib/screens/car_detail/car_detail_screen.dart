@@ -40,6 +40,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
   String _selectedFuelType = "Gasoline";
 
   final Map<String, String?> _errorMessages = {};
+  final Map<String, String> _carFields = {};
+
+  bool _isChanged = false;
 
   @override
   void initState() {
@@ -47,25 +50,23 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
     var activeCar = carService.getActiveCar();
     _controllers.addAll({
       'Name': FieldController(
-          controller: TextEditingController(text: activeCar.name),
-          isRequired: true),
+          controller: _createController(activeCar.name), isRequired: true),
       'License Plate': FieldController(
-          controller: TextEditingController(text: activeCar.licensePlate),
+          controller: _createController(activeCar.licensePlate),
           isRequired: true),
       'Insurance': FieldController(
-          controller: TextEditingController(text: activeCar.insurance),
-          isRequired: true),
+          controller: _createController(activeCar.insurance), isRequired: true),
       'Insurance Contact': FieldController(
-          controller: TextEditingController(text: activeCar.insuranceContact),
+          controller: _createController(activeCar.insuranceContact),
           isRequired: true),
       'Odometer Status (km)': FieldController(
-          controller: TextEditingController(text: activeCar.odometerStatus),
+          controller: _createController(activeCar.odometerStatus),
           isRequired: true),
       'Responsible Person': FieldController(
-          controller: TextEditingController(text: activeCar.responsiblePerson),
+          controller: _createController(activeCar.responsiblePerson),
           isRequired: true),
       'Description': FieldController(
-          controller: TextEditingController(text: activeCar.description),
+          controller: _createController(activeCar.description),
           isRequired: false),
     });
     _selectedFuelType = activeCar.fuelType;
@@ -79,51 +80,113 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
           title: 'Car Detail', userDetailRoute: Routes.userDetail),
       body: Padding(
         padding: const EdgeInsets.all(_EDGE_INSETS),
-        child: Column(
-          children: [
-            CarAddFieldList(
-              controllers: _controllers,
-              errorMessages: _errorMessages,
-              fuelTypes: _fuelTypes,
-              selectedFuelType: _selectedFuelType,
-              carIcons: _carIcons,
-              selectedCarIcon: _selectedCarIcon,
-              onFuelTypeChanged: (newValue) {
-                setState(() {
-                  _selectedFuelType = newValue!;
-                });
-              },
-              onCarIconChanged: (value) {
-                setState(() {
-                  _selectedCarIcon = value as int;
-                });
-              },
-            ),
-            SizedBox(
-              height: _SIZED_BOX_HEIGHT,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: null,
-                  style: ElevatedButton.styleFrom(
-                    disabledBackgroundColor: Colors.grey,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              CarAddFieldList(
+                controllers: _controllers,
+                errorMessages: _errorMessages,
+                fuelTypes: _fuelTypes,
+                selectedFuelType: _selectedFuelType,
+                carIcons: _carIcons,
+                selectedCarIcon: _selectedCarIcon,
+                onFuelTypeChanged: (newValue) {
+                  setState(() {
+                    _selectedFuelType = newValue!;
+                    _isChanged = true;
+                  });
+                },
+                onCarIconChanged: (value) {
+                  setState(() {
+                    _selectedCarIcon = value as int;
+                    _isChanged = true;
+                  });
+                },
+              ),
+              SizedBox(
+                height: _SIZED_BOX_HEIGHT,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: _isChanged
+                        ? () {
+                            setState(() {
+                              _validateFieldsAndSubmit();
+                            });
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      disabledBackgroundColor: Colors.grey,
+                    ),
+                    child: Text("Update Car Detail"),
                   ),
-                  child: Text("Update Car Detail"),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      textStyle: TextStyle(color: Colors.black)),
-                  child: Text("Delete Car"),
-                )
-              ],
-            )
-          ],
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        textStyle: TextStyle(color: Colors.black)),
+                    child: Text("Delete Car"),
+                  )
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _validateFieldsAndSubmit() {
+    bool isValid = true;
+    _clearAllErrorMessages();
+    for (var entry in _controllers.entries) {
+      if (entry.value.controller.text.trim().isEmpty &&
+          entry.value.isRequired) {
+        _errorMessages[entry.key] = entry.value.controller.text.trim().isEmpty
+            ? '${entry.key} is required'
+            : null;
+        isValid = false;
+      } else {
+        _carFields[entry.key] = entry.value.controller.text.trim();
+      }
+    }
+
+    if (isValid) {
+      setState(() {
+        _submitForm();
+      });
+    }
+  }
+
+  void _submitForm() {
+    _isChanged = false;
+    carService.updateCar(
+      carService.activeCar.id,
+      _carFields['Name']!,
+      _selectedFuelType,
+      _carFields['License Plate']!,
+      _carFields['Insurance']!,
+      _carFields['Insurance Contact']!,
+      _carFields['Odometer Status (km)']!,
+      _carFields['Responsible Person']!,
+      _carFields['Description']!,
+      _selectedCarIcon,
+    );
+  }
+
+  void _clearAllErrorMessages() {
+    _errorMessages.clear();
+  }
+
+  TextEditingController _createController(String initialText) {
+    final controller = TextEditingController(text: initialText);
+    controller.addListener(() {
+      setState(() {
+        _isChanged = true;
+      });
+    });
+    return controller;
   }
 }
