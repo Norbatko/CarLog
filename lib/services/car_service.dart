@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:car_log/model/car.dart';
 import 'package:car_log/model/car_model.dart';
+import 'package:car_log/model/controllers/field_controller.dart';
 
 class CarService {
   final CarModel carModel = CarModel();
@@ -62,7 +63,7 @@ class CarService {
         responsiblePerson: responsiblePerson,
         description: description,
         icon: selectedCarIcon);
-    await carModel.updateCar(activeCar.id, updatedCar);
+    await carModel.updateCar(id, updatedCar);
   }
 
   void setActiveCar(Car car) {
