@@ -11,7 +11,7 @@ import 'package:car_log/widgets/builders/build_future.dart';
 
 const _SIZED_BOX_HEIGHT = 16.0;
 const _EDGE_INSETS = 16.0;
-const _BIG_SIZED_BOX_HEIGHT = 60.0;
+const _BIG_SIZED_BOX_HEIGHT = 40.0;
 const _FONT_SIZE = 20.0;
 const _IMAGE_HEIGHT = 80.0;
 
@@ -42,9 +42,12 @@ class UserDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(AuthService authService, UserService userService, String? userId, bool isLoggedInUser) {
+  Widget _buildBody(AuthService authService, UserService userService,
+      String? userId, bool isLoggedInUser) {
     return buildFuture<User?>(
-      future: isLoggedInUser ? authService.getCurrentUser() : userService.getUserData(userId!),
+      future: isLoggedInUser
+          ? authService.getCurrentUser()
+          : userService.getUserData(userId!),
       loadingWidget: const Center(child: CircularProgressIndicator()),
       errorWidget: (error) => Center(child: Text('Error: $error')),
       onData: (context, user) {
@@ -56,7 +59,8 @@ class UserDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, User user, AuthService authService, bool isLoggedInUser) {
+  Widget _buildContent(BuildContext context, User user, AuthService authService,
+      bool isLoggedInUser) {
     return Column(
       children: [
         Expanded(
