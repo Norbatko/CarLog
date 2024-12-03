@@ -66,6 +66,10 @@ class CarService {
     await carModel.updateCar(id, updatedCar);
   }
 
+  Future<void> deleteCar(String carId) async {
+    await carModel.deleteCar(carId);
+  }
+
   void setActiveCar(Car car) {
     activeCar = car;
   }
