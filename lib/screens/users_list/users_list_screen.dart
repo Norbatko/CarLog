@@ -1,5 +1,4 @@
 import 'package:car_log/model/user.dart';
-import 'package:car_log/screens/users_list/widgets/user_tile_widget.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/screens/users_list/widgets/users_list.dart';
 import 'package:car_log/set_up_locator.dart';

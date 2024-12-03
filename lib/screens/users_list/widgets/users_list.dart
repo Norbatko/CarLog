@@ -1,7 +1,5 @@
-import 'package:car_log/model/car.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/users_list/widgets/user_tile_widget.dart';
-import 'package:car_log/services/database_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:flutter/material.dart';
 

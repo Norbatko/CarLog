@@ -1,4 +1,3 @@
-import 'package:car_log/screens/car_ride/car_ride_screen.dart';
 import 'package:car_log/screens/login/animated_car_screen.dart';
 import 'package:car_log/screens/user_detail/user_detail_screen.dart';
 import 'package:car_log/set_up_locator.dart';
