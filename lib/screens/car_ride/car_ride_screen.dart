@@ -1,8 +1,5 @@
 import 'package:car_log/model/car.dart';
 import 'package:car_log/services/Routes.dart';
-import 'package:car_log/services/car_service.dart';
-import 'package:car_log/services/user_service.dart';
-import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 

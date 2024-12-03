@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:car_log/model/car.dart';
 import 'package:car_log/model/car_model.dart';
-import 'package:car_log/model/controllers/field_controller.dart';
 
 class CarService {
   final CarModel carModel = CarModel();
