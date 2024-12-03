@@ -87,61 +87,84 @@ class _CarAddDialogState extends State<CarAddDialog> {
 
   void _showAddCarDialog(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return StatefulBuilder(builder: (context, setState) {
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
             return AlertDialog(
-              title: _isSubmitting ? Text("New car added") : Text('Add Car'),
-              content: _isSubmitting
-                  ? Lottie.asset('assets/animations/add_car.json',
-                      width: _ANIMATION_WIDTH,
-                      height: _ANIMATION_HEIGHT,
-                      repeat: false)
-                  : CarAddFieldList(
-                      controllers: _controllers,
-                      errorMessages: _errorMessages,
-                      fuelTypes: _fuelTypes,
-                      selectedFuelType: _selectedFuelType,
-                      carIcons: _carIcons,
-                      selectedCarIcon: _selectedCarIcon,
-                      onFuelTypeChanged: (newValue) {
-                        setState(() {
-                          _selectedFuelType = newValue!;
-                        });
-                      },
-                      onCarIconChanged: (value) {
-                        setState(() {
-                          _selectedCarIcon = value as int;
-                        });
-                      },
-                    ),
-              actions: _isSubmitting
-                  ? []
-                  : [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          _clearAllErrorMessages();
-                          _clearAllControllers();
-                        },
-                        child: Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _validateFieldsAndSubmit();
-                          });
-                        },
-                        child: Text('Submit'),
-                      ),
-                    ],
+              title: _buildDialogTitle(),
+              content: _buildDialogContent(setState),
+              actions: _buildDialogActions(context, setState),
             );
-          });
-        }).then((_) {
+          },
+        );
+      },
+    ).then((_) {
       _clearAllErrorMessages();
       _clearAllControllers();
     });
   }
+
+  Widget _buildDialogTitle() {
+    return _isSubmitting ? Text("New car added") : Text('Add Car');
+  }
+
+  Widget _buildDialogContent(void Function(void Function()) setState) {
+    if (_isSubmitting) {
+      return Lottie.asset(
+        'assets/animations/add_car.json',
+        width: _ANIMATION_WIDTH,
+        height: _ANIMATION_HEIGHT,
+        repeat: false,
+      );
+    } else {
+      return CarAddFieldList(
+        controllers: _controllers,
+        errorMessages: _errorMessages,
+        fuelTypes: _fuelTypes,
+        selectedFuelType: _selectedFuelType,
+        carIcons: _carIcons,
+        selectedCarIcon: _selectedCarIcon,
+        onFuelTypeChanged: (newValue) {
+          setState(() {
+            _selectedFuelType = newValue!;
+          });
+        },
+        onCarIconChanged: (value) {
+          setState(() {
+            _selectedCarIcon = value as int;
+          });
+        },
+      );
+    }
+  }
+
+  List<Widget> _buildDialogActions(
+      BuildContext context, void Function(void Function()) setState) {
+    if (_isSubmitting) {
+      return [];
+    } else {
+      return [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            _clearAllErrorMessages();
+            _clearAllControllers();
+          },
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            setState(() {
+              _validateFieldsAndSubmit();
+            });
+          },
+          child: Text('Submit'),
+        ),
+      ];
+    }
+  }
+
 
   void _validateFieldsAndSubmit() {
     bool isValid = true;
