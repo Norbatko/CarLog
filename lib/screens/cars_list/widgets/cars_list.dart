@@ -1,7 +1,7 @@
 import 'package:car_log/model/car.dart';
-import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_tile_widget.dart';
 import 'package:car_log/services/Routes.dart';
+import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
@@ -9,14 +9,10 @@ import 'package:flutter/material.dart';
 
 class CarsList extends StatefulWidget {
   final List<Car> cars;
-  final User? currentUser;
-  final UserService userService;
 
   const CarsList({
     super.key,
     required this.cars,
-    required this.currentUser,
-    required this.userService,
   });
 
   @override
@@ -26,6 +22,8 @@ class CarsList extends StatefulWidget {
 class _CarsListState extends State<CarsList> {
   late List<Car> sortedCars;
   final CarService carService = get<CarService>();
+  final UserService userService = get<UserService>();
+  final AuthService authService = get<AuthService>();
 
   @override
   void initState() {
@@ -35,25 +33,19 @@ class _CarsListState extends State<CarsList> {
 
   void _sortCars() {
     final favoriteCars = widget.cars
-        .where((car) =>
-            widget.currentUser != null &&
-            widget.userService.isFavoriteCar(car.id))
+        .where((car) => userService.isFavoriteCar(car.id))
         .toList();
     final otherCars = widget.cars
-        .where((car) =>
-            widget.currentUser == null ||
-            !widget.userService.isFavoriteCar(car.id))
+        .where((car) =>  !userService.isFavoriteCar(car.id))
         .toList();
     sortedCars = favoriteCars..addAll(otherCars);
   }
 
   void _toggleFavorite(String carId) async {
-    if (widget.currentUser != null) {
-      await widget.userService.toggleFavoriteCar(carId);
+      await userService.toggleFavoriteCar(carId);
       setState(() {
         _sortCars(); // Re-sort after toggling favorite
       });
-    }
   }
 
   @override
@@ -65,8 +57,7 @@ class _CarsListState extends State<CarsList> {
             itemCount: sortedCars.length,
             itemBuilder: (context, index) {
               final car = sortedCars[index];
-              final isFavorite = widget.currentUser != null &&
-                  widget.userService.isFavoriteCar(car.id);
+              final isFavorite = userService.isFavoriteCar(car.id);
               return CarTileWidget(
                   car: car,
                   isFavorite: isFavorite,

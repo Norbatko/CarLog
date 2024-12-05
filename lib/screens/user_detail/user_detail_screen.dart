@@ -7,7 +7,6 @@ import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/user_detail/widgets/log_out_button.dart';
 import 'package:car_log/widgets/theme/theme_color_picker.dart';
-import 'package:car_log/widgets/builders/build_future.dart';
 
 const _SIZED_BOX_HEIGHT = 16.0;
 const _EDGE_INSETS = 16.0;
@@ -44,16 +43,24 @@ class UserDetailScreen extends StatelessWidget {
 
   Widget _buildBody(AuthService authService, UserService userService,
       String? userId, bool isLoggedInUser) {
-    return buildFuture<User?>(
-      future: isLoggedInUser
-          ? authService.getCurrentUser()
-          : userService.getUserData(userId!),
-      loadingWidget: const Center(child: CircularProgressIndicator()),
-      errorWidget: (error) => Center(child: Text('Error: $error')),
-      onData: (context, user) {
+    final userStream = isLoggedInUser
+        ? authService.getCurrentUser()
+        : userService.getUserData(userId!);
+
+    return StreamBuilder<User?>(
+      stream: userStream,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+
+        final user = snapshot.data;
         if (user == null) {
           return const Center(child: Text('User not found'));
         }
+
         return _buildContent(context, user, authService, isLoggedInUser);
       },
     );

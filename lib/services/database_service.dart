@@ -4,7 +4,7 @@ import 'package:car_log/model/user.dart';
 class DatabaseService {
   final CollectionReference _userRef = FirebaseFirestore.instance.collection('users');
 
-  Stream<User?> getUserStreamById(String uid) {
+  Stream<User?> getUserById(String uid) {
     return _userRef.doc(uid).snapshots().map((snapshot) {
       if (snapshot.exists) {
         final userData = snapshot.data() as Map<String, dynamic>;
@@ -48,15 +48,6 @@ class DatabaseService {
     } catch (e) {
       throw Exception('Error deleting user profile: $e');
     }
-  }
-
-  Future<User?> getUserById(String uid) async {
-    final snapshot = await _userRef.doc(uid).get();
-    if (snapshot.exists) {
-      final userData = snapshot.data() as Map<String, dynamic>;
-      return User.fromMap(uid, userData);
-    }
-    return null;
   }
 
   Stream<List<String>> userFavoritesStream(String uid) {

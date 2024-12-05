@@ -15,41 +15,45 @@ class UserService with ChangeNotifier {
   }) : _databaseService = databaseService;
 
   User? _currentUser;
-  User? get currentUser => _currentUser;
 
-  final StreamController<User> _userStreamController =
-  StreamController<User>.broadcast();
-  Stream<User> get userStream => _userStreamController.stream;
+  final StreamController<User?> _userStreamController =
+  StreamController<User?>.broadcast();
+  Stream<User?> get userStream => _userStreamController.stream;
 
-  Future<User?> getUserData(String userId) async {
-    return await _databaseService.getUserById(userId);
+  Stream<User?> getUserData(String userId) {
+    return _databaseService.getUserById(userId);
   }
 
-  Future<User?> getLoggedInUserData(userId) async {
-    _currentUser = await _databaseService.getUserById(userId);
-    _userStreamController.add(_currentUser!);
-    notifyListeners();
-    return _currentUser;
+  Stream<User?> getLoggedInUserData(String userId) async* {
+    _databaseService.getUserById(userId).listen((user) {
+      _currentUser = user;
+      _userStreamController.add(user);
+      notifyListeners();
+    });
+    yield _currentUser;
   }
 
   bool isFavoriteCar(String carId) {
     return _currentUser?.favoriteCars.contains(carId) ?? false;
   }
 
-  Future<void> toggleFavoriteCar(String carId) async {
-    if (_currentUser == null) return;
-    isFavoriteCar(carId)
-      ?_currentUser!.favoriteCars.remove(carId)
-      :_currentUser!.favoriteCars.add(carId);
-
-    await updateUserFavorites(_currentUser!.id, _currentUser!.favoriteCars);
-    _userStreamController.add(_currentUser!);
-    notifyListeners();
+  Stream<void> toggleFavoriteCar(String carId) {
+    if (isFavoriteCar(carId)) {
+      _currentUser!.favoriteCars.remove(carId);
+    } else {
+      _currentUser!.favoriteCars.add(carId);
+    }
+    _databaseService
+        .updateUserFavorites(_currentUser!.id, _currentUser!.favoriteCars)
+        .listen((_) {
+      _userStreamController.add(_currentUser);
+      notifyListeners();
+    });
+    return Stream.empty();
   }
 
-  Future<void> updateUserFavorites(
-      String userId, List<String> favoriteCars) async {
-    await _databaseService.updateUserFavorites(userId, favoriteCars);
+  Stream<void> updateUserFavorites(String userId, List<String> favoriteCars) {
+    return _databaseService.updateUserFavorites(userId, favoriteCars);
   }
 
   Stream<List<User>> get users => userModel.getUsers();

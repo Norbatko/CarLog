@@ -8,7 +8,7 @@ class CarService {
   Function? onOdometerChange;
 
   final StreamController<Car> _carStreamController =
-      StreamController<Car>.broadcast();
+  StreamController<Car>.broadcast();
   Stream<Car> get carStream => _carStreamController.stream;
 
   CarService();
@@ -16,20 +16,20 @@ class CarService {
   void updateOdometer(int newOdometer) {
     activeCar.odometerStatus = newOdometer.toString();
     _carStreamController.add(activeCar);
-    carModel.saveCar(activeCar);
+    carModel.saveCar(activeCar).listen((_) {});
     onOdometerChange?.call();
   }
 
   Stream<List<Car>> get cars => carModel.getCars();
 
-  Future<void> addCar(
+  Stream<void> addCar(
       String name,
       String fuelType,
       String licensePlate,
       String insuranceContact,
       String odometerStatus,
       String responsiblePerson,
-      int selectedCarIcon) async {
+      int selectedCarIcon) async* {
     Car newCar = Car(
         name: name,
         fuelType: fuelType,
@@ -38,10 +38,10 @@ class CarService {
         odometerStatus: odometerStatus,
         description: responsiblePerson,
         icon: selectedCarIcon);
-    await carModel.addCar(newCar);
+    yield* carModel.addCar(newCar);
   }
 
-  Future<void> updateCar(
+  Stream<void> updateCar(
       String id,
       String name,
       String fuelType,
@@ -51,7 +51,7 @@ class CarService {
       String odometerStatus,
       String responsiblePerson,
       String description,
-      int selectedCarIcon) async {
+      int selectedCarIcon) async* {
     Car updatedCar = Car(
         name: name,
         fuelType: fuelType,
@@ -62,11 +62,11 @@ class CarService {
         responsiblePerson: responsiblePerson,
         description: description,
         icon: selectedCarIcon);
-    await carModel.updateCar(id, updatedCar);
+    yield* carModel.updateCar(id, updatedCar);
   }
 
-  Future<void> deleteCar(String carId) async {
-    await carModel.deleteCar(carId);
+  Stream<void> deleteCar(String carId) async* {
+    yield* carModel.deleteCar(carId);
   }
 
   void setActiveCar(Car car) {

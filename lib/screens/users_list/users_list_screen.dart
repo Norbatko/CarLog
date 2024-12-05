@@ -2,7 +2,6 @@ import 'package:car_log/model/user.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/screens/users_list/widgets/users_list.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/widgets/builders/build_future_with_stream.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/services/auth_service.dart';
@@ -16,27 +15,55 @@ class UsersListScreen extends StatelessWidget {
     final AuthService authService = get<AuthService>();
     final UserService userService = get<UserService>();
 
+    final currentUserStream = _loadCurrentUser(authService, userService);
+
     return Scaffold(
       appBar: ApplicationBar(
           title: 'User List', userDetailRoute: Routes.userDetail),
-      body: buildFutureWithStream<User?, List<User>>(
-        future: _loadCurrentUser(authService, userService),
-        stream: userService.users,
-        loadingWidget: const Center(child: CircularProgressIndicator()),
-        errorWidget: (error) =>
-            Center(child: Text('Error loading data: $error')),
-        onData: (context, currentUser, users) => UsersList(
-            users: users, currentUser: currentUser, userService: userService),
+      body: StreamBuilder<User?>(
+        stream: currentUserStream,
+        builder: (context, currentUserSnapshot) {
+          if (currentUserSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (currentUserSnapshot.hasError) {
+            return Center(
+                child: Text('Error loading current user: ${currentUserSnapshot.error}'));
+          }
+
+          final currentUser = currentUserSnapshot.data;
+
+          return StreamBuilder<List<User>>(
+            stream: userService.users,
+            builder: (context, usersSnapshot) {
+              if (usersSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (usersSnapshot.hasError) {
+                return Center(
+                    child: Text('Error loading users: ${usersSnapshot.error}'));
+              }
+
+              final users = usersSnapshot.data ?? [];
+              return UsersList(
+                users: users,
+                currentUser: currentUser,
+                userService: userService,
+              );
+            },
+          );
+        },
       ),
     );
   }
 
-  Future<User?> _loadCurrentUser(
-      AuthService authService, UserService userService) async {
-    final user = await authService.getCurrentUser();
-    if (user != null) {
-      return await userService.getUserData(user.id);
+  Stream<User?> _loadCurrentUser(
+      AuthService authService, UserService userService) async* {
+    final userStream = authService.getCurrentUser();
+    await for (final user in userStream) {
+      if (user != null) {
+        yield* userService.getUserData(user.id);
+      } else {
+        yield null;
+      }
     }
-    return null;
   }
 }
