@@ -1,54 +1,54 @@
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:rxdart/rxdart.dart';
+import 'widgets/cars_list.dart';
+
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/model/car.dart';
 import 'package:car_log/services/Routes.dart';
 
-import 'widgets/cars_list.dart';
 
 class CarsListScreen extends StatelessWidget {
-  const CarsListScreen({super.key});
+  CarsListScreen({super.key});
+  final AuthService _authService = get<AuthService>();
+  final CarService _carService = get<CarService>();
+  final UserService _userService = get<UserService>();
 
   @override
   Widget build(BuildContext context) {
-    final AuthService authService = get<AuthService>();
-    final UserService userService = get<UserService>();
-    final CarService carService = get<CarService>();
-
-    final currentUserStream = _loadCurrentUser(authService, userService);
+    final currentUserStream = _loadCurrentUser(_authService, _userService);
+    final combinedStream = Rx.combineLatest2<User?, List<Car>, Map<String, dynamic>>(
+      currentUserStream,
+      _carService.cars,
+          (currentUser, cars) => {
+        'currentUser': currentUser,
+        'cars': cars,
+      },
+    );
 
     return Scaffold(
       appBar: const ApplicationBar(
-          title: 'Car List', userDetailRoute: Routes.userDetail),
-      body: StreamBuilder<User?>(
-        stream: currentUserStream,
-        builder: (context, currentUserSnapshot) {
-          if (currentUserSnapshot.connectionState == ConnectionState.waiting) {
+        title: 'Car List',
+        userDetailRoute: Routes.userDetail,
+      ),
+      body: StreamBuilder<Map<String, dynamic>>(
+        stream: combinedStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return _buildLoading();
-          } else if (currentUserSnapshot.hasError) {
-            return _buildError(currentUserSnapshot.error);
+          } else if (snapshot.hasError) {
+            return _buildError(snapshot.error);
           }
+          final cars = snapshot.data?['cars'] as List<Car>? ?? [];
 
-          return StreamBuilder<List<Car>>(
-            stream: carService.cars,
-            builder: (context, carsSnapshot) {
-              if (carsSnapshot.connectionState == ConnectionState.waiting) {
-                return _buildLoading();
-              } else if (carsSnapshot.hasError) {
-                return _buildError(carsSnapshot.error);
-              }
-
-              final cars = carsSnapshot.data ?? [];
-              return CarsList(
-                cars: cars,
-              );
-            },
+          return CarsList(
+            cars: cars
           );
         },
       ),
