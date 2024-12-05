@@ -1,54 +1,56 @@
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'car.dart';
 
 class CarModel {
-  final DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+  final CollectionReference carsCollection =
+  FirebaseFirestore.instance.collection('cars');
 
   CarModel();
 
-  Future<void> addCar(Car car) async {
-    DatabaseReference carRef = databaseReference.child('cars').push();
-    await carRef.child('detail').set(car.toMap());
+  Stream<void> addCar(Car car) async* {
+    await carsCollection.add(car.toMap());
+    yield null;
   }
 
-  Future<void> updateCar(String carId, Car updatedCar) async {
-    DatabaseReference carRef = databaseReference.child('cars').child(carId);
-    await carRef.child('detail').update(updatedCar.toMap());
+  Stream<void> updateCar(String carId, Car updatedCar) async* {
+    await carsCollection.doc(carId).update(updatedCar.toMap());
+    yield null;
   }
 
-  Future<void> deleteCar(String carId) async {
-    await databaseReference.child('cars').child(carId).remove();
+  Stream<void> deleteCar(String carId) async* {
+    await carsCollection.doc(carId).delete();
+    yield null;
   }
 
   Stream<List<Car>> getCars() {
-    return databaseReference.child('cars').onValue.map((event) {
-      var snapshot = event.snapshot;
-      var data = snapshot.value as Map<dynamic, dynamic>?;
-
-      if (data != null) {
-        List<Car> carsList = [];
-        data.forEach((key, value) {
-          if (value is Map<Object?, Object?>) {
-            var detail = value['detail'] as Map<Object?, Object?>?;
-            if (detail != null && detail.isNotEmpty) {
-              carsList.add(Car.fromMap(key, detail.cast<String, dynamic>()));
-            }
-          }
-        });
-
-        print(carsList);
-        return carsList;
+    return carsCollection.snapshots().map((querySnapshot) {
+      List<Car> carsList = [];
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final detail = data['detail'] as Map<String, dynamic>?;
+        if (detail != null) {
+          carsList.add(Car.fromMap(doc.id, detail));
+        }
       }
-
-      return [];
+      return carsList;
     });
   }
-  
-  Future<void> saveCar(Car car) async {
+
+  Stream<void> saveCar(Car car) async* {
     if (car.id.isEmpty) {
-      databaseReference.child('cars').push().child('detail').set(car.toMap());
+      await carsCollection.add(car.toMap());
     } else {
-      databaseReference.child('cars').child(car.id).child('detail').set(car.toMap());
+      await carsCollection.doc(car.id).set(car.toMap());
+    }
+    yield null;
+  }
+
+  Stream<Car?> getCarById(String carId) async* {
+    final docSnapshot = await carsCollection.doc(carId).get();
+    if (docSnapshot.exists) {
+      yield Car.fromMap(carId, docSnapshot.data() as Map<String, dynamic>);
+    } else {
+      yield null;
     }
   }
 }

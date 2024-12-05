@@ -1,11 +1,10 @@
 import 'package:car_log/screens/login/animated_car_screen.dart';
+import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/model/user_model.dart';
-import 'package:get_it/get_it.dart';
 
 const _LOGO_WIDTH = 150.0;
 
@@ -17,43 +16,38 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final AuthService authService = GetIt.instance<AuthService>();
-  final UserModel userModel = GetIt.instance<UserModel>();
+  final AuthService authService = get<AuthService>();
+  final UserModel userModel = get<UserModel>();
 
-  Future<String?> _authenticateUser(LoginData data) async {
-    try {
-      return await authService.authUser(data);
-    } catch (e) {
-      return e.toString();
-    }
+  Stream<String?> _authenticateUser(LoginData data) {
+    return authService.authUser(data);
   }
 
-  Future<String?> _onSignup(SignupData data) async {
+  Stream<String?> _onSignup(SignupData data) async* {
     try {
-      final userId = await authService.signupUser(data);
+      await for (final userId in authService.signupUser(data)) {
+        if (userId != null) {
+          String name = data.additionalSignupData?['name'] ?? '';
+          String login = data.additionalSignupData?['login'] ?? '';
+          String phoneNumber = data.additionalSignupData?['phoneNumber'] ?? '';
 
-      if (userId != null) {
-        String name = data.additionalSignupData?['name'] ?? '';
-        String login = data.additionalSignupData?['login'] ?? '';
-        String phoneNumber = data.additionalSignupData?['phoneNumber'] ?? '';
+          final newUser = User(
+            id: userId,
+            name: name,
+            login: login,
+            email: data.name!,
+            phoneNumber: phoneNumber,
+            isAdmin: false,
+            favoriteCars: [],
+          );
 
-        final newUser = User(
-          id: userId,
-          name: name,
-          login: login,
-          email: data.name!,
-          phoneNumber: phoneNumber,
-          isAdmin: false,
-          favoriteCars: [],
-        );
-
-        await userModel.addUser(newUser);
-        _onLoginSuccess();
+          await userModel.addUser(newUser);
+          _onLoginSuccess();
+        }
+        yield null;
       }
-
-      return null;
     } catch (e) {
-      return e.toString();
+      yield e.toString();
     }
   }
 
@@ -68,16 +62,29 @@ class _LoginScreenState extends State<LoginScreen> {
     return FlutterLogin(
       logo: const AssetImage('assets/images/logo.png'),
       onLogin: (LoginData data) async {
-        final result = await _authenticateUser(data);
-        if (result == null) {
-          _onLoginSuccess();
+        final resultStream = _authenticateUser(data);
+        await for (final result in resultStream) {
+          if (result == null) {
+            _onLoginSuccess();
+          }
+          return result;
         }
-        return result;
+        return null;
       },
-      onSignup: _onSignup,
-      onRecoverPassword: (String name) =>
-          Provider.of<AuthService>(context, listen: false)
-              .recoverPassword(name),
+      onSignup: (SignupData data) async {
+        final resultStream = _onSignup(data);
+        await for (final result in resultStream) {
+          return result;
+        }
+        return null;
+      },
+      onRecoverPassword: (String name) async {
+        final recoverStream = authService.recoverPassword(name);
+        await for (final result in recoverStream) {
+          return result;
+        }
+        return "Error recovering password";
+      },
       additionalSignupFields: const [
         UserFormField(
           keyName: 'name',

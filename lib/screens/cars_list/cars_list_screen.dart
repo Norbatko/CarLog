@@ -1,7 +1,6 @@
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/widgets/builders/build_future_with_stream.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -22,27 +21,51 @@ class CarsListScreen extends StatelessWidget {
     final UserService userService = get<UserService>();
     final CarService carService = get<CarService>();
 
+    final currentUserStream = _loadCurrentUser(authService, userService);
+
     return Scaffold(
       appBar: const ApplicationBar(
           title: 'Car List', userDetailRoute: Routes.userDetail),
-      body: buildFutureWithStream<User?, List<Car>>(
-        future: _loadCurrentUser(authService, userService),
-        stream: carService.cars,
-        loadingWidget: _buildLoading(),
-        errorWidget: (error) => _buildError(error),
-        onData: (context, currentUser, cars) => CarsList(
-            cars: cars, currentUser: currentUser, userService: userService),
+      body: StreamBuilder<User?>(
+        stream: currentUserStream,
+        builder: (context, currentUserSnapshot) {
+          if (currentUserSnapshot.connectionState == ConnectionState.waiting) {
+            return _buildLoading();
+          } else if (currentUserSnapshot.hasError) {
+            return _buildError(currentUserSnapshot.error);
+          }
+
+          return StreamBuilder<List<Car>>(
+            stream: carService.cars,
+            builder: (context, carsSnapshot) {
+              if (carsSnapshot.connectionState == ConnectionState.waiting) {
+                return _buildLoading();
+              } else if (carsSnapshot.hasError) {
+                return _buildError(carsSnapshot.error);
+              }
+
+              final cars = carsSnapshot.data ?? [];
+              return CarsList(
+                cars: cars,
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: const CarAddDialog(),
     );
   }
 
-  Future<User?> _loadCurrentUser(
-      AuthService authService, UserService userService) async {
-    final user = await authService.getCurrentUser();
-    return (user != null)
-        ? await userService.getLoggedInUserData(user.id)
-        : null;
+  Stream<User?> _loadCurrentUser(
+      AuthService authService, UserService userService) async* {
+    final userStream = authService.getCurrentUser();
+    await for (final user in userStream) {
+      if (user != null) {
+        yield* userService.getLoggedInUserData(user.id);
+      } else {
+        yield null;
+      }
+    }
   }
 
   Widget _buildLoading() => Center(
