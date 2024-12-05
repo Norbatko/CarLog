@@ -12,7 +12,7 @@ class TabManager extends StatefulWidget {
 class _TabManagerState extends State<TabManager> {
   int _currentIndex = 1;
 
-  final List<Widget> _screens = const [
+  final List<Widget> _screens = [
     UsersListScreen(),
     CarsListScreen(),
   ];
