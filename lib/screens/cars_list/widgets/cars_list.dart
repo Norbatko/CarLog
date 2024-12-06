@@ -26,10 +26,17 @@ class _CarsListState extends State<CarsList> {
   final CarService carService = get<CarService>();
   final UserService userService = get<UserService>();
   final AuthService authService = get<AuthService>();
+  Stream<User?>? currentUserStream;
 
   @override
   void initState() {
     super.initState();
+    currentUserStream = authService.getCurrentUser().asyncExpand((user) {
+      if (user != null) {
+        return userService.getLoggedInUserData(user.id);
+      }
+      return Stream.value(null);
+    });
   }
 
   void _sortCars() {

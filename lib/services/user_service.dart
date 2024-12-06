@@ -18,7 +18,7 @@ class UserService with ChangeNotifier {
 
   final StreamController<User?> _userStreamController =
   StreamController<User?>.broadcast();
-  Stream<User?> get userStream => _userStreamController.stream;
+  Stream<User?> get userStream => _userStreamController.stream.map((user) => _currentUser);
 
   Stream<User?> getUserData(String userId) {
     return _databaseService.getUserById(userId);
