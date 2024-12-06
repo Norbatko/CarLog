@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:car_log/model/user.dart';
 
+const _USER_COLLECTION = 'users';
+const _FAVORITE_CARS = 'favoriteCars';
+const _IS_ADMIN = 'isAdmin';
+
 class DatabaseService {
-  final CollectionReference _userRef = FirebaseFirestore.instance.collection('users');
+  final CollectionReference _userRef = FirebaseFirestore.instance.collection(_USER_COLLECTION);
 
   Stream<User?> getUserById(String uid) {
     return _userRef.doc(uid).snapshots().map((snapshot) {
@@ -11,15 +15,6 @@ class DatabaseService {
         return User.fromMap(uid, userData);
       }
       return null;
-    });
-  }
-
-  Stream<List<User>> getAllUsersStream() {
-    return _userRef.snapshots().map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final userData = doc.data() as Map<String, dynamic>;
-        return User.fromMap(doc.id, userData);
-      }).toList();
     });
   }
 
@@ -53,8 +48,8 @@ class DatabaseService {
   Stream<List<String>> userFavoritesStream(String uid) {
     return _userRef.doc(uid).snapshots().map((snapshot) {
       final data = snapshot.data() as Map<String, dynamic>?;
-      if (data != null && data['favoriteCars'] is List) {
-        return List<String>.from(data['favoriteCars']);
+      if (data != null && data[_FAVORITE_CARS] is List) {
+        return List<String>.from(data[_FAVORITE_CARS]);
       }
       return <String>[];
     }).handleError((error) {
@@ -65,10 +60,10 @@ class DatabaseService {
   Stream<bool> isAdminStream(String uid) {
     return _userRef.doc(uid).snapshots().map((snapshot) {
       final data = snapshot.data() as Map<String, dynamic>?;
-      if (data != null && data.containsKey('isAdmin')) {
-        return data['isAdmin'] as bool;
+      if (data != null && data.containsKey(_IS_ADMIN)) {
+        return data[_IS_ADMIN] as bool;
       }
-      return false; // Default to non-admin if field is not found
+      return false;
     }).handleError((error) {
       throw Exception('Error streaming admin status: $error');
     });
@@ -76,7 +71,7 @@ class DatabaseService {
 
   Stream<void> updateUserFavorites(String uid, List<String> favoriteCars) async* {
     try {
-      await _userRef.doc(uid).update({'favoriteCars': favoriteCars});
+      await _userRef.doc(uid).update({_FAVORITE_CARS: favoriteCars});
       yield null; // Emit an event to indicate completion
     } catch (e) {
       throw Exception('Error updating favorite cars: $e');
