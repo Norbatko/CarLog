@@ -7,19 +7,17 @@ class CarModel {
 
   CarModel();
 
-  Stream<void> addCar(Car car) async* {
-    await carsCollection.add(car.toMap());
-    yield null;
+  Stream<void> addCar(Car car) {
+    carsCollection.add(car.toMap());
+    return Stream.value(null);
   }
 
   Stream<void> updateCar(String carId, Car updatedCar) async* {
     await carsCollection.doc(carId).update(updatedCar.toMap());
-    yield null;
   }
 
   Stream<void> deleteCar(String carId) async* {
     await carsCollection.doc(carId).delete();
-    yield null;
   }
 
   Stream<List<Car>> getCars() {
@@ -36,20 +34,19 @@ class CarModel {
     });
   }
 
-  Stream<void> saveCar(Car car) async* {
+  Stream<void> saveCar(Car car)async* {
     if (car.id.isEmpty) {
       await carsCollection.add(car.toMap());
     } else {
       await carsCollection.doc(car.id).set(car.toMap());
     }
-    yield null;
   }
 
   Stream<Car?> getCarById(String carId) async* {
     final docSnapshot = await carsCollection.doc(carId).get();
     if (docSnapshot.exists) {
       yield Car.fromMap(carId, docSnapshot.data() as Map<String, dynamic>);
-    } else {
+    } else{
       yield null;
     }
   }
