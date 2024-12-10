@@ -16,10 +16,6 @@ class UserService with ChangeNotifier {
 
   User? _currentUser;
 
-  final StreamController<User?> _userStreamController =
-      StreamController<User?>.broadcast();
-  Stream<User?> get userStream => _userStreamController.stream;
-
   Stream<User?> getUserData(String userId) {
     return _databaseService.getUserById(userId);
   }
@@ -27,7 +23,6 @@ class UserService with ChangeNotifier {
   Stream<User?> getLoggedInUserData(String userId) async* {
     yield* _databaseService.getUserById(userId).map((user) {
       _currentUser = user;
-      _userStreamController.add(user);
       notifyListeners();
       return user;
     });
@@ -46,7 +41,6 @@ class UserService with ChangeNotifier {
     _databaseService
         .updateUserFavorites(_currentUser!.id, _currentUser!.favoriteCars)
         .listen((_) {
-      _userStreamController.add(_currentUser);
       notifyListeners();
     });
     return Stream.empty();
@@ -57,10 +51,4 @@ class UserService with ChangeNotifier {
   }
 
   Stream<List<User>> get users => userModel.getUsers();
-
-  @override
-  void dispose() {
-    _userStreamController.close();
-    super.dispose();
-  }
 }
