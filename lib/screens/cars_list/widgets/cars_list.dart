@@ -26,39 +26,34 @@ class _CarsListState extends State<CarsList> {
   final CarService carService = get<CarService>();
   final UserService userService = get<UserService>();
   final AuthService authService = get<AuthService>();
-  Stream<User?>? currentUserStream;
+  Stream<User?>? currentUserStream = null;
 
   @override
   void initState() {
     super.initState();
     currentUserStream = authService.getCurrentUser().asyncExpand((user) {
-      if (user != null) {
-        return userService.getLoggedInUserData(user.id);
-      }
-      return Stream.value(null);
+      return userService.getLoggedInUserData(user!.id);
     });
   }
 
   void _sortCars() {
-    final favoriteCars = widget.cars
-        .where((car) => userService.isFavoriteCar(car.id))
-        .toList();
-    final otherCars = widget.cars
-        .where((car) =>  !userService.isFavoriteCar(car.id))
-        .toList();
+    final favoriteCars =
+        widget.cars.where((car) => userService.isFavoriteCar(car.id)).toList();
+    final otherCars =
+        widget.cars.where((car) => !userService.isFavoriteCar(car.id)).toList();
     sortedCars = favoriteCars..addAll(otherCars);
   }
 
   void _toggleFavorite(String carId) async {
-      await userService.toggleFavoriteCar(carId);
-      setState(() {
-        _sortCars(); // Re-sort after toggling favorite
-      });
+    await userService.toggleFavoriteCar(carId);
+    setState(() {
+      _sortCars(); // Re-sort after toggling favorite
+    });
   }
 
   Widget build(BuildContext context) {
     return StreamCustomBuilder<User?>(
-      stream: userService.userStream,
+      stream: currentUserStream!,
       builder: (context, currentUser) {
         if (currentUser == null) {
           return const Center(child: Text('No user data available'));
@@ -67,25 +62,25 @@ class _CarsListState extends State<CarsList> {
         return sortedCars.isEmpty
             ? const Center(child: Text('No cars available'))
             : ListView.builder(
-          itemCount: sortedCars.length,
-          itemBuilder: (context, index) {
-            final car = sortedCars[index];
-            final isFavorite = currentUser.favoriteCars.contains(car.id);
-            return CarTileWidget(
-              car: car,
-              isFavorite: isFavorite,
-              onToggleFavorite: () => _toggleFavorite(car.id),
-              onNavigate: () {
-                carService.setActiveCar(car);
-                Navigator.pushNamed(
-                  context,
-                  Routes.carDetail,
-                  arguments: car,
-                );
-              },
-            );
-          },
-        );
+                itemCount: sortedCars.length,
+                itemBuilder: (context, index) {
+                  final car = sortedCars[index];
+                  final isFavorite = currentUser.favoriteCars.contains(car.id);
+                  return CarTileWidget(
+                    car: car,
+                    isFavorite: isFavorite,
+                    onToggleFavorite: () => _toggleFavorite(car.id),
+                    onNavigate: () {
+                      carService.setActiveCar(car);
+                      Navigator.pushNamed(
+                        context,
+                        Routes.carDetail,
+                        arguments: car,
+                      );
+                    },
+                  );
+                },
+              );
       },
     );
   }
