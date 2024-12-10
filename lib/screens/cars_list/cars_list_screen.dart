@@ -13,7 +13,6 @@ import 'package:car_log/services/user_service.dart';
 import 'package:car_log/model/car.dart';
 import 'package:car_log/services/Routes.dart';
 
-
 class CarsListScreen extends StatelessWidget {
   CarsListScreen({super.key});
   final AuthService _authService = get<AuthService>();
@@ -23,10 +22,11 @@ class CarsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentUserStream = _loadCurrentUser(_authService, _userService);
-    final combinedStream = Rx.combineLatest2<User?, List<Car>, Map<String, dynamic>>(
+    final combinedStream =
+        Rx.combineLatest2<User?, List<Car>, Map<String, dynamic>>(
       currentUserStream,
       _carService.cars,
-          (currentUser, cars) => {
+      (currentUser, cars) => {
         'currentUser': currentUser,
         'cars': cars,
       },
@@ -47,9 +47,7 @@ class CarsListScreen extends StatelessWidget {
           }
           final cars = snapshot.data?['cars'] as List<Car>? ?? [];
 
-          return CarsList(
-            cars: cars
-          );
+          return CarsList(cars: cars);
         },
       ),
       floatingActionButton: const CarAddDialog(),

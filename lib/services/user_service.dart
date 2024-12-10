@@ -17,20 +17,20 @@ class UserService with ChangeNotifier {
   User? _currentUser;
 
   final StreamController<User?> _userStreamController =
-  StreamController<User?>.broadcast();
-  Stream<User?> get userStream => _userStreamController.stream.map((user) => _currentUser);
+      StreamController<User?>.broadcast();
+  Stream<User?> get userStream => _userStreamController.stream;
 
   Stream<User?> getUserData(String userId) {
     return _databaseService.getUserById(userId);
   }
 
   Stream<User?> getLoggedInUserData(String userId) async* {
-    _databaseService.getUserById(userId).listen((user) {
+    yield* _databaseService.getUserById(userId).map((user) {
       _currentUser = user;
       _userStreamController.add(user);
       notifyListeners();
+      return user;
     });
-    yield _currentUser;
   }
 
   bool isFavoriteCar(String carId) {
