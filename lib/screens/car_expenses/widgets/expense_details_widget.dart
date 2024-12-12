@@ -17,7 +17,7 @@ class ExpenseDetailsWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          expense.type.toString(),
+          expenseTypeToString(expense.type),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: _EXPENSE_NAME_FONT_SIZE,
@@ -25,7 +25,7 @@ class ExpenseDetailsWidget extends StatelessWidget {
           ),
         ),
         Text(
-          expense.amount.toString(),
+          "\$${expense.amount % 1 == 0 ? expense.amount.toStringAsFixed(0) : expense.amount}",
           style: TextStyle(
             fontSize: _LICENSE_PLATE_FONT_SIZE,
             color: theme.colorScheme.onSecondaryContainer,
