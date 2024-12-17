@@ -60,14 +60,16 @@ class _CarAddDialogState extends State<CarAddDialog> {
       _isSubmitting = true;
     });
 
-    carService.addCar(
-        _carFields['Name']!,
-        _selectedFuelType,
-        _carFields['License Plate']!,
-        _carFields['Insurance Contact']!,
-        _carFields['Odometer Status']!,
-        _carFields['Responsible Person']!,
-        _selectedCarIcon);
+    carService
+        .addCar(
+            _carFields['Name']!,
+            _selectedFuelType,
+            _carFields['License Plate']!,
+            _carFields['Insurance Contact']!,
+            _carFields['Odometer Status']!,
+            _carFields['Responsible Person']!,
+            _selectedCarIcon)
+        .listen((_) {});
 
     Future.delayed(const Duration(seconds: 2), () {
       _isSubmitting = false;
@@ -164,7 +166,6 @@ class _CarAddDialogState extends State<CarAddDialog> {
       ];
     }
   }
-
 
   void _validateFieldsAndSubmit() {
     bool isValid = true;

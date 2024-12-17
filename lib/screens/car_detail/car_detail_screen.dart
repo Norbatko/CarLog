@@ -125,7 +125,9 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      carService.deleteCar(carService.activeCar.id);
+                      carService
+                          .deleteCar(carService.activeCar.id)
+                          .listen((_) {});
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
