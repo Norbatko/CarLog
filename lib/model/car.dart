@@ -40,15 +40,17 @@ class Car {
 
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'fuel_type': fuelType,
-      'licence_plate': licensePlate,
-      'insurance': insurance,
-      'insurance_contact': insuranceContact,
-      'odometer_status': odometerStatus,
-      'responsible_person': responsiblePerson,
-      'description': description,
-      'icon': icon,
+      'detail': {
+        'name': name,
+        'fuel_type': fuelType,
+        'licence_plate': licensePlate,
+        'insurance': insurance,
+        'insurance_contact': insuranceContact,
+        'odometer_status': odometerStatus,
+        'responsible_person': responsiblePerson,
+        'description': description,
+        'icon': icon,
+      }
     };
   }
 }
