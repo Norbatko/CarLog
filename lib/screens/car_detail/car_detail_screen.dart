@@ -167,18 +167,20 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
 
   void _submitForm() {
     _isChanged = false;
-    carService.updateCar(
-      carService.activeCar.id,
-      _carFields['Name']!,
-      _selectedFuelType,
-      _carFields['License Plate']!,
-      _carFields['Insurance']!,
-      _carFields['Insurance Contact']!,
-      _carFields['Odometer Status (km)']!,
-      _carFields['Responsible Person']!,
-      _carFields['Description']!,
-      _selectedCarIcon,
-    );
+    carService
+        .updateCar(
+          carService.activeCar.id,
+          _carFields['Name']!,
+          _selectedFuelType,
+          _carFields['License Plate']!,
+          _carFields['Insurance']!,
+          _carFields['Insurance Contact']!,
+          _carFields['Odometer Status (km)']!,
+          _carFields['Responsible Person']!,
+          _carFields['Description']!,
+          _selectedCarIcon,
+        )
+        .listen((_) {});
   }
 
   void _clearAllErrorMessages() {
