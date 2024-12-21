@@ -1,6 +1,8 @@
 import 'package:car_log/model/expense.dart';
 import 'package:flutter/material.dart';
 
+const _ICON_SIZE = 36.0;
+
 // Icons for each expense type using Material Icons
 final Map<ExpenseType, IconData> _expenseIcons = {
   ExpenseType.fuel: Icons.local_gas_station,
@@ -22,7 +24,7 @@ class ExpenseIconWidget extends StatelessWidget {
     return Icon(
       _expenseIcons[expenseType],
       color: theme.colorScheme.secondary,
-      size: 36.0,
+      size: _ICON_SIZE,
     );
   }
 }

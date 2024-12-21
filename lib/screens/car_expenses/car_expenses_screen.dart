@@ -8,6 +8,8 @@ import 'package:car_log/widgets/builders/stream_custom_builder.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:flutter/material.dart';
 
+const _TITLE = 'Car Expenses';
+
 class CarExpensesScreen extends StatefulWidget {
   const CarExpensesScreen({super.key});
 
@@ -30,8 +32,7 @@ class _CarExpensesScreenState extends State<CarExpensesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ApplicationBar(
-          title: 'Car Expenses', userDetailRoute: Routes.userDetail),
+      appBar: ApplicationBar(title: _TITLE, userDetailRoute: Routes.userDetail),
       body: StreamCustomBuilder<List<Expense>>(
           stream: ExpenseService().getExpenses(carService.activeCar.id),
           builder: (context, expenses) {
