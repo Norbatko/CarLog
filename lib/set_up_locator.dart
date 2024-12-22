@@ -1,3 +1,4 @@
+import 'package:car_log/services/expense_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/database_service.dart';
@@ -15,6 +16,7 @@ class SetUpLocator {
     get.registerSingleton<DatabaseService>(DatabaseService());
     get.registerSingleton<CarModel>(CarModel());
     get.registerSingleton<UserModel>(UserModel());
+    get.registerSingleton<ExpenseService>(ExpenseService());
 
     get.registerLazySingleton<AuthService>(
       () => AuthService(databaseService: get<DatabaseService>()),
