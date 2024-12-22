@@ -1,3 +1,4 @@
+import 'package:car_log/services/Routes.dart';
 import 'package:car_log/widgets/tab_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -18,10 +19,10 @@ class AnimatedCarScreen extends StatefulWidget {
 }
 
 class _AnimatedCarScreenState extends State<AnimatedCarScreen>
-  with SingleTickerProviderStateMixin {
-    late AnimationController _controller;
-    late Animation<double> _carAnimation;
-    late Animation<double> _carScaleAnimation;
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _carAnimation;
+  late Animation<double> _carScaleAnimation;
 
   @override
   void initState() {
@@ -34,11 +35,14 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
       vsync: this,
     );
 
-    _carAnimation = Tween<double>(begin: _ANIMATION_TWEEN_BEGIN, end: _ANIMATION_TWEEN_END).animate(
+    _carAnimation =
+        Tween<double>(begin: _ANIMATION_TWEEN_BEGIN, end: _ANIMATION_TWEEN_END)
+            .animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
-    _carScaleAnimation = Tween<double>(begin: _SCALE_TWEEN_BEGIN, end: _SCALE_TWEEN_END).animate(
+    _carScaleAnimation =
+        Tween<double>(begin: _SCALE_TWEEN_BEGIN, end: _SCALE_TWEEN_END).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
@@ -48,6 +52,7 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
                 TabManager(),
+            settings: RouteSettings(name: Routes.carNavigation),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               const begin = Offset(_OFFSET_BEGIN, _OFFSET_END);
@@ -86,7 +91,8 @@ class _AnimatedCarScreenState extends State<AnimatedCarScreen>
         future: _loadBackgroundImage(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            Future.delayed(Duration(milliseconds: _BG_IMAGE_DURATION_IN_MS), () {
+            Future.delayed(Duration(milliseconds: _BG_IMAGE_DURATION_IN_MS),
+                () {
               if (mounted) _controller.forward();
             });
 
