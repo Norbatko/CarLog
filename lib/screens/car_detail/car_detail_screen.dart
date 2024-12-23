@@ -121,7 +121,12 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     style: ElevatedButton.styleFrom(
                       disabledBackgroundColor: Colors.grey,
                     ),
-                    child: Text("Update Car Detail"),
+                    child: Text(
+                      "Update Car Detail",
+                      style: _isChanged
+                          ? TextStyle(color: Colors.black)
+                          : TextStyle(color: Colors.white60),
+                    ),
                   ),
                   CarDeleteDialog(),
                 ],
