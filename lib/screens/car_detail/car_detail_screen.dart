@@ -1,4 +1,5 @@
 import 'package:car_log/model/controllers/field_controller.dart';
+import 'package:car_log/screens/car_detail/widgets/car_delete_dialog.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
@@ -120,20 +121,14 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
                     style: ElevatedButton.styleFrom(
                       disabledBackgroundColor: Colors.grey,
                     ),
-                    child: Text("Update Car Detail"),
+                    child: Text(
+                      "Update Car Detail",
+                      style: _isChanged
+                          ? TextStyle(color: Colors.black)
+                          : TextStyle(color: Colors.white60),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      carService
-                          .deleteCar(carService.activeCar.id)
-                          .listen((_) {});
-                    },
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        textStyle: TextStyle(color: Colors.black)),
-                    child: Text("Delete Car"),
-                  )
+                  CarDeleteDialog(),
                 ],
               )
             ],

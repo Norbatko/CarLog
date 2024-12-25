@@ -1,4 +1,5 @@
 import 'package:car_log/screens/login/animated_car_screen.dart';
+import 'package:car_log/services/Routes.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
@@ -53,7 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLoginSuccess() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => AnimatedCarScreen()),
+      MaterialPageRoute(
+        builder: (context) => AnimatedCarScreen(),
+        settings: RouteSettings(name: Routes.carAnimation),
+      ),
     );
   }
 
