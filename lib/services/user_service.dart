@@ -51,4 +51,6 @@ class UserService with ChangeNotifier {
   }
 
   Stream<List<User>> get users => userModel.getUsers();
+
+  User? get currentUser => _currentUser;
 }
