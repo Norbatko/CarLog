@@ -1,4 +1,5 @@
 import 'package:car_log/model/expense.dart';
+import 'package:car_log/screens/car_expenses/widgets/car_expense_add_dialog.dart';
 import 'package:car_log/screens/car_expenses/widgets/expenses_list.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
@@ -21,14 +22,6 @@ class _CarExpensesScreenState extends State<CarExpensesScreen> {
   final CarService carService = get<CarService>();
   Expense? expense = ExpenseService().activeExpense;
 
-  final Map<ExpenseType, IconData> _expenseIcons = {
-    ExpenseType.fuel: Icons.local_gas_station,
-    ExpenseType.maintenance: Icons.build,
-    ExpenseType.repair: Icons.handyman,
-    ExpenseType.insurance: Icons.shield,
-    ExpenseType.other: Icons.more_vert,
-  };
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,6 +31,7 @@ class _CarExpensesScreenState extends State<CarExpensesScreen> {
           builder: (context, expenses) {
             return ExpensesList(expenses: expenses);
           }),
+      floatingActionButton: CarExpenseAddDialog(),
     );
   }
 }
