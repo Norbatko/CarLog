@@ -19,13 +19,13 @@ class ExpenseService {
 
   Expense? get activeExpense => _activeExpense;
 
-  Future<void> addExpenses(
+  Stream<void> addExpenses(
     String carId, {
     required ExpenseType type,
     required String userID,
     required double amount,
     required DateTime date,
-  }) async {
+  }) async* {
     Expense expense = Expense(
       id: '',
       userId: userID,
@@ -34,16 +34,16 @@ class ExpenseService {
       date: date,
     );
 
-    await expenseModel.addExpense(carId, expense);
+    yield* expenseModel.addExpense(carId, expense);
   }
 
-  Future<void> deleteExpense(String carId, String expenseId) async {
-    await expenseModel.deleteExpense(carId, expenseId);
+  Stream<void> deleteExpense(String carId, String expenseId) async* {
+    yield* expenseModel.deleteExpense(carId, expenseId);
   }
 
-  Future<void> updateExpense(
-      String carId, String expenseId, Expense expense) async {
-    await expenseModel.updateExpense(carId, expenseId, expense);
+  Stream<void> updateExpense(
+      String carId, String expenseId, Expense expense) async* {
+    yield* expenseModel.updateExpense(carId, expenseId, expense);
   }
 
   void setActiveExpense(Expense expense) {
