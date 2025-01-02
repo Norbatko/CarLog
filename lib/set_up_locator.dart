@@ -5,6 +5,7 @@ import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/database_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/services/car_service.dart';
+import 'package:car_log/services/note_service.dart';
 import 'package:car_log/model/car_model.dart';
 import 'package:car_log/model/user_model.dart';
 import 'package:car_log/widgets/theme/theme_setter.dart';
@@ -18,10 +19,11 @@ class SetUpLocator {
     get.registerSingleton<CarModel>(CarModel());
     get.registerSingleton<UserModel>(UserModel());
     get.registerSingleton<ExpenseService>(ExpenseService());
+    get.registerSingleton<NoteService>(NoteService());
     get.registerSingleton<ReceiptService>(ReceiptService());
 
     get.registerLazySingleton<AuthService>(
-      () => AuthService(databaseService: get<DatabaseService>()),
+          () => AuthService(databaseService: get<DatabaseService>()),
     );
 
     get.registerLazySingleton<UserService>(
