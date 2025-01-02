@@ -23,7 +23,7 @@ class NoteInputField extends StatelessWidget {
     required this.onCancelReply,
   });
 
-  void _sendMessage() {
+  void _sendMessage(BuildContext context) {
     final currentUser = get<UserService>().currentUser;
     if (messageController.text.isEmpty || currentUser == null) return;
 
@@ -39,6 +39,10 @@ class NoteInputField extends StatelessWidget {
     messageController.clear();
     onCancelReply();
 
+    // Unfocus the text field and hide the keyboard
+    FocusScope.of(context).unfocus();
+
+    // Scroll to the bottom smoothly
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
@@ -88,7 +92,7 @@ class NoteInputField extends StatelessWidget {
               ),
               IconButton(
                 icon: const Icon(Icons.send),
-                onPressed: _sendMessage,
+                onPressed: () => _sendMessage(context),
               ),
             ],
           ),
