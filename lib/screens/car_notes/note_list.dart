@@ -28,7 +28,7 @@ class NoteList extends StatelessWidget {
             controller: scrollController,
             itemCount: notes.length,
             itemBuilder: (context, index) {
-              return NoteItem(note: notes[index]);
+              return NoteItem(note: notes[index], carId: carId);
             },
           );
         }

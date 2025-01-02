@@ -35,4 +35,22 @@ class Note {
       'createdAt': createdAt.toIso8601String(),
     };
   }
+
+  Note copyWith({
+    String? id,
+    String? userId,
+    String? title,
+    String? content,
+    String? userName,
+    DateTime? createdAt,
+  }) {
+    return Note(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      userName: userName ?? this.userName,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }
