@@ -4,6 +4,7 @@ import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/builders/stream_custom_builder.dart';
+import 'package:car_log/widgets/image_picker.dart';
 import 'package:car_log/widgets/theme/app_bar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -68,21 +69,18 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Created By:',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  StreamBuilder<User?>(
-                    stream: _userService.getUserData(_currentExpense.userId),
-                    builder: (context, snapshot) {
-                      return Text(snapshot.data?.name ?? 'Loading...');
-                    },
-                  ),
-                ],
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Created By:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                StreamBuilder<User?>(
+                  stream: _userService.getUserData(_currentExpense.userId),
+                  builder: (context, snapshot) {
+                    return Text(snapshot.data?.name ?? 'Loading...');
+                  },
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             Row(
@@ -101,6 +99,9 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 Text('${_currentExpense.date.toLocal()}'.split(' ')[0]),
               ],
+            ),
+            ImagePickerWidget(
+              expense: _currentExpense,
             ),
             if (notes.isNotEmpty) ...[
               const SizedBox(height: 16),
