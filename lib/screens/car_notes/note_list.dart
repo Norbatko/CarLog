@@ -21,8 +21,6 @@ class NoteList extends StatefulWidget {
 }
 
 class _NoteListState extends State<NoteList> {
-  bool _isFirstLoad = true;
-
   @override
   Widget build(BuildContext context) {
     final noteService = get<NoteService>();
@@ -33,16 +31,13 @@ class _NoteListState extends State<NoteList> {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
         }
-
         final notes = snapshot.data!;
 
-        // Scroll to the bottom after the frame is built (first load only)
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_isFirstLoad && widget.scrollController.hasClients) {
+          if (widget.scrollController.hasClients) {
             widget.scrollController.jumpTo(
               widget.scrollController.position.maxScrollExtent,
             );
-            _isFirstLoad = false;  // Disable after first load
           }
         });
 
