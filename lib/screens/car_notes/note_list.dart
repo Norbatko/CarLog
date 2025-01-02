@@ -7,31 +7,37 @@ import 'package:flutter/material.dart';
 class NoteList extends StatelessWidget {
   final String carId;
   final ScrollController scrollController;
-  final NoteService _noteService = get<NoteService>();
+  final ValueChanged<Note> onReply;
 
-  NoteList({required this.carId, required this.scrollController});
+  const NoteList({
+    required this.carId,
+    required this.scrollController,
+    required this.onReply,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final noteService = get<NoteService>();
+
     return StreamBuilder<List<Note>>(
-      stream: _noteService.getNotes(carId),
+      stream: noteService.getNotes(carId),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (!snapshot.hasData) {
           return Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No notes found'));
-        } else {
-          List<Note> notes = snapshot.data!;
-          return ListView.builder(
-            controller: scrollController,
-            itemCount: notes.length,
-            itemBuilder: (context, index) {
-              return NoteItem(note: notes[index], carId: carId);
-            },
-          );
         }
+
+        final notes = snapshot.data!;
+        return ListView.builder(
+          itemCount: notes.length,
+          itemBuilder: (context, index) {
+            final note = notes[index];
+            return NoteItem(
+              note: note,
+              carId: carId,
+              onReply: onReply,
+            );
+          },
+        );
       },
     );
   }

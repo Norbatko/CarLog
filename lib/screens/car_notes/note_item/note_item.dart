@@ -5,14 +5,20 @@ import 'package:car_log/services/note_service.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/model/note.dart';
 import 'package:car_log/set_up_locator.dart';
+import 'package:car_log/screens/car_notes/reply_message_widget.dart';
 
 const _HORIZONTAL_MARGIN = EdgeInsets.symmetric(horizontal: 12.0);
 
 class NoteItem extends StatelessWidget {
   final Note note;
   final String carId;
+  final ValueChanged<Note>? onReply;  // Pass callback to handle replies
 
-  const NoteItem({required this.note, required this.carId});
+  const NoteItem({
+    required this.note,
+    required this.carId,
+    this.onReply,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +29,11 @@ class NoteItem extends StatelessWidget {
 
     return GestureDetector(
       onLongPress: () {
-        if (isCurrentUser || isAdmin) {
-          _showOptions(context, isCurrentUser, noteService);
+          _showOptions(context, isCurrentUser, noteService, isAdmin);
+      },
+      onHorizontalDragEnd: (details) {
+        if (details.primaryVelocity != null && details.primaryVelocity! > 0) {
+          onReply?.call(note);  // Trigger reply action on swipe
         }
       },
       child: Align(
@@ -36,6 +45,17 @@ class NoteItem extends StatelessWidget {
                 ? CrossAxisAlignment.end
                 : CrossAxisAlignment.start,
             children: [
+              if (note.replyNoteContent != null)
+                SizedBox( height: 8),
+              if (note.replyNoteContent != null)
+                ReplyMessageWidget(
+                  note: Note(
+                    userId: note.userId,
+                    content: note.replyNoteContent!,
+                    userName: note.userName,
+                  ),
+                  onCancelReply: () {},
+                ),
               UserInfoNoteItem(note: note, isCurrentUser: isCurrentUser),
               MessageBubble(note: note, isCurrentUser: isCurrentUser),
             ],
@@ -45,13 +65,13 @@ class NoteItem extends StatelessWidget {
     );
   }
 
-  void _showOptions(BuildContext context, bool isCurrentUser, NoteService noteService) {
+  void _showOptions(BuildContext context, bool isCurrentUser, NoteService noteService, bool isAdmin) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return Wrap(
           children: [
-            if (isCurrentUser)
+            if (isCurrentUser || isAdmin)
               ListTile(
                 leading: Icon(Icons.edit),
                 title: Text('Edit'),
@@ -61,19 +81,28 @@ class NoteItem extends StatelessWidget {
                 },
               ),
             ListTile(
-              leading: Icon(Icons.delete),
-              title: Text('Delete'),
+              leading: Icon(Icons.reply),
+              title: Text('Reply'),
               onTap: () {
                 Navigator.pop(context);
-                noteService.deleteNote(carId, note.id).listen((status) {
-                  if (status == 'success') {
-                    print('Note deleted successfully'); //TODO maybe add an animation or smth
-                  } else {
-                    print('Failed to delete note: $status');
-                  }
-                });
+                onReply?.call(note);  // Trigger reply callback
               },
             ),
+            if (isCurrentUser || isAdmin)
+              ListTile(
+                leading: Icon(Icons.delete),
+                title: Text('Delete'),
+                onTap: () {
+                  Navigator.pop(context);
+                  noteService.deleteNote(carId, note.id).listen((status) {
+                    if (status == 'success') {
+                      print('Note deleted successfully');
+                    } else {
+                      print('Failed to delete note: $status');
+                    }
+                  });
+                },
+              ),
           ],
         );
       },
@@ -103,12 +132,8 @@ class NoteItem extends StatelessWidget {
                   note.id,
                   note.copyWith(content: controller.text),
                 ).listen((status) {
-                  if (status == null) {
-                    print('Note updated successfully');
-                  } else {
-                    print('Failed to update note: $status');
-                  }
-                });
+                  print('Status: $status');
+                                });
                 Navigator.pop(context);
               },
               child: Text('Save'),
