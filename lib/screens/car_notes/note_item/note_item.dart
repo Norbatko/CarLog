@@ -1,10 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:car_log/model/note.dart';
 import 'package:car_log/screens/car_notes/note_item/message_bubble.dart';
 import 'package:car_log/screens/car_notes/note_item/user_info_note_item.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/services/note_service.dart';
-import 'package:flutter/material.dart';
-import 'package:car_log/model/note.dart';
 import 'package:car_log/set_up_locator.dart';
+import 'package:swipe_to/swipe_to.dart';
 import 'package:car_log/screens/car_notes/reply_message_widget.dart';
 
 const _HORIZONTAL_MARGIN = EdgeInsets.symmetric(horizontal: 12.0);
@@ -12,7 +13,7 @@ const _HORIZONTAL_MARGIN = EdgeInsets.symmetric(horizontal: 12.0);
 class NoteItem extends StatelessWidget {
   final Note note;
   final String carId;
-  final ValueChanged<Note>? onReply;  // Pass callback to handle replies
+  final ValueChanged<Note>? onReply;
 
   const NoteItem({
     required this.note,
@@ -29,43 +30,58 @@ class NoteItem extends StatelessWidget {
 
     return GestureDetector(
       onLongPress: () {
-          _showOptions(context, isCurrentUser, noteService, isAdmin);
+        _showOptions(context, isCurrentUser, noteService, isAdmin);
       },
-      onHorizontalDragEnd: (details) {
-        if (details.primaryVelocity != null && details.primaryVelocity! > 0) {
-          onReply?.call(note);  // Trigger reply action on swipe
+      child: SwipeTo(
+        onRightSwipe: !isCurrentUser
+            ? (details) {
+          if (onReply != null) {
+            onReply!(note);
+          }
         }
-      },
-      child: Align(
-        alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          margin: _HORIZONTAL_MARGIN,
-          child: Column(
-            crossAxisAlignment: isCurrentUser
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
-            children: [
-              if (note.replyNoteContent != null)
-                SizedBox( height: 8),
-              if (note.replyNoteContent != null)
-                ReplyMessageWidget(
-                  note: Note(
-                    userId: note.userId,
-                    content: note.replyNoteContent!,
-                    userName: note.userName,
+            : null,  // Disable right swipe for current user's messages
+        onLeftSwipe: isCurrentUser
+            ? (details) {
+          if (onReply != null) {
+            onReply!(note);
+          }
+        }
+            : null,  // Disable left swipe for other users' messages
+        child: Align(
+          alignment: isCurrentUser ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            margin: _HORIZONTAL_MARGIN,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment:
+              isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                if (note.replyNoteContent != null) const SizedBox(height: 8),
+                if (note.replyNoteContent != null)
+                  ReplyMessageWidget(
+                    note: Note(
+                      userId: note.userId,
+                      content: note.replyNoteContent!,
+                      userName: note.userName,
+                    ),
+                    onCancelReply: () {},
                   ),
-                  onCancelReply: () {},
-                ),
-              UserInfoNoteItem(note: note, isCurrentUser: isCurrentUser),
-              MessageBubble(note: note, isCurrentUser: isCurrentUser),
-            ],
+                UserInfoNoteItem(note: note, isCurrentUser: isCurrentUser),
+                const SizedBox(height: 4),
+                MessageBubble(note: note, isCurrentUser: isCurrentUser),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _showOptions(BuildContext context, bool isCurrentUser, NoteService noteService, bool isAdmin) {
+  void _showOptions(
+      BuildContext context, bool isCurrentUser, NoteService noteService, bool isAdmin) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -73,25 +89,27 @@ class NoteItem extends StatelessWidget {
           children: [
             if (isCurrentUser || isAdmin)
               ListTile(
-                leading: Icon(Icons.edit),
-                title: Text('Edit'),
+                leading: const Icon(Icons.edit),
+                title: const Text('Edit'),
                 onTap: () {
                   Navigator.pop(context);
                   _editNote(context, noteService);
                 },
               ),
             ListTile(
-              leading: Icon(Icons.reply),
-              title: Text('Reply'),
+              leading: const Icon(Icons.reply),
+              title: const Text('Reply'),
               onTap: () {
                 Navigator.pop(context);
-                onReply?.call(note);  // Trigger reply callback
+                if (onReply != null) {
+                  onReply!(note);
+                }
               },
             ),
             if (isCurrentUser || isAdmin)
               ListTile(
-                leading: Icon(Icons.delete),
-                title: Text('Delete'),
+                leading: const Icon(Icons.delete),
+                title: const Text('Delete'),
                 onTap: () {
                   Navigator.pop(context);
                   noteService.deleteNote(carId, note.id).listen((status) {
@@ -115,15 +133,15 @@ class NoteItem extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Note'),
+          title: const Text('Edit Note'),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(hintText: 'Edit your message'),
+            decoration: const InputDecoration(hintText: 'Edit your message'),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -133,10 +151,10 @@ class NoteItem extends StatelessWidget {
                   note.copyWith(content: controller.text),
                 ).listen((status) {
                   print('Status: $status');
-                                });
+                });
                 Navigator.pop(context);
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );

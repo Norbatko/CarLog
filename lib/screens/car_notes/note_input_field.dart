@@ -4,6 +4,8 @@ import 'package:car_log/services/note_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
 
+const _BORDER_RADIUS = 12.0;
+
 class NoteInputField extends StatelessWidget {
   final TextEditingController messageController;
   final String carId;
@@ -75,9 +77,12 @@ class NoteInputField extends StatelessWidget {
                 child: TextField(
                   controller: messageController,
                   focusNode: focusNode,  // Use passed focus node
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Type a note...',
-                    border: OutlineInputBorder(),
+                    filled: true,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(_BORDER_RADIUS),
+                    ),
                   ),
                 ),
               ),
