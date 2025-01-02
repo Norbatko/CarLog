@@ -4,7 +4,7 @@ import 'package:car_log/screens/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/widgets/theme/app_bar.dart';
+import 'package:car_log/widgets/theme/application_bar.dart';
 import 'package:flutter/material.dart';
 
 const _EDGE_INSETS = 16.0;

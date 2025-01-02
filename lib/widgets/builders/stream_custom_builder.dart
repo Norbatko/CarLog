@@ -23,7 +23,6 @@ class StreamCustomBuilder<T> extends StatelessWidget {
         } else if (!snapshot.hasData || snapshot.data == null) {
           return const Center(child: Text('No data available'));
         }
-
         return builder(context, snapshot.data!);
       },
     );
