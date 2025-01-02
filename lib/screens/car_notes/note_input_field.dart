@@ -1,70 +1,94 @@
+import 'package:flutter/material.dart';
 import 'package:car_log/model/note.dart';
 import 'package:car_log/services/note_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:flutter/material.dart';
-
-const _PADDING = EdgeInsets.all(12.0);
-const _BORDER_RADIUS = 12.0;
-const _ANIMATION_DURATION = Duration(milliseconds: 300);
-const _HINT_TEXT = 'Type a note...';
 
 class NoteInputField extends StatelessWidget {
   final TextEditingController messageController;
   final String carId;
   final ScrollController scrollController;
-  final NoteService _noteService = get<NoteService>();
-  final UserService _userService = get<UserService>();
+  final Note? replyNote;
+  final FocusNode focusNode;  // Accept FocusNode
+  final VoidCallback onCancelReply;
 
-  NoteInputField({
+  const NoteInputField({
     required this.messageController,
     required this.carId,
     required this.scrollController,
+    this.replyNote,
+    required this.focusNode,
+    required this.onCancelReply,
   });
+
+  void _sendMessage() {
+    final currentUser = get<UserService>().currentUser;
+    if (messageController.text.isEmpty || currentUser == null) return;
+
+    final newNote = Note(
+      userId: currentUser.id,
+      content: messageController.text,
+      userName: currentUser.name,
+      replyNoteId: replyNote?.id,
+      replyNoteContent: replyNote?.content,
+    );
+
+    get<NoteService>().addNote(newNote, carId);
+    messageController.clear();
+    onCancelReply();
+
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: _PADDING,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: messageController,
-              decoration: InputDecoration(
-                hintText: _HINT_TEXT,
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(_BORDER_RADIUS),
+    return Column(
+      children: [
+        if (replyNote != null)
+          Container(
+            color: Colors.grey.withOpacity(0.2),
+            padding: const EdgeInsets.all(8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Replying to: ${replyNote?.userName}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+                GestureDetector(
+                  onTap: onCancelReply,
+                  child: const Icon(Icons.close, size: 18),
+                ),
+              ],
             ),
           ),
-          IconButton(
-            icon: Icon(Icons.send),
-            onPressed: () {
-              String message = messageController.text;
-              final currentUser = _userService.currentUser;
-              if (message.isNotEmpty && currentUser != null) {
-                _noteService.addNote(
-                  Note(
-                    userId: currentUser.id,
-                    content: message,
-                    userName: currentUser.name,
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: messageController,
+                  focusNode: focusNode,  // Use passed focus node
+                  decoration: const InputDecoration(
+                    hintText: 'Type a note...',
+                    border: OutlineInputBorder(),
                   ),
-                  carId,
-                );
-                messageController.clear();
-                scrollController.animateTo(
-                  scrollController.position.maxScrollExtent,
-                  duration: _ANIMATION_DURATION,
-                  curve: Curves.easeOut,
-                );
-              }
-            },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.send),
+                onPressed: _sendMessage,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

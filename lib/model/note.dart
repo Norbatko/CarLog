@@ -5,6 +5,8 @@ class Note {
   final String content;
   final String userName;
   final DateTime createdAt;
+  final String? replyNoteId;
+  final String? replyNoteContent;
 
   Note({
     this.id = '',
@@ -13,6 +15,8 @@ class Note {
     this.content = '',
     this.userName = '',
     DateTime? createdAt,
+    this.replyNoteId,
+    this.replyNoteContent,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory Note.fromMap(String id, Map<String, dynamic> data) {
@@ -23,6 +27,8 @@ class Note {
       content: data['content'] ?? '',
       userName: data['userName'] ?? '',
       createdAt: DateTime.parse(data['createdAt'] ?? ''),
+      replyNoteId: data['replyNoteId'],
+      replyNoteContent: data['replyNoteContent'],
     );
   }
 
@@ -33,6 +39,8 @@ class Note {
       'content': content,
       'userName': userName,
       'createdAt': createdAt.toIso8601String(),
+      'replyNoteId': replyNoteId,
+      'replyNoteContent': replyNoteContent,
     };
   }
 
@@ -43,6 +51,8 @@ class Note {
     String? content,
     String? userName,
     DateTime? createdAt,
+    String? replyNoteId,
+    String? replyNoteContent,
   }) {
     return Note(
       id: id ?? this.id,
@@ -51,6 +61,8 @@ class Note {
       content: content ?? this.content,
       userName: userName ?? this.userName,
       createdAt: createdAt ?? this.createdAt,
+      replyNoteId: replyNoteId ?? this.replyNoteId,
+      replyNoteContent: replyNoteContent ?? this.replyNoteContent,
     );
   }
 }
