@@ -1,3 +1,4 @@
+import 'package:car_log/screens/car_notes/reply_message_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/model/note.dart';
 import 'package:car_log/services/note_service.dart';
@@ -56,15 +57,19 @@ class NoteInputField extends StatelessWidget {
       children: [
         if (replyNote != null)
           Container(
-            color: Colors.grey.withOpacity(0.2),
+            decoration: BoxDecoration(
+              border: const Border(
+                top: BorderSide(
+                  color: Colors.black54,  // Thin black line
+                  width: 0.8,  // Thickness of the line
+                ),
+              ),
+            ),
             padding: const EdgeInsets.all(8),
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    'Replying to: ${replyNote?.userName}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child: ReplyMessageWidget(note: replyNote!, onCancelReply: onCancelReply),
                 ),
                 GestureDetector(
                   onTap: onCancelReply,
