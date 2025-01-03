@@ -6,9 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:car_log/services/ride_service.dart';
 import 'package:car_log/model/ride.dart';
 import 'package:car_log/set_up_locator.dart';
-
-const _NO_RIDE_HISTORY = Center(child: Text('No ride history found'));
-const _CAR_HISTORY_TITLE = 'Car History';
+import 'package:lottie/lottie.dart';
+import 'package:car_log/screens/car_history/widgets/car_history_constants.dart';
 
 class CarHistoryScreen extends StatelessWidget {
   final RideService rideService = get<RideService>();
@@ -21,9 +20,11 @@ class CarHistoryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _CAR_HISTORY_TITLE,
+          CAR_HISTORY_TITLE,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.onPrimary,
+            color: theme.colorScheme.onPrimary,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
           ),
         ),
         backgroundColor: theme.colorScheme.primary,
@@ -31,54 +32,105 @@ class CarHistoryScreen extends StatelessWidget {
       body: StreamCustomBuilder<List<Ride>>(
         stream: rideService.getRides(activeCar.id),
         builder: (context, rides) {
-          return _buildRideList(rides);
+          return _buildRideList(rides, context);
         },
       ),
       floatingActionButton: AddRideButton(),
     );
   }
 
-  Widget _buildRideList(List<Ride> rides) {
-    if (rides.isEmpty) return _NO_RIDE_HISTORY;
+  Widget _buildRideList(List<Ride> rides, BuildContext context) {
+    if (rides.isEmpty) return _buildEmptyState(context);
 
     return ListView.builder(
       itemCount: rides.length,
+      padding: const EdgeInsets.symmetric(vertical: SECTION_PADDING),
       itemBuilder: (context, index) {
         String formattedDate =
             '${rides[index].finishedAt.day.toString().padLeft(2, '0')}.${rides[index].finishedAt.month.toString().padLeft(2, '0')}.${rides[index].finishedAt.year.toString().substring(2)}';
-        return ListTile(
-          title: Row(
+        return _buildRideCard(context, rides[index], formattedDate);
+      },
+    );
+  }
+
+  Widget _buildRideCard(BuildContext context, Ride ride, String formattedDate) {
+    return Card(
+      margin: RIDE_CARD_EDGE_SYMMETRIC,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(CARD_RADIUS),
+      ),
+      elevation: CARD_ELEVATION,
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            Routes.carDetail,
+            arguments: ride,
+          );
+        },
+        borderRadius: BorderRadius.circular(CARD_RADIUS),
+        child: Padding(
+          padding: const EdgeInsets.all(SPACING_VERTICAL),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  formattedDate,
-                  textAlign: TextAlign.start,
-                ),
+              _buildRideInfo(
+                icon: Icons.calendar_today,
+                label: formattedDate,
+                alignment: TextAlign.start,
               ),
-              Expanded(
-                child: Text(
-                  rides[index].userName,
-                  textAlign: TextAlign.center,
-                ),
+              _buildRideInfo(
+                icon: Icons.person,
+                label: ride.userName,
+                alignment: TextAlign.center,
               ),
-              Expanded(
-                child: Text(
-                  '${rides[index].distance} km',
-                  textAlign: TextAlign.end,
-                ),
+              _buildRideInfo(
+                icon: Icons.directions_car,
+                label: '${ride.distance} km',
+                alignment: TextAlign.end,
+                iconColor: Colors.green,
               ),
             ],
           ),
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              Routes.carDetail,
-              arguments: rides[index],
-            );
-          },
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRideInfo({
+    required IconData icon,
+    required String label,
+    TextAlign alignment = TextAlign.start,
+    Color iconColor = Colors.blue,
+  }) {
+    return Expanded(
+      child: Row(
+        mainAxisAlignment: alignment == TextAlign.start
+            ? MainAxisAlignment.start
+            : alignment == TextAlign.end
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: ICON_SIZE, color: iconColor),
+          SIZED_BOX_WIDTH_12,
+          Text(label, style: TEXT_STYLE),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Lottie.asset('assets/animations/nothing.json', width: 200, height: 200),
+          SIZED_BOX_HEIGHT_24,
+          NO_RIDE_HISTORY_TEXT,
+          SIZED_BOX_HEIGHT_10,
+          ADD_FIRST_RIDE_TEXT,
+        ],
+      ),
     );
   }
 }
