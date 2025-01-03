@@ -6,7 +6,7 @@ import 'widgets/cars_list.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/cars_list/widgets/car_add_dialog.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/widgets/theme/app_bar.dart';
+import 'package:car_log/widgets/theme/application_bar.dart';
 import 'package:car_log/services/auth_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/user_service.dart';
