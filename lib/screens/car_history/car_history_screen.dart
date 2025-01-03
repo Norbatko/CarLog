@@ -11,6 +11,9 @@ import 'package:car_log/screens/car_history/widgets/car_history_constants.dart';
 
 class CarHistoryScreen extends StatelessWidget {
   final RideService rideService = get<RideService>();
+  final bool isVisible;
+
+  CarHistoryScreen({Key? key, required this.isVisible}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +43,7 @@ class CarHistoryScreen extends StatelessWidget {
   }
 
   Widget _buildRideList(List<Ride> rides, BuildContext context) {
-    if (rides.isEmpty) return _buildEmptyState(context);
+    if (rides.isEmpty) return _buildEmptyState(context, isVisible);
 
     return ListView.builder(
       itemCount: rides.length,
@@ -119,17 +122,21 @@ class CarHistoryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Lottie.asset('assets/animations/nothing.json', width: 200, height: 200),
-          SIZED_BOX_HEIGHT_24,
-          NO_RIDE_HISTORY_TEXT,
-          SIZED_BOX_HEIGHT_10,
-          ADD_FIRST_RIDE_TEXT,
-        ],
+  Widget _buildEmptyState(BuildContext context, bool isVisible) {
+    return Offstage(
+      offstage: !isVisible,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (isVisible)
+              Lottie.asset('assets/animations/nothing.json', width: 220, height: 220),
+            SIZED_BOX_HEIGHT_24,
+            NO_RIDE_HISTORY_TEXT,
+            SIZED_BOX_HEIGHT_10,
+            ADD_FIRST_RIDE_TEXT,
+          ],
+        ),
       ),
     );
   }
