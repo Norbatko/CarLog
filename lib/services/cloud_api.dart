@@ -15,19 +15,17 @@ class CloudApi {
       : _credentials = auth.ServiceAccountCredentials.fromJson(json);
 
   Future<ObjectInfo> save(String name, Uint8List imgBytes) async {
-    // Create a client
     if (_client == null) {
       _client =
           await auth.clientViaServiceAccount(_credentials, Storage.SCOPES);
     }
 
-    // Instantiate objects to cloud storage
     var storage = Storage(_client!, 'Image Upload Google Storage');
     var bucket = storage.bucket(_BUCKET_NAME);
 
-    // Save to bucket
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final type = lookupMimeType(name);
+
     return await bucket.writeBytes(name, imgBytes,
         metadata: ObjectMetadata(
           contentType: type,
@@ -38,23 +36,24 @@ class CloudApi {
   }
 
   Future<Uint8List> download(String name) async {
-    // Create a client if not already created
     if (_client == null) {
       _client =
           await auth.clientViaServiceAccount(_credentials, Storage.SCOPES);
     }
 
-    // Instantiate objects to cloud storage
     var storage = Storage(_client!, 'Image Download Google Storage');
     var bucket = storage.bucket(_BUCKET_NAME);
 
-    // Read the file as bytes
     try {
-      return await bucket
-          .read(name)
+      final reader = bucket.read(name);
+      final bytes = await reader
           .fold<BytesBuilder>(
               BytesBuilder(), (builder, data) => builder..add(data))
           .then((builder) => builder.takeBytes());
+      if (bytes.isEmpty) {
+        throw Exception("Downloaded file is empty");
+      }
+      return bytes;
     } catch (e) {
       throw Exception("Error downloading file: $e");
     }
