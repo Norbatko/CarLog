@@ -1,5 +1,5 @@
 import 'package:car_log/screens/car_history/widgets/add_ride_button.dart';
-import 'package:car_log/services/Routes.dart';
+import 'package:car_log/screens/ride_edit/ride_edit_screen.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/widgets/builders/stream_custom_builder.dart';
 import 'package:flutter/material.dart';
@@ -65,17 +65,17 @@ class CarHistoryScreen extends StatelessWidget {
       elevation: CARD_ELEVATION,
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(
+          Navigator.push(
             context,
-            Routes.carDetail,
-            arguments: ride,
+            MaterialPageRoute(
+              builder: (context) => RideEditScreen(ride: ride),
+            ),
           );
         },
         borderRadius: BorderRadius.circular(CARD_RADIUS),
         child: Padding(
           padding: const EdgeInsets.all(SPACING_VERTICAL),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildRideInfo(
                 icon: Icons.calendar_today,
@@ -100,6 +100,7 @@ class CarHistoryScreen extends StatelessWidget {
     );
   }
 
+
   Widget _buildRideInfo({
     required IconData icon,
     required String label,
@@ -108,15 +109,20 @@ class CarHistoryScreen extends StatelessWidget {
   }) {
     return Expanded(
       child: Row(
-        mainAxisAlignment: alignment == TextAlign.start
-            ? MainAxisAlignment.start
-            : alignment == TextAlign.end
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(icon, size: ICON_SIZE, color: iconColor),
+          SizedBox(
+            width: 28,  // Fixed width to align all icons
+            child: Icon(icon, size: ICON_SIZE, color: iconColor),
+          ),
           SIZED_BOX_WIDTH_12,
-          Text(label, style: TEXT_STYLE),
+          Expanded(
+            child: Text(
+              label,
+              style: TEXT_STYLE,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
     );

@@ -10,4 +10,5 @@ class Routes {
 
   static const String rideDetail = '/ride/detail';
   static const String rideAdd = '/ride/add';
+  static const String rideEdit = '/ride/edit';
 }
