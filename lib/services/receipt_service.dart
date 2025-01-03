@@ -28,7 +28,6 @@ class ReceiptService {
     String carId,
     String expenseId,
     String receiptId, {
-    required ExpenseType type,
     required String userID,
     required DateTime date,
   }) async* {
