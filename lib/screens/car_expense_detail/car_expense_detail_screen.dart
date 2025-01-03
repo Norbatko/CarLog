@@ -8,7 +8,7 @@ import 'package:car_log/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/builders/stream_custom_builder.dart';
 import 'package:car_log/widgets/image_picker.dart';
-import 'package:car_log/widgets/theme/app_bar.dart';
+import 'package:car_log/widgets/theme/application_bar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

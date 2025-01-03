@@ -15,24 +15,26 @@ class CarTabManager extends StatefulWidget {
 
 class _CarTabManagerState extends State<CarTabManager> {
   int _currentIndex = 0;
-  final List<Widget> _screens = [
-    CarDetailScreen(),
-    CarExpensesScreen(),
-    CarRideScreen(),
-    CarHistoryScreen(),
-    CarNotesScreen(),
-  ];
+  late List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
-    _currentIndex = _screens.indexWhere((screen) => screen is CarRideScreen);
+    _currentIndex = 2;
+    _screens = [
+      CarDetailScreen(),
+      CarExpensesScreen(),
+      CarRideScreen(),
+      CarHistoryScreen(isVisible: _currentIndex == 3),
+      CarNotesScreen(),
+    ];
   }
 
   void _onNavItemTapped(int index) {
     if (index != _currentIndex) {
       setState(() {
         _currentIndex = index;
+        _screens[3] = CarHistoryScreen(isVisible: index == 3);
       });
     }
   }
@@ -82,16 +84,14 @@ class _CarTabManagerState extends State<CarTabManager> {
           selectedColor: Theme.of(context).colorScheme.primary,
           unSelectedColor: Colors.grey,
           title: const Text('Notes'),
-          badge: const Text('9+'),
-          showBadge: _currentIndex ==
-                  _screens.indexWhere((screen) => screen is CarNotesScreen)
-              ? false
-              : true,
+          //badge: const Text('9+'),
+          //showBadge: _currentIndex != 4, TODO: this made overflows when switching tabs
         ),
       ],
       option: BubbleBarOptions(
-          barStyle: BubbleBarStyle.vertical,
-          bubbleFillStyle: BubbleFillStyle.fill),
+        barStyle: BubbleBarStyle.vertical,
+        bubbleFillStyle: BubbleFillStyle.fill,
+      ),
       onTap: (index) => _onNavItemTapped(index),
     );
   }

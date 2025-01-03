@@ -37,6 +37,8 @@ dependencies:
   get_it: ^8.0.2
   flutter_colorpicker: ^1.1.0
   rxdart: ^0.28.0
+  intl: ^0.20.1
+  swipe_to: ^1.0.6
 
   flutter:
     sdk: flutter
@@ -93,6 +95,7 @@ flutter:
     - assets/animations/add_car.json
     - assets/animations/add_expense.json
     - assets/api/credentials.json
+    - assets/animations/nothing.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
