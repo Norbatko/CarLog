@@ -88,6 +88,7 @@ flutter:
     - assets/icon/icon.png
     - assets/animations/add_car.json
     - assets/animations/add_expense.json
+    - assets/animations/nothing.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

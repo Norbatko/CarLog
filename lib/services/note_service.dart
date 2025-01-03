@@ -25,7 +25,6 @@ class NoteService {
     }
   }
 
-
   Stream<String> updateNote(String carId, String noteId, Note updatedNote) async* {
     try {
       await carsCollection
@@ -47,24 +46,11 @@ class NoteService {
         .map((querySnapshot) {
       List<Note> notesList = [];
       for (var doc in querySnapshot.docs) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         notesList.add(Note.fromMap(doc.id, data));
       }
       notesList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
       return notesList;
     });
-  }
-
-  Stream<Note?> getNoteById(String carId, String noteId) async* {
-    final docSnapshot = await carsCollection
-        .doc(carId)
-        .collection('notes')
-        .doc(noteId)
-        .get();
-    if (docSnapshot.exists) {
-      yield Note.fromMap(noteId, docSnapshot.data() as Map<String, dynamic>);
-    } else {
-      yield null;
-    }
   }
 }
