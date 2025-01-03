@@ -65,15 +65,13 @@ class ReceiptModel {
         .collection('expenses')
         .doc(expenseId)
         .collection('receipts')
-        .where('userId', isEqualTo: userId)
+        .where('userId', isEqualTo: userId) // Filter by userId
         .snapshots()
-        .map((snapshot) => snapshot.docs.map((doc) {
-              final data = doc.data();
-              return Receipt(
-                id: doc.id,
-                userId: data['userId'],
-                date: (data['date'] as Timestamp).toDate(),
-              );
-            }).toList());
+        .map((querySnapshot) {
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return Receipt.fromMap(doc.id, data);
+      }).toList();
+    });
   }
 }
