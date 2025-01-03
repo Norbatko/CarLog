@@ -1,5 +1,6 @@
 import 'package:car_log/model/expense.dart';
 import 'package:car_log/screens/car_expenses/widgets/car_expense_add_dialog.dart';
+import 'package:car_log/screens/car_expenses/widgets/expense_icon_widget.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/expense_service.dart';
@@ -65,16 +66,19 @@ class CarExpensesScreen extends StatelessWidget {
           padding: CARD_PADDING,
           child: Row(
             children: [
+              // Keep the date icon as it was
               _buildAlignedExpenseInfo(
                 icon: Icons.date_range,
                 label: DateFormat(DATE_FORMAT).format(expense.date),
                 alignment: TextAlign.start,
               ),
+              // Use ExpenseIconWidget for dynamic expense category icon
               _buildAlignedExpenseInfo(
-                icon: Icons.category,
+                iconWidget: ExpenseIconWidget(expenseType: expense.type),
                 label: expenseTypeToString(expense.type),
                 alignment: TextAlign.center,
               ),
+              // Keep the money icon as it was for the amount
               _buildAlignedExpenseInfo(
                 icon: Icons.attach_money,
                 label: '${expense.amount.toStringAsFixed(0)}',
@@ -89,7 +93,8 @@ class CarExpensesScreen extends StatelessWidget {
   }
 
   Widget _buildAlignedExpenseInfo({
-    required IconData icon,
+    IconData? icon,
+    Widget? iconWidget,
     required String label,
     TextAlign alignment = TextAlign.start,
     Color iconColor = Colors.blue,
@@ -100,7 +105,7 @@ class CarExpensesScreen extends StatelessWidget {
         children: [
           SizedBox(
             width: ICON_BOX_WIDTH,
-            child: Icon(icon, size: ICON_SIZE, color: iconColor),
+            child: iconWidget ?? Icon(icon, size: ICON_SIZE, color: iconColor),
           ),
           const SizedBox(width: SPACING_BETWEEN_ICON_TEXT),
           Expanded(
