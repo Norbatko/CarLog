@@ -1,104 +1,59 @@
 import 'dart:io';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:car_log/model/expense.dart';
+import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/cloud_api.dart';
+import 'package:car_log/services/receipt_service.dart';
+import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImagePickerWidget extends StatefulWidget {
+class ImagePickerHandler {
   final Expense expense;
-  const ImagePickerWidget({super.key, required this.expense});
-
-  @override
-  State<ImagePickerWidget> createState() => _ImagePickerWidgetState();
-}
-
-class _ImagePickerWidgetState extends State<ImagePickerWidget> {
+  final CloudApi api;
   late File _image;
   Uint8List? _imageBytes;
   late String _imageName;
-  final picker = ImagePicker();
-  late CloudApi api;
-  bool isUploaded = false;
-  bool loading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    rootBundle.loadString('assets/api/credentials.json').then((json) {
-      api = CloudApi(json);
-    });
-  }
+  ImagePickerHandler(this.expense, this.api);
 
-  void _getImage() async {
+  Future<void> pickImage(BuildContext context) async {
+    final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        _imageBytes = _image.readAsBytesSync();
-        _imageName = widget.expense.id +
-            "/" +
-            widget.expense.userId +
-            "/" +
-            _image.path.hashCode.toString();
-        isUploaded = false;
-      } else {
-        print('No image selected.');
-      }
-      _saveImage();
-    });
+    if (pickedFile != null) {
+      _image = File(pickedFile.path);
+      _imageBytes = await _image.readAsBytes();
+      _imageName = "${expense.id}/${expense.userId}/${_image.path.hashCode}";
+
+      // Upload to the cloud
+      await uploadImage();
+      showUploadedSnackBar(context);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No image selected.')),
+      );
+    }
   }
 
-  void _saveImage() async {
-    setState(() {
-      loading = true;
-    });
-    // Upload to Google cloud
-    final response = await api.save(_imageName, _imageBytes!);
-    setState(() {
-      loading = false;
-      isUploaded = true;
-    });
+  Future<void> uploadImage() async {
+    if (_imageBytes != null) {
+      await api.save(_imageName, _imageBytes!);
+    }
+    final _receiptService = get<ReceiptService>();
+    final _carService = get<CarService>();
+    _receiptService
+        .addReceipt(_carService.activeCar.id, expense.id,
+            _image.path.hashCode.toString(),
+            userID: expense.userId, date: DateTime.now())
+        .listen((_) {});
   }
 
-  void _getImageFromCloud() async {
-    setState(() {
-      loading = true;
-    });
-    print("Images bytes before: " + String.fromCharCodes(_imageBytes!));
-    final xx = widget.expense.id;
-    final zz = widget.expense.userId;
-    _imageBytes = await api.download(xx + zz + _imageName);
-    print("Images bytes after: " + String.fromCharCodes(_imageBytes!));
-
-    setState(() {
-      loading = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        if (loading)
-          const CircularProgressIndicator()
-        else if (isUploaded || _imageBytes != null)
-          Image.memory(_imageBytes!, height: 100, width: 100, fit: BoxFit.cover)
-        else
-          FloatingActionButton(
-            onPressed: _getImage,
-            child: const Icon(Icons.add_a_photo),
-          ),
-        if (isUploaded)
-          ElevatedButton(
-            onPressed: _getImageFromCloud,
-            child: const Text('Get Image from Cloud'),
-          ),
-      ],
+  void showUploadedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Image uploaded successfully!')),
     );
   }
 }
