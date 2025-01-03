@@ -5,7 +5,16 @@ import 'package:car_log/services/note_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
 
+// Constants for Padding, Border Radius, and Spacing
 const _BORDER_RADIUS = 12.0;
+const _PADDING_12 = EdgeInsets.all(12.0);
+const _PADDING_8 = EdgeInsets.all(8.0);
+const _TOP_BORDER = BorderSide(color: Colors.black54, width: 0.8);
+const _ICON_SIZE = 18.0;
+const _HINT_TEXT = 'Type a note...';
+const _ICON_SEND = Icon(Icons.send);
+const _ICON_CLOSE = Icon(Icons.close, size: _ICON_SIZE);
+const _DURATION_300_MS = Duration(milliseconds: 300);
 
 class NoteInputField extends StatelessWidget {
   final TextEditingController messageController;
@@ -22,7 +31,8 @@ class NoteInputField extends StatelessWidget {
     this.replyNote,
     required this.focusNode,
     required this.onCancelReply,
-  });
+    Key? key,
+  }) : super(key: key);
 
   void _sendMessage(BuildContext context) {
     final currentUser = get<UserService>().currentUser;
@@ -40,13 +50,11 @@ class NoteInputField extends StatelessWidget {
     messageController.clear();
     onCancelReply();
 
-    // Unfocus the text field and hide the keyboard
     FocusScope.of(context).unfocus();
 
-    // Scroll to the bottom smoothly
     scrollController.animateTo(
       scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 300),
+      duration: _DURATION_300_MS,
       curve: Curves.easeOut,
     );
   }
@@ -55,39 +63,17 @@ class NoteInputField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (replyNote != null)
-          Container(
-            decoration: BoxDecoration(
-              border: const Border(
-                top: BorderSide(
-                  color: Colors.black54,  // Thin black line
-                  width: 0.8,  // Thickness of the line
-                ),
-              ),
-            ),
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ReplyMessageWidget(note: replyNote!, onCancelReply: onCancelReply),
-                ),
-                GestureDetector(
-                  onTap: onCancelReply,
-                  child: const Icon(Icons.close, size: 18),
-                ),
-              ],
-            ),
-          ),
+        if (replyNote != null) _buildReplyContainer(),
         Padding(
-          padding: const EdgeInsets.all(12.0),
+          padding: _PADDING_12,
           child: Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: messageController,
-                  focusNode: focusNode,  // Use passed focus node
+                  focusNode: focusNode,
                   decoration: InputDecoration(
-                    hintText: 'Type a note...',
+                    hintText: _HINT_TEXT,
                     filled: true,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(_BORDER_RADIUS),
@@ -96,13 +82,33 @@ class NoteInputField extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.send),
+                icon: _ICON_SEND,
                 onPressed: () => _sendMessage(context),
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildReplyContainer() {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(top: _TOP_BORDER),
+      ),
+      padding: _PADDING_8,
+      child: Row(
+        children: [
+          Expanded(
+            child: ReplyMessageWidget(note: replyNote!, onCancelReply: onCancelReply),
+          ),
+          GestureDetector(
+            onTap: onCancelReply,
+            child: _ICON_CLOSE,
+          ),
+        ],
+      ),
     );
   }
 }
