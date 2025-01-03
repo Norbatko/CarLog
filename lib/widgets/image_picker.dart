@@ -13,15 +13,16 @@ import 'package:image_picker/image_picker.dart';
 class ImagePickerHandler {
   final Expense expense;
   final CloudApi api;
+  final ImageSource imageSource;
   late File _image;
   Uint8List? _imageBytes;
   late String _imageName;
 
-  ImagePickerHandler(this.expense, this.api);
+  ImagePickerHandler(this.expense, this.api, this.imageSource);
 
   Future<void> pickImage(BuildContext context) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(source: imageSource);
 
     if (pickedFile != null) {
       _image = File(pickedFile.path);
