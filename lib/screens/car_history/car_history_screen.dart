@@ -1,9 +1,9 @@
 import 'package:car_log/screens/car_history/widgets/add_ride_button.dart';
 import 'package:car_log/services/Routes.dart';
+import 'package:car_log/services/car_service.dart';
 import 'package:car_log/widgets/builders/stream_custom_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/services/ride_service.dart';
-import 'package:car_log/services/user_service.dart';
 import 'package:car_log/model/ride.dart';
 import 'package:car_log/set_up_locator.dart';
 
@@ -16,7 +16,7 @@ class CarHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
-    final activeCar = get<UserService>().currentUser?.favoriteCars.first;
+    final activeCar = get<CarService>().getActiveCar();
 
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +29,7 @@ class CarHistoryScreen extends StatelessWidget {
         backgroundColor: theme.colorScheme.primary,
       ),
       body: StreamCustomBuilder<List<Ride>>(
-        stream: rideService.getRides(activeCar ?? ''),
+        stream: rideService.getRides(activeCar.id),
         builder: (context, rides) {
           return _buildRideList(rides);
         },

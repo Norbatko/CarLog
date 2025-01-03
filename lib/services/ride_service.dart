@@ -30,7 +30,7 @@ class RideService {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        return Ride.fromMap(doc.id, doc.data() as Map<String, dynamic>);
+        return Ride.fromMap(doc.id, doc.data());
       }).toList()
         ..sort((a, b) => b.startedAt.compareTo(a.startedAt));
     });
