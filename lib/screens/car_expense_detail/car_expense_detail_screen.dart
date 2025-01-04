@@ -12,6 +12,7 @@ import 'package:car_log/widgets/theme/application_bar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pie_menu/pie_menu.dart';
 
@@ -140,11 +141,65 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                               itemCount: receipts.length,
                               itemBuilder: (context, index) {
                                 final receipt = receipts[index];
-                                return Container(
-                                  child: ListTile(
-                                    leading: Text(receipt.id),
-                                    title: Text(receipt.userId),
-                                    onTap: () {},
+                                return Slidable(
+                                  key: ValueKey(receipt.id),
+                                  child: Container(
+                                    child: ListTile(
+                                      leading: Text(receipt.id),
+                                      title: Text(receipt.userId),
+                                      onTap: () {},
+                                    ),
+                                  ),
+                                  startActionPane: ActionPane(
+                                      motion:
+                                          const ScrollMotion(), // Slide across the entire width
+                                      children: [
+                                        SlidableAction(
+                                          // An action can be bigger than the others.
+                                          onPressed: (context) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      'Delete action on Item $index')),
+                                            );
+                                          },
+                                          backgroundColor:
+                                              const Color(0xFF7BC043),
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.save_alt,
+                                          label: 'Download',
+                                        ),
+                                      ]),
+                                  endActionPane: ActionPane(
+                                    motion: const ScrollMotion(),
+                                    dismissible:
+                                        DismissiblePane(onDismissed: () {
+                                      // Action when slid all the way
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Receipt ${receipt.id} deleted')),
+                                      );
+                                      _receiptService
+                                          .deleteReceipt(
+                                              _carService.activeCar.id,
+                                              _currentExpense.id,
+                                              receipt.id)
+                                          .listen((_) {});
+                                      _cloudApi.delete(
+                                          "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}");
+                                    }),
+                                    children: [
+                                      SlidableAction(
+                                        onPressed: (_) {},
+                                        backgroundColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                        icon: Icons.delete,
+                                        label: 'Delete',
+                                      ),
+                                    ],
                                   ),
                                 );
                               },
