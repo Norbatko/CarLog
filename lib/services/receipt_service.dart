@@ -1,4 +1,3 @@
-import 'package:car_log/model/expense.dart';
 import 'package:car_log/model/receipt.dart';
 import 'package:car_log/model/receipt_model.dart';
 
