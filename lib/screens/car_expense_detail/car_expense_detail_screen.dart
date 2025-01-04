@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:car_log/model/expense.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/services/Routes.dart';
@@ -14,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:pie_menu/pie_menu.dart';
 
 const _EDGE_INSETS = 16.0;
@@ -39,33 +42,39 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
     });
   }
 
-  String? selectedFileName;
-  String? selectedFilePath;
-
-  Future<void> pickFile() async {
-    try {
-      // Attempt to pick a file
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.any, // Allow any file type
-      );
-
-      if (result != null && result.files.isNotEmpty) {
-        PlatformFile file = result.files.first;
-
-        setState(() {
-          selectedFileName = file.name;
-          selectedFilePath = file.path;
-        });
-      } else {
-        // User canceled the picker
-        setState(() {
-          selectedFileName = null;
-          selectedFilePath = null;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error picking file: $e');
-    }
+  void _showImageDialog(BuildContext context, Uint8List imageBytes) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          insetPadding: EdgeInsets.zero,
+          backgroundColor: Colors.transparent,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                  ),
+                ),
+                Center(
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: Image.memory(
+                      imageBytes,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -151,18 +160,66 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                                     ),
                                   ),
                                   startActionPane: ActionPane(
-                                      motion:
-                                          const ScrollMotion(), // Slide across the entire width
+                                      motion: const ScrollMotion(),
                                       children: [
                                         SlidableAction(
-                                          // An action can be bigger than the others.
-                                          onPressed: (context) {
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              SnackBar(
-                                                  content: Text(
-                                                      'Delete action on Item $index')),
-                                            );
+                                          onPressed: (context) async {
+                                            var navigator =
+                                                Navigator.of(context);
+                                            var cloudFileName =
+                                                "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}";
+                                            Uint8List imageBytes =
+                                                await _cloudApi
+                                                    .download(cloudFileName);
+                                            _showImageDialog(
+                                                navigator.context, imageBytes);
+                                          },
+                                          backgroundColor:
+                                              Colors.lightBlueAccent,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.image,
+                                          label: 'Preview',
+                                        ),
+                                        SlidableAction(
+                                          onPressed: (context) async {
+                                            var cloudFileName =
+                                                "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}";
+                                            Uint8List imageBytes =
+                                                await _cloudApi
+                                                    .download(cloudFileName);
+
+                                            String? mimeType = lookupMimeType(
+                                                '',
+                                                headerBytes: imageBytes);
+                                            if (mimeType == null ||
+                                                !mimeType
+                                                    .startsWith('image/')) {
+                                              print(
+                                                  'Unable to determine file type or not an image.');
+                                              return;
+                                            }
+
+                                            String fileExtension = {
+                                                  'image/png': 'png',
+                                                  'image/jpeg': 'jpg',
+                                                  'image/gif': 'gif',
+                                                  'image/bmp': 'bmp',
+                                                }[mimeType] ??
+                                                'img';
+
+                                            String? directoryPath =
+                                                await FilePicker.platform
+                                                    .getDirectoryPath();
+                                            if (directoryPath == null) {
+                                              print(
+                                                  'User canceled directory selection.');
+                                              return;
+                                            }
+
+                                            String savePath =
+                                                '$directoryPath/${cloudFileName.split('/').last}.$fileExtension';
+                                            File file = File(savePath);
+                                            await file.writeAsBytes(imageBytes);
                                           },
                                           backgroundColor:
                                               const Color(0xFF7BC043),
@@ -193,7 +250,22 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                                     }),
                                     children: [
                                       SlidableAction(
-                                        onPressed: (_) {},
+                                        onPressed: (context) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Receipt ${receipt.id} deleted')),
+                                          );
+                                          _receiptService
+                                              .deleteReceipt(
+                                                  _carService.activeCar.id,
+                                                  _currentExpense.id,
+                                                  receipt.id)
+                                              .listen((_) {});
+                                          _cloudApi.delete(
+                                              "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}");
+                                        },
                                         backgroundColor: Colors.red,
                                         foregroundColor: Colors.white,
                                         icon: Icons.delete,
