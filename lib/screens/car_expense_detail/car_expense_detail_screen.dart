@@ -21,6 +21,7 @@ import 'package:mime/mime.dart';
 import 'package:pie_menu/pie_menu.dart';
 
 const _EDGE_INSETS = 16.0;
+const _boldTextStyle = TextStyle(fontWeight: FontWeight.bold);
 
 class CarExpenseDetailScreen extends StatefulWidget {
   const CarExpenseDetailScreen({super.key});
@@ -205,39 +206,16 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Created By:',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  StreamBuilder<User?>(
-                    stream: _userService.getUserData(_currentExpense.userId),
-                    builder: (context, snapshot) {
-                      return Text(snapshot.data?.email ?? 'Unknown User');
-                    },
-                  ),
-                ],
-              ),
+              _buildExpenseDetailRow('Created By:',
+                  _userService.getUserData(_currentExpense.userId)),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Amount:',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('\$${_currentExpense.amount.toStringAsFixed(2)}'),
-                ],
-              ),
+              _buildExpenseDetailRow('Amount:',
+                  '\$${_currentExpense.amount.toInt() == _currentExpense.amount ? _currentExpense.amount.toInt().toString() : _currentExpense.amount.toStringAsFixed(2)}'),
               const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Date:',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('${_currentExpense.date.toLocal()}'.split(' ')[0]),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text("Receipts", style: TextStyle(fontWeight: FontWeight.bold)),
+              _buildExpenseDetailRow(
+                  'Date:', '${_currentExpense.date.toLocal()}'.split(' ')[0]),
+              const SizedBox(height: 16, child: Divider()),
+              const Text("Receipts", style: _boldTextStyle),
               StreamCustomBuilder(
                   stream: _receiptService.getReceiptsByUserId(
                       _carService.activeCar.id,
@@ -421,6 +399,22 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildExpenseDetailRow(String label, dynamic value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: _boldTextStyle),
+        value is Stream<User?>
+            ? StreamBuilder<User?>(
+                stream: value,
+                builder: (_, snapshot) =>
+                    Text(snapshot.data?.email ?? 'Unknown User'),
+              )
+            : Text(value),
+      ],
     );
   }
 
