@@ -38,9 +38,23 @@ class CloudApi {
         ));
   }
 
-  Future<void> delete(String name) async {
+  Future<void> deleteFile(String name) async {
     var bucket = await initBucket();
     bucket.delete(name);
+  }
+
+  Future<void> deleteFolder(String folderName) async {
+    var bucket = await initBucket();
+
+    var folders = await bucket.list(prefix: folderName).toList();
+
+    for (var folder in folders) {
+      if (folder.isDirectory) {
+        await deleteFolder(folder.name);
+      } else {
+        await deleteFile(folder.name);
+      }
+    }
   }
 
   Future<Uint8List> download(String name) async {
