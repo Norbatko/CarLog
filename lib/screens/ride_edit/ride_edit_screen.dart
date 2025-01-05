@@ -5,6 +5,8 @@ import 'package:car_log/model/ride.dart';
 import 'package:car_log/services/ride_service.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class RideEditScreen extends StatefulWidget {
   final Ride ride;
@@ -57,6 +59,49 @@ class _RideEditScreenState extends State<RideEditScreen> {
     _locationStartController.dispose();
     _locationEndController.dispose();
     super.dispose();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showErrorDialog(
+          'Location Services Disabled', 'Please enable location services.');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _showErrorDialog(
+            'Permission Denied', 'Location permissions are denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _showErrorDialog('Permission Denied',
+          'Location permissions are permanently denied.');
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition();
+
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude, position.longitude);
+
+    Placemark place = placemarks[0];
+
+    setState(() {
+      _locationStartController.text =
+      '${place.street}, ${place.locality}, ${place.country}';
+    });
+
+    showSnackBar(
+        context, 'Location fetched: ${position.latitude}, ${position.longitude}');
   }
 
   void saveOrUpdateRide() {
@@ -137,7 +182,14 @@ class _RideEditScreenState extends State<RideEditScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              _buildTextField('Start Location', _locationStartController),
+              _buildTextField(
+                'Start Location',
+                _locationStartController,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.my_location),
+                  onPressed: _getCurrentLocation,
+                ),
+              ),
               const SizedBox(height: 16),
               _buildTextField('End Location', _locationEndController),
               const SizedBox(height: 16),
@@ -178,17 +230,18 @@ class _RideEditScreenState extends State<RideEditScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      {IconButton? suffixIcon}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        suffixIcon: const Icon(Icons.map),
+        suffixIcon: suffixIcon,
       ),
     );
   }
 
-  void showSnackBar(BuildContext context, String message) {
+void showSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
