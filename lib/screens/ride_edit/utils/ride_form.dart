@@ -1,10 +1,11 @@
 import 'dart:async';
-
 import 'package:car_log/model/ride.dart';
 import 'package:car_log/screens/ride_edit/utils/build_card_section.dart';
+import 'package:car_log/screens/ride_edit/utils/ride_form_constants.dart';
 import 'package:car_log/screens/ride_edit/widget/date_time_picker_tile.dart';
 import 'package:car_log/screens/ride_edit/widget/dialog_helper.dart';
 import 'package:car_log/screens/ride_edit/widget/location_field.dart';
+import 'package:car_log/screens/ride_edit/widget/save_ride_button.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/location_service.dart';
 import 'package:car_log/services/ride_service.dart';
@@ -49,9 +50,8 @@ class _RideFormState extends State<RideForm> {
       if (mounted) {
         setState(() => _isUpdatingStartLocation
             ? _locationStartController.text = location
-            : _locationEndController.text = location
-        );
-        DialogHelper.showSnackBar(context, 'Location updated.');
+            : _locationEndController.text = location);
+        DialogHelper.showSnackBar(context, RideFormConstants.LOCATION_UPDATED_MESSAGE);
       }
     });
   }
@@ -67,7 +67,67 @@ class _RideFormState extends State<RideForm> {
     super.dispose();
   }
 
-  void saveOrUpdateRide() {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          BuildCardSection(
+            context: context,
+            title: RideFormConstants.LOCATION_DETAILS_TITLE,
+            children: [
+              LocationField(
+                controller: _locationStartController,
+                label: RideFormConstants.START_LOCATION_LABEL,
+                onPressed: () => _requestLocation(true),
+              ),
+              const SizedBox(height: RideFormConstants.FIELD_SPACING),
+              LocationField(
+                controller: _locationEndController,
+                label: RideFormConstants.END_LOCATION_LABEL,
+                onPressed: () => _requestLocation(false),
+              ),
+            ],
+          ),
+          BuildCardSection(
+            context: context,
+            title: RideFormConstants.RIDE_DETAILS_TITLE,
+            children: [
+              TextFormField(
+                controller: _distanceController,
+                decoration: const InputDecoration(
+                  labelText: RideFormConstants.DISTANCE_LABEL,
+                  prefixIcon: Icon(Icons.directions_car),
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              ),
+            ],
+          ),
+          BuildCardSection(
+            context: context,
+            title: RideFormConstants.TIME_DETAILS_TITLE,
+            children: [
+              DateTimePickerTile(
+                label: RideFormConstants.STARTED_AT_LABEL,
+                dateTime: _selectedStartDateTime,
+                onTap: () => _selectDateTime(context, true),
+              ),
+              DateTimePickerTile(
+                label: RideFormConstants.FINISHED_AT_LABEL,
+                dateTime: _selectedFinishDateTime,
+                onTap: () => _selectDateTime(context, false),
+              ),
+            ],
+          ),
+          const SizedBox(height: RideFormConstants.SECTION_VERTICAL_MARGIN),
+          SaveRideButton(onPressed: _saveOrUpdateRide)
+        ],
+      ),
+    );
+  }
+
+  void _saveOrUpdateRide() {
     if (_distanceController.text.isEmpty || !_isValidTime()) return;
 
     final updatedRide = widget.ride.copyWith(
@@ -79,10 +139,8 @@ class _RideFormState extends State<RideForm> {
       locationEnd: _locationEndController.text,
     );
 
-    rideService
-        .saveRide(updatedRide, get<CarService>().activeCar.id)
-        .listen((_) {
-      DialogHelper.showSnackBar(context, 'Ride saved successfully');
+    rideService.saveRide(updatedRide, get<CarService>().activeCar.id).listen((_) {
+      DialogHelper.showSnackBar(context, RideFormConstants.RIDE_SAVED_MESSAGE);
       Navigator.pop(context);
     });
   }
@@ -92,85 +150,28 @@ class _RideFormState extends State<RideForm> {
         _selectedStartDateTime!.isBefore(_selectedFinishDateTime!)) {
       return true;
     }
-    DialogHelper.showErrorDialog(context, 'Invalid Time', 'Start time must be before finish time.');
+    DialogHelper.showErrorDialog(
+      context,
+      RideFormConstants.INVALID_TIME_TITLE,
+      RideFormConstants.INVALID_TIME_MESSAGE,
+    );
     return false;
   }
 
   void _requestLocation(bool isStartLocation) {
-    isStartLocation ? _isUpdatingStartLocation = true : _isUpdatingStartLocation = false;
+    isStartLocation
+        ? _isUpdatingStartLocation = true
+        : _isUpdatingStartLocation = false;
     locationService.requestLocation();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          BuildCardSection(
-              context: context,
-              title: 'Location Details',
-              children: [
-                LocationField(
-                  controller: _locationStartController,
-                  label: 'Start Location',
-                  onPressed: () => _requestLocation(true),
-                ),
-                const SizedBox(height: 16),
-                LocationField(
-                  controller: _locationEndController,
-                  label: 'End Location',
-                  onPressed: () => _requestLocation(false),
-                ),
-              ]),
-          BuildCardSection(context: context, title: 'Ride Details', children: [
-            TextFormField(
-              controller: _distanceController,
-              decoration: const InputDecoration(
-                labelText: 'Distance (km)',
-                prefixIcon: Icon(Icons.directions_car),
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-          ]),
-          BuildCardSection(context: context, title: 'Time', children: [
-            DateTimePickerTile(
-              label: 'Started at',
-              dateTime: _selectedStartDateTime,
-              onTap: () => _selectDateTime(context, true),
-            ),
-            DateTimePickerTile(
-              label: 'Finished at',
-              dateTime: _selectedFinishDateTime,
-              onTap: () => _selectDateTime(context, false),
-            ),
-          ]),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            icon: const Icon(Icons.save),
-            label: const Text('Save Ride'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: saveOrUpdateRide,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _selectDateTime(
-      BuildContext context, bool isStartDateTime) async {
-    final initialDate =
-        isStartDateTime ? _selectedStartDateTime : _selectedFinishDateTime;
+  Future<void> _selectDateTime(BuildContext context, bool isStartDateTime) async {
+    final initialDate = isStartDateTime ? _selectedStartDateTime : _selectedFinishDateTime;
     final selectedDate = await showDatePicker(
       context: context,
       initialDate: initialDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      firstDate: DateTime(RideFormConstants.FIRST_YEAR),
+      lastDate: DateTime(RideFormConstants.LAST_YEAR),
     );
     if (selectedDate == null) return;
 
@@ -189,6 +190,7 @@ class _RideFormState extends State<RideForm> {
     );
     setState(() => isStartDateTime
         ? _selectedStartDateTime = selectedDateTime
-        : _selectedFinishDateTime = selectedDateTime);
+        : _selectedFinishDateTime = selectedDateTime
+    );
   }
 }
