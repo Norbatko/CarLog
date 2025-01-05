@@ -121,10 +121,31 @@ class _RideFormState extends State<RideForm> {
             ],
           ),
           const SizedBox(height: RideFormConstants.SECTION_VERTICAL_MARGIN),
-          SaveRideButton(onPressed: _saveOrUpdateRide)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              BaseActionRideButton(
+                onPressed: _saveOrUpdateRide,
+                isDeleteButton: false,
+              ),
+              const SizedBox(width: RideFormConstants.FIELD_SPACING),
+              BaseActionRideButton(
+                onPressed: _deleteRide,
+                isDeleteButton: true,
+              ),
+            ],
+          ),
+          const SizedBox(height: RideFormConstants.SECTION_VERTICAL_MARGIN),
         ],
       ),
     );
+  }
+
+  void _deleteRide() {
+    rideService.deleteRide(get<CarService>().activeCar.id, widget.ride.id).listen((_) {
+      DialogHelper.showSnackBar(context, RideFormConstants.RIDE_DELETED_MESSAGE);
+      Navigator.pop(context);
+    });
   }
 
   void _saveOrUpdateRide() {
