@@ -6,6 +6,7 @@ import 'package:car_log/model/user.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/cloud_api.dart';
+import 'package:car_log/services/expense_service.dart';
 import 'package:car_log/services/receipt_service.dart';
 import 'package:car_log/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
@@ -34,6 +35,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
   final _receiptService = get<ReceiptService>();
   final _userService = get<UserService>();
   final _carService = get<CarService>();
+  final _expenseService = get<ExpenseService>();
   late CloudApi _cloudApi;
 
   @override
@@ -308,7 +310,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                                               _currentExpense.id,
                                               receipt.id)
                                           .listen((_) {});
-                                      _cloudApi.delete(
+                                      _cloudApi.deleteFile(
                                           "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}");
                                     }),
                                     children: [
@@ -326,7 +328,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                                                   _currentExpense.id,
                                                   receipt.id)
                                               .listen((_) {});
-                                          _cloudApi.delete(
+                                          _cloudApi.deleteFile(
                                               "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}");
                                         },
                                         backgroundColor: Colors.red,
@@ -386,7 +388,16 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                     label: const Text('Edit'),
                   ),
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        _expenseService
+                            .deleteExpense(
+                                _carService.activeCar.id, _currentExpense.id)
+                            .listen((_) {});
+                        _cloudApi.deleteFolder("${_currentExpense.id}/");
+                      });
+                      Navigator.of(context).pop();
+                    },
                     icon: const Icon(Icons.delete),
                     label: const Text('Delete'),
                     style: ElevatedButton.styleFrom(
