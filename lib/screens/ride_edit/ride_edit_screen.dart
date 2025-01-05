@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:car_log/model/ride.dart';
 import 'package:car_log/services/ride_service.dart';
 import 'package:car_log/services/car_service.dart';
+import 'package:car_log/services/location_service.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 
 class RideEditScreen extends StatefulWidget {
   final Ride ride;
@@ -33,6 +33,9 @@ class _RideEditScreenState extends State<RideEditScreen> {
   bool updateOdometer = false;
   int initialDistance = 0;
   final RideService rideService = get<RideService>();
+  final LocationService locationService = get<LocationService>();
+
+  late StreamSubscription<String> _locationSubscription;
 
   @override
   void initState() {
@@ -49,10 +52,26 @@ class _RideEditScreenState extends State<RideEditScreen> {
     _selectedStartDateTime = widget.ride.startedAt;
     _selectedFinishDateTime = widget.ride.finishedAt;
     initialDistance = widget.ride.distance;
+
+    // Listen to the location stream and store the subscription
+    _locationSubscription = locationService.locationStream.listen((location) {
+      if (mounted) {
+        setState(() {
+          _locationStartController.text = location;
+        });
+        showSnackBar(context, 'Location updated.');
+      }
+    }, onError: (error) {
+      if (mounted) {
+        _showErrorDialog('Location Error', error);
+      }
+    });
   }
 
   @override
   void dispose() {
+    // Cancel the subscription to avoid calling setState after dispose
+    _locationSubscription.cancel();
     _rideTypeController.dispose();
     _distanceController.dispose();
     _userNameController.dispose();
@@ -61,47 +80,8 @@ class _RideEditScreenState extends State<RideEditScreen> {
     super.dispose();
   }
 
-  Future<void> _getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      _showErrorDialog(
-          'Location Services Disabled', 'Please enable location services.');
-      return;
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        _showErrorDialog(
-            'Permission Denied', 'Location permissions are denied');
-        return;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      _showErrorDialog('Permission Denied',
-          'Location permissions are permanently denied.');
-      return;
-    }
-
-    Position position = await Geolocator.getCurrentPosition();
-
-    List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude, position.longitude);
-
-    Placemark place = placemarks[0];
-
-    setState(() {
-      _locationStartController.text =
-      '${place.street}, ${place.locality}, ${place.country}';
-    });
-
-    showSnackBar(
-        context, 'Location fetched: ${position.latitude}, ${position.longitude}');
+  void _requestLocationUpdate() {
+    locationService.requestLocation();
   }
 
   void saveOrUpdateRide() {
@@ -187,7 +167,7 @@ class _RideEditScreenState extends State<RideEditScreen> {
                 _locationStartController,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.my_location),
-                  onPressed: _getCurrentLocation,
+                  onPressed: _requestLocationUpdate,
                 ),
               ),
               const SizedBox(height: 16),
@@ -241,14 +221,14 @@ class _RideEditScreenState extends State<RideEditScreen> {
     );
   }
 
-void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
+  void showSnackBar(BuildContext context, String message) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
 
   void _showErrorDialog(String title, String message) {
     showDialog(
@@ -266,11 +246,12 @@ void showSnackBar(BuildContext context, String message) {
     );
   }
 
-
   Widget _buildDateTimeTile(
       String label, DateTime? dateTime, VoidCallback onTap) {
     return ListTile(
-      title: Text('$label\n${dateTime != null ? DateFormat('dd.MM - HH:mm').format(dateTime) : ''}'),
+      title: Text(
+        '$label\n${dateTime != null ? DateFormat('dd.MM - HH:mm').format(dateTime) : ''}',
+      ),
       onTap: onTap,
       trailing: const Icon(Icons.edit_calendar),
     );
