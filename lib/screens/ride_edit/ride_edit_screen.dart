@@ -22,6 +22,8 @@ class _RideEditScreenState extends State<RideEditScreen> {
   late TextEditingController _rideTypeController;
   late TextEditingController _distanceController;
   late TextEditingController _userNameController;
+  late TextEditingController _locationStartController;
+  late TextEditingController _locationEndController;
 
   DateTime? _selectedStartDateTime;
   DateTime? _selectedFinishDateTime;
@@ -37,6 +39,10 @@ class _RideEditScreenState extends State<RideEditScreen> {
     _distanceController =
         TextEditingController(text: widget.ride.distance.toString());
     _userNameController = TextEditingController(text: widget.ride.userName);
+    _locationStartController =
+        TextEditingController(text: widget.ride.locationStart);
+    _locationEndController =
+        TextEditingController(text: widget.ride.locationEnd);
 
     _selectedStartDateTime = widget.ride.startedAt;
     _selectedFinishDateTime = widget.ride.finishedAt;
@@ -48,7 +54,37 @@ class _RideEditScreenState extends State<RideEditScreen> {
     _rideTypeController.dispose();
     _distanceController.dispose();
     _userNameController.dispose();
+    _locationStartController.dispose();
+    _locationEndController.dispose();
     super.dispose();
+  }
+
+  void saveOrUpdateRide() {
+    if (_distanceController.text.isEmpty || !isValidTime()) return;
+
+    final updatedRide = widget.ride.copyWith(
+      startedAt: _selectedStartDateTime,
+      finishedAt: _selectedFinishDateTime,
+      rideType: _rideTypeController.text,
+      distance: int.parse(_distanceController.text),
+      locationStart: _locationStartController.text,
+      locationEnd: _locationEndController.text,
+    );
+
+    rideService.saveRide(updatedRide, get<CarService>().activeCar.id).listen((_) {
+      showSnackBar(context, 'Ride saved successfully');
+      Navigator.pop(context);
+    });
+  }
+
+  bool isValidTime() {
+    if (_selectedStartDateTime != null &&
+        _selectedFinishDateTime != null &&
+        _selectedStartDateTime!.isBefore(_selectedFinishDateTime!)) {
+      return true;
+    }
+    _showErrorDialog('Invalid Time', 'Start time must be before finish time.');
+    return false;
   }
 
   Future<void> _selectDateTime(
@@ -85,54 +121,6 @@ class _RideEditScreenState extends State<RideEditScreen> {
     }
   }
 
-  void saveOrUpdateRide() {
-    if (_distanceController.text.isEmpty || !isValidTime()) return;
-
-    final updatedRide = widget.ride.copyWith(
-      startedAt: _selectedStartDateTime,
-      finishedAt: _selectedFinishDateTime,
-      rideType: _rideTypeController.text,
-      distance: int.parse(_distanceController.text),
-    );
-
-    rideService.saveRide(updatedRide, get<CarService>().activeCar.id).listen((_) {
-      showSnackBar(context, 'Ride saved successfully');
-      Navigator.pop(context);
-    });
-  }
-
-  bool isValidTime() {
-    if (_selectedStartDateTime != null &&
-        _selectedFinishDateTime != null &&
-        _selectedStartDateTime!.isBefore(_selectedFinishDateTime!)) {
-      return true;
-    }
-    _showErrorDialog('Invalid Time', 'Start time must be before finish time.');
-    return false;
-  }
-
-  void _showErrorDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -148,11 +136,16 @@ class _RideEditScreenState extends State<RideEditScreen> {
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Driver: ${widget.ride.userName}',
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              _buildTextField('Start Location', _locationStartController),
+              const SizedBox(height: 16),
+              _buildTextField('End Location', _locationEndController),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _distanceController,
+                decoration: const InputDecoration(labelText: 'Distance (km)'),
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
               const SizedBox(height: 16),
               Row(
@@ -174,23 +167,6 @@ class _RideEditScreenState extends State<RideEditScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _distanceController,
-                decoration: const InputDecoration(labelText: 'Distance (km)'),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              ),
-              const SizedBox(height: 16),
-              SwitchListTile(
-                title: const Text('Update Odometer'),
-                value: updateOdometer,
-                onChanged: (value) {
-                  setState(() {
-                    updateOdometer = value;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: saveOrUpdateRide,
                 child: const Text('Save'),
@@ -201,6 +177,42 @@ class _RideEditScreenState extends State<RideEditScreen> {
       ),
     );
   }
+
+  Widget _buildTextField(String label, TextEditingController controller) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        suffixIcon: const Icon(Icons.map),
+      ),
+    );
+  }
+
+  void showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showErrorDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildDateTimeTile(
       String label, DateTime? dateTime, VoidCallback onTap) {
