@@ -19,8 +19,6 @@ class ExpenseIconWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Icon(
       _expenseIcons[expenseType],
       color: Colors.blue,
