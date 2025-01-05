@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:car_log/model/expense.dart';
+import 'package:car_log/model/receipt.dart';
 import 'package:car_log/model/user.dart';
 import 'package:car_log/services/Routes.dart';
 import 'package:car_log/services/car_service.dart';
@@ -77,6 +78,111 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
     );
   }
 
+  void _showInfoDialog(BuildContext context, Receipt receipt) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Image Details",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+          ),
+          content: StreamBuilder<User?>(
+              stream: _userService.getUserData(receipt.userId),
+              builder: (context, snapshot) {
+                var user = snapshot.data;
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text('Image',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
+                                decoration: TextDecoration.underline)),
+                        SizedBox(width: 5),
+                        const Icon(Icons.image),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('ID:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(receipt.id),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Creation date:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text('${receipt.date.toLocal()}'.split(' ')[0]),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text('User',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              decoration: TextDecoration.underline,
+                            )),
+                        SizedBox(width: 5),
+                        const Icon(Icons.person),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Name:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(user?.name ?? 'Unknown'),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Login:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(user?.login ?? 'Unknown'),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Email:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(user?.email ?? 'Unknown'),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Role:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(user?.isAdmin == true ? 'Admin' : 'User'),
+                      ],
+                    ),
+                  ],
+                );
+              }),
+          actions: [
+            ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Return"))
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final _currentExpense =
@@ -92,7 +198,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
       ),
       child: Scaffold(
         appBar: ApplicationBar(
-            title: 'Car Detail', userDetailRoute: Routes.userDetail),
+            title: 'Expense Detail', userDetailRoute: Routes.userDetail),
         body: Padding(
           padding: const EdgeInsets.fromLTRB(
               _EDGE_INSETS, _EDGE_INSETS, _EDGE_INSETS, _EDGE_INSETS * 2),
@@ -107,7 +213,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                   StreamBuilder<User?>(
                     stream: _userService.getUserData(_currentExpense.userId),
                     builder: (context, snapshot) {
-                      return Text(snapshot.data?.name ?? 'Loading...');
+                      return Text(snapshot.data?.email ?? 'Unknown User');
                     },
                   ),
                 ],
@@ -130,7 +236,8 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                   Text('${_currentExpense.date.toLocal()}'.split(' ')[0]),
                 ],
               ),
-              Text("Receipts"),
+              const SizedBox(height: 8),
+              Text("Receipts", style: TextStyle(fontWeight: FontWeight.bold)),
               StreamCustomBuilder(
                   stream: _receiptService.getReceiptsByUserId(
                       _carService.activeCar.id,
@@ -154,85 +261,63 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                                   key: ValueKey(receipt.id),
                                   child: Container(
                                     child: ListTile(
-                                      leading: Text(receipt.id),
-                                      title: Text(receipt.userId),
-                                      onTap: () {},
+                                      leading: const Icon(Icons.image),
+                                      title: Text("Receipt: ${receipt.id}"),
+                                      trailing: StreamBuilder<User?>(
+                                        stream: _userService
+                                            .getUserData(receipt.userId),
+                                        builder: (context, snapshot) {
+                                          return TextButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                '/user/detail',
+                                                arguments: receipt.userId,
+                                              );
+                                            },
+                                            child: Text(snapshot.data?.login ??
+                                                'Unknown User'), // Show the user name or a fallback
+                                          );
+                                        },
+                                      ),
+                                      onTap: () async {
+                                        var navigator = Navigator.of(context);
+                                        var cloudFileName =
+                                            "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}";
+                                        Uint8List imageBytes = await _cloudApi
+                                            .download(cloudFileName);
+                                        _showImageDialog(
+                                            navigator.context, imageBytes);
+                                      },
                                     ),
                                   ),
                                   startActionPane: ActionPane(
                                       motion: const ScrollMotion(),
                                       children: [
                                         SlidableAction(
-                                          onPressed: (context) async {
-                                            var navigator =
-                                                Navigator.of(context);
-                                            var cloudFileName =
-                                                "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}";
-                                            Uint8List imageBytes =
-                                                await _cloudApi
-                                                    .download(cloudFileName);
-                                            _showImageDialog(
-                                                navigator.context, imageBytes);
-                                          },
-                                          backgroundColor:
-                                              Colors.lightBlueAccent,
-                                          foregroundColor: Colors.white,
-                                          icon: Icons.image,
-                                          label: 'Preview',
-                                        ),
-                                        SlidableAction(
-                                          onPressed: (context) async {
-                                            var cloudFileName =
-                                                "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}";
-                                            Uint8List imageBytes =
-                                                await _cloudApi
-                                                    .download(cloudFileName);
-
-                                            String? mimeType = lookupMimeType(
-                                                '',
-                                                headerBytes: imageBytes);
-                                            if (mimeType == null ||
-                                                !mimeType
-                                                    .startsWith('image/')) {
-                                              print(
-                                                  'Unable to determine file type or not an image.');
-                                              return;
-                                            }
-
-                                            String fileExtension = {
-                                                  'image/png': 'png',
-                                                  'image/jpeg': 'jpg',
-                                                  'image/gif': 'gif',
-                                                  'image/bmp': 'bmp',
-                                                }[mimeType] ??
-                                                'img';
-
-                                            String? directoryPath =
-                                                await FilePicker.platform
-                                                    .getDirectoryPath();
-                                            if (directoryPath == null) {
-                                              print(
-                                                  'User canceled directory selection.');
-                                              return;
-                                            }
-
-                                            String savePath =
-                                                '$directoryPath/${cloudFileName.split('/').last}.$fileExtension';
-                                            File file = File(savePath);
-                                            await file.writeAsBytes(imageBytes);
-                                          },
+                                          onPressed: (context) => downloadFile(
+                                              _currentExpense,
+                                              receipt,
+                                              context),
                                           backgroundColor:
                                               const Color(0xFF7BC043),
                                           foregroundColor: Colors.white,
                                           icon: Icons.save_alt,
                                           label: 'Download',
                                         ),
+                                        SlidableAction(
+                                          onPressed: (context) =>
+                                              _showInfoDialog(context, receipt),
+                                          backgroundColor: Colors.blueAccent,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.info,
+                                          label: 'Info',
+                                        ),
                                       ]),
                                   endActionPane: ActionPane(
                                     motion: const ScrollMotion(),
                                     dismissible:
                                         DismissiblePane(onDismissed: () {
-                                      // Action when slid all the way
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         SnackBar(
@@ -337,5 +422,36 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
         ),
       ),
     );
+  }
+
+  void downloadFile(
+      Expense expense, Receipt receipt, BuildContext context) async {
+    var cloudFileName = "${expense.id}/${expense.userId}/${receipt.id}";
+    Uint8List imageBytes = await _cloudApi.download(cloudFileName);
+
+    String? mimeType = lookupMimeType('', headerBytes: imageBytes);
+    if (mimeType == null || !mimeType.startsWith('image/')) {
+      print('Unable to determine file type or not an image.');
+      return;
+    }
+
+    String fileExtension = {
+          'image/png': 'png',
+          'image/jpeg': 'jpg',
+          'image/gif': 'gif',
+          'image/bmp': 'bmp',
+        }[mimeType] ??
+        'img';
+
+    String? directoryPath = await FilePicker.platform.getDirectoryPath();
+    if (directoryPath == null) {
+      print('User canceled directory selection.');
+      return;
+    }
+
+    String savePath =
+        '$directoryPath/${cloudFileName.split('/').last}.$fileExtension';
+    File file = File(savePath);
+    await file.writeAsBytes(imageBytes);
   }
 }
