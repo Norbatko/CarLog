@@ -8,6 +8,7 @@ import 'package:car_log/widgets/theme/theme_setter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:car_log/screens/login/login_screen.dart';
+import 'package:geolocator/geolocator.dart';
 import 'firebase_db/firebase_options.dart';
 import 'package:car_log/services/Routes.dart';
 
@@ -15,6 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SetUpLocator.init();
+  await GeolocatorPlatform.instance.isLocationServiceEnabled();
   runApp(MyApp());
 }
 
