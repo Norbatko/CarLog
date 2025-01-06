@@ -6,7 +6,7 @@ const _ICON_SIZE = 22.0;
 // Icons for each expense type using Material Icons
 final Map<ExpenseType, IconData> _expenseIcons = {
   ExpenseType.fuel: Icons.local_gas_station,
-  ExpenseType.maintenance: Icons.build,
+  ExpenseType.service: Icons.build,
   ExpenseType.repair: Icons.handyman,
   ExpenseType.insurance: Icons.shield,
   ExpenseType.other: Icons.more_vert,
