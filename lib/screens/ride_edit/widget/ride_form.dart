@@ -47,12 +47,6 @@ class _RideFormState extends State<RideForm> {
     _selectedStartDateTime = widget.ride.startedAt;
     _selectedFinishDateTime = widget.ride.finishedAt;
     _locationSubscription = locationService.locationStream.listen((location) {
-      if (mounted) {
-        setState(() => _isUpdatingStartLocation
-            ? _locationStartController.text = location
-            : _locationEndController.text = location);
-        DialogHelper.showSnackBar(context, RideFormConstants.LOCATION_UPDATED_MESSAGE);
-      }
     });
   }
 
@@ -180,9 +174,15 @@ class _RideFormState extends State<RideForm> {
   }
 
   void _requestLocation(bool isStartLocation) {
-    isStartLocation
-        ? _isUpdatingStartLocation = true
-        : _isUpdatingStartLocation = false;
+    _isUpdatingStartLocation = isStartLocation;
+    _locationSubscription = locationService.locationStream.listen((location) {
+      if (mounted) {
+        setState(() => _isUpdatingStartLocation
+            ? _locationStartController.text = location
+            : _locationEndController.text = location);
+        DialogHelper.showSnackBar(context, RideFormConstants.LOCATION_UPDATED_MESSAGE);
+      }
+    });
     locationService.requestLocation();
   }
 
