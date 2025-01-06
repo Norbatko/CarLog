@@ -14,15 +14,18 @@ class CloudApi {
   CloudApi(String json)
       : _credentials = auth.ServiceAccountCredentials.fromJson(json);
 
-  Future<ObjectInfo> save(String name, Uint8List imgBytes) async {
+  Future<Bucket> initBucket() async {
     if (_client == null) {
       _client =
           await auth.clientViaServiceAccount(_credentials, Storage.SCOPES);
     }
 
     var storage = Storage(_client!, 'Image Upload Google Storage');
-    var bucket = storage.bucket(_BUCKET_NAME);
+    return storage.bucket(_BUCKET_NAME);
+  }
 
+  Future<ObjectInfo> save(String name, Uint8List imgBytes) async {
+    var bucket = await initBucket();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final type = lookupMimeType(name);
 
@@ -35,14 +38,27 @@ class CloudApi {
         ));
   }
 
-  Future<Uint8List> download(String name) async {
-    if (_client == null) {
-      _client =
-          await auth.clientViaServiceAccount(_credentials, Storage.SCOPES);
-    }
+  Future<void> deleteFile(String name) async {
+    var bucket = await initBucket();
+    bucket.delete(name);
+  }
 
-    var storage = Storage(_client!, 'Image Download Google Storage');
-    var bucket = storage.bucket(_BUCKET_NAME);
+  Future<void> deleteFolder(String folderName) async {
+    var bucket = await initBucket();
+
+    var folders = await bucket.list(prefix: folderName).toList();
+
+    for (var folder in folders) {
+      if (folder.isDirectory) {
+        await deleteFolder(folder.name);
+      } else {
+        await deleteFile(folder.name);
+      }
+    }
+  }
+
+  Future<Uint8List> download(String name) async {
+    var bucket = await initBucket();
 
     try {
       final reader = bucket.read(name);
