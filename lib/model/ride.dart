@@ -48,4 +48,27 @@ class Ride {
       'locationEnd': locationEnd,
     };
   }
+  Ride copyWith({
+    String? id,
+    String? userId,
+    String? userName,
+    DateTime? startedAt,
+    DateTime? finishedAt,
+    String? rideType,
+    int? distance,
+    String? locationStart,
+    String? locationEnd,
+  }) {
+    return Ride(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      startedAt: startedAt ?? this.startedAt,
+      finishedAt: finishedAt ?? this.finishedAt,
+      rideType: rideType ?? this.rideType,
+      distance: distance ?? this.distance,
+      locationStart: locationStart ?? this.locationStart,
+      locationEnd: locationEnd ?? this.locationEnd,
+    );
+  }
 }
