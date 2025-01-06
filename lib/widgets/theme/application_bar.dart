@@ -15,7 +15,8 @@ class ApplicationBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Text(title,
           style: TextStyle(color: Theme.of(context).colorScheme.onSecondary)),
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      centerTitle: true,
       actions: [
         IconButton(
           icon: Icon(
