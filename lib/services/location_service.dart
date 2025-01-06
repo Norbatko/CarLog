@@ -53,9 +53,34 @@ class LocationService {
     }
   }
 
+  Future<void> _fetchCoordinatesFromLocation(String address) async {
+    try {
+      List<Location> locations = await locationFromAddress(address);
+
+      if (locations.isNotEmpty) {
+        Location location = locations.first;
+        double latitude = location.latitude;
+        double longitude = location.longitude;
+
+        print('Latitude: $latitude, Longitude: $longitude');
+        _locationController.add('Coordinates: $latitude, $longitude');
+      } else {
+        _locationController.addError('No coordinates found for this address.');
+      }
+    } catch (e) {
+      _locationController.addError('Failed to fetch coordinates.');
+      print('Error: $e');
+    }
+  }
+
+  //USAGE when fetching location from map - TODo, method works
+  void requestCoordinates(String address) {
+    _fetchCoordinatesFromLocation(address);
+  }
+
   void requestLocation() {
     _fetchCurrentLocation();
-  }
+    }
 
   void dispose() {
     _locationController.close();
