@@ -101,6 +101,7 @@ flutter:
     - assets/animations/add_expense.json
     - assets/api/credentials.json
     - assets/animations/nothing.json
+    - assets/animations/image_upload.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
