@@ -1,4 +1,4 @@
-import 'package:car_log/screens/ride_edit/utils/ride_form.dart';
+import 'package:car_log/screens/ride_edit/widget/ride_form.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/model/ride.dart';
 
