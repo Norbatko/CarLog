@@ -39,8 +39,7 @@ class LocationService {
 
   void _fetchCurrentLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition();
 
       List<Placemark> placemarks = await placemarkFromCoordinates(
           position.latitude, position.longitude);
