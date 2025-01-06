@@ -207,12 +207,16 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
               _EDGE_INSETS, _EDGE_INSETS, _EDGE_INSETS, _EDGE_INSETS * 2),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
-              _buildExpenseDetailRow('Created By:',
-                  _userService.getUserData(_currentExpense.userId)),
+              _buildExpenseDetailRow(
+                  'Type: ', expenseTypeToString(_currentExpense.type)),
               const SizedBox(height: 8),
               _buildExpenseDetailRow('Amount:',
                   '\$${_currentExpense.amount.toInt() == _currentExpense.amount ? _currentExpense.amount.toInt().toString() : _currentExpense.amount.toStringAsFixed(2)}'),
+              const SizedBox(height: 8),
+              _buildExpenseDetailRow('Created By:',
+                  _userService.getUserData(_currentExpense.userId)),
               const SizedBox(height: 8),
               _buildExpenseDetailRow(
                   'Date:', '${_currentExpense.date.toLocal()}'.split(' ')[0]),
@@ -239,37 +243,35 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                                 final receipt = receipts[index];
                                 return Slidable(
                                   key: ValueKey(receipt.id),
-                                  child: Container(
-                                    child: ListTile(
-                                      leading: const Icon(Icons.image),
-                                      title: Text("Receipt: ${receipt.id}"),
-                                      trailing: StreamBuilder<User?>(
-                                        stream: _userService
-                                            .getUserData(receipt.userId),
-                                        builder: (context, snapshot) {
-                                          return TextButton(
-                                            onPressed: () {
-                                              Navigator.pushNamed(
-                                                context,
-                                                '/user/detail',
-                                                arguments: receipt.userId,
-                                              );
-                                            },
-                                            child: Text(snapshot.data?.login ??
-                                                'Unknown User'), // Show the user name or a fallback
-                                          );
-                                        },
-                                      ),
-                                      onTap: () async {
-                                        var navigator = Navigator.of(context);
-                                        var cloudFileName =
-                                            "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}";
-                                        Uint8List imageBytes = await _cloudApi
-                                            .download(cloudFileName);
-                                        _showImageDialog(
-                                            navigator.context, imageBytes);
+                                  child: ListTile(
+                                    leading: const Icon(Icons.image),
+                                    title: Text("Receipt: ${receipt.id}"),
+                                    trailing: StreamBuilder<User?>(
+                                      stream: _userService
+                                          .getUserData(receipt.userId),
+                                      builder: (context, snapshot) {
+                                        return TextButton(
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              '/user/detail',
+                                              arguments: receipt.userId,
+                                            );
+                                          },
+                                          child: Text(snapshot.data?.login ??
+                                              'Unknown User'), // Show the user name or a fallback
+                                        );
                                       },
                                     ),
+                                    onTap: () async {
+                                      var navigator = Navigator.of(context);
+                                      var cloudFileName =
+                                          "${_currentExpense.id}/${_currentExpense.userId}/${receipt.id}";
+                                      Uint8List imageBytes = await _cloudApi
+                                          .download(cloudFileName);
+                                      _showImageDialog(
+                                          navigator.context, imageBytes);
+                                    },
                                   ),
                                   startActionPane: ActionPane(
                                       motion: const ScrollMotion(),
@@ -343,50 +345,15 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                             ),
                           );
                   }),
-              const Spacer(),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: PieMenu(
-                      actions: [
-                        PieAction(
-                          tooltip: const Text('Gallery'),
-                          onSelect: () {
-                            final imagePickerHandler = ImagePickerHandler(
-                                _currentExpense,
-                                _cloudApi,
-                                ImageSource.gallery);
-                            imagePickerHandler.pickImage(context);
-                          },
-                          child: const Icon(Icons.image),
-                        ),
-                        PieAction(
-                          tooltip: const Text('Camera'),
-                          onSelect: () {
-                            final imagePickerHandler = ImagePickerHandler(
-                                _currentExpense, _cloudApi, ImageSource.camera);
-                            imagePickerHandler.pickImage(context);
-                          },
-                          child: const Icon(Icons.camera_alt),
-                        ),
-                      ],
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          // Handle edit action
-                        },
-                        icon: const Icon(Icons.note_add),
-                        label: const Text('Add receipt'),
-                      ),
-                    ),
-                  ),
                   ElevatedButton.icon(
-                    onPressed: () {
-                      // Handle edit action
-                    },
+                    onPressed: () {},
                     icon: const Icon(Icons.edit),
                     label: const Text('Edit'),
                   ),
+                  const SizedBox(width: 5),
                   ElevatedButton.icon(
                     onPressed: () {
                       setState(() {
@@ -398,8 +365,14 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                       });
                       Navigator.of(context).pop();
                     },
-                    icon: const Icon(Icons.delete),
-                    label: const Text('Delete'),
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.white),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
@@ -407,6 +380,65 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                 ],
               ),
             ],
+          ),
+        ),
+        floatingActionButton: PieMenu(
+          actions: [
+            PieAction(
+              tooltip: const Text('Gallery'),
+              buttonTheme: PieButtonTheme(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  iconColor: Theme.of(context).colorScheme.onSecondary),
+              buttonThemeHovered: PieButtonTheme(
+                  backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                  iconColor: Theme.of(context).colorScheme.primary,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    border: Border.all(
+                      color:
+                          Theme.of(context).colorScheme.primary, // Border color
+                      width: 4, // Border width
+                    ),
+                  )),
+              onSelect: () {
+                final imagePickerHandler = ImagePickerHandler(
+                    _currentExpense, _cloudApi, ImageSource.gallery);
+                imagePickerHandler.pickImage(context);
+              },
+              child: const Icon(Icons.image),
+            ),
+            PieAction(
+              tooltip: const Text('Camera'),
+              buttonTheme: PieButtonTheme(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  iconColor: Theme.of(context).colorScheme.onSecondary),
+              buttonThemeHovered: PieButtonTheme(
+                  backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                  iconColor: Theme.of(context).colorScheme.primary,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    border: Border.all(
+                      color:
+                          Theme.of(context).colorScheme.primary, // Border color
+                      width: 4, // Border width
+                    ),
+                  )),
+              onSelect: () {
+                final imagePickerHandler = ImagePickerHandler(
+                    _currentExpense, _cloudApi, ImageSource.camera);
+                imagePickerHandler.pickImage(context);
+              },
+              child: const Icon(Icons.camera_alt),
+            ),
+          ],
+          child: FloatingActionButton(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            child: Icon(Icons.note_add,
+                color: Theme.of(context).colorScheme.onSecondary),
+            onPressed: () {},
+            heroTag: "addReceiptFAB",
           ),
         ),
       ),
