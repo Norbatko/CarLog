@@ -229,11 +229,13 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                       _userService.currentUser!.id),
                   builder: (context, receipts) {
                     return receipts.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'No receipts available',
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.grey),
+                        ? Expanded(
+                            child: const Center(
+                              child: Text(
+                                'No receipts available',
+                                style:
+                                    TextStyle(fontSize: 18, color: Colors.grey),
+                              ),
                             ),
                           )
                         : Expanded(
