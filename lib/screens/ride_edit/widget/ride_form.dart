@@ -162,9 +162,21 @@ class _RideFormState extends State<RideForm> {
   }
 
   void _deleteRide() {
-    rideService.deleteRide(get<CarService>().activeCar.id, widget.ride.id).listen((_) {
-      DialogHelper.showSnackBar(context, RideFormConstants.RIDE_DELETED_MESSAGE);
-      Navigator.pop(context);
+    final carService = get<CarService>();
+    final rideDistance = widget.ride.distance;
+
+    rideService.deleteRide(carService.activeCar.id, widget.ride.id).listen((_) {
+      if (mounted) {
+        final newOdometerValue = int.parse(carService.activeCar.odometerStatus) - rideDistance;
+        carService.updateOdometer(newOdometerValue < 0 ? 0 : newOdometerValue);
+
+        DialogHelper.showSnackBar(context, RideFormConstants.RIDE_DELETED_MESSAGE);
+        Navigator.pop(context);
+      }
+    }).onError((_) {
+      if (mounted) {
+        DialogHelper.showSnackBar(context, 'Failed to delete ride.');
+      }
     });
   }
 
@@ -182,6 +194,10 @@ class _RideFormState extends State<RideForm> {
 
     rideService.saveRide(updatedRide, get<CarService>().activeCar.id).listen((_) {
       if (mounted) {
+        // Explicitly update odometer after ride save
+        final newOdometerValue = int.parse(get<CarService>().activeCar.odometerStatus) + updatedRide.distance;
+        get<CarService>().updateOdometer(newOdometerValue);
+
         DialogHelper.showSnackBar(context, RideFormConstants.RIDE_SAVED_MESSAGE);
         Navigator.pop(context);
       }
@@ -191,7 +207,6 @@ class _RideFormState extends State<RideForm> {
       }
     });
   }
-
 
   bool _isValidTime() {
     if (_selectedStartDateTime != null && _selectedFinishDateTime != null &&
