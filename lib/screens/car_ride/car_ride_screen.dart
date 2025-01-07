@@ -20,10 +20,10 @@ class CarRideScreen extends StatefulWidget {
   _CarRideScreenState createState() => _CarRideScreenState();
 }
 
-class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProviderStateMixin {
+class _CarRideScreenState extends State<CarRideScreen>
+    with SingleTickerProviderStateMixin {
   final CarService _carService = GetIt.instance<CarService>();
   late Car activeCar;
-  bool isRiding = false;
   late AnimationController _animationController;
   late LocationService _locationService;
   LatLng? _currentPosition;
@@ -53,16 +53,11 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
     List<Location> locations = await locationFromAddress(location);
     if (locations.isNotEmpty) {
       setState(() {
-        _currentPosition = LatLng(locations.first.latitude, locations.first.longitude);
+        _currentPosition =
+            LatLng(locations.first.latitude, locations.first.longitude);
         _mapController.move(_currentPosition!, 14.0);
       });
     }
-  }
-
-  void _toggleRide(bool rideStatus) {
-    setState(() {
-      isRiding = rideStatus;
-    });
   }
 
   @override
@@ -79,7 +74,8 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: ApplicationBar(title: 'Start Ride', userDetailRoute: Routes.userDetail),
+      appBar: ApplicationBar(
+          title: 'Start Ride', userDetailRoute: Routes.userDetail),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -120,7 +116,9 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
                   screenWidth: screenWidth,
                   screenHeight: screenHeight,
                   animationController: _animationController,
-                  onRideToggle: _toggleRide,
+                  startPosition: _currentPosition != null
+                      ? _currentPosition.toString()
+                      : '',
                 ),
               ),
             ],

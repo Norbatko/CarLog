@@ -1,17 +1,18 @@
+import 'package:car_log/screens/car_ride/widgets/add_new_ride_dialog.dart';
 import 'package:flutter/material.dart';
 
 class StartRideButton extends StatefulWidget {
   final double screenWidth;
   final double screenHeight;
   final AnimationController animationController;
-  final Function(bool) onRideToggle;
+  final String startPosition;
 
   const StartRideButton({
     Key? key,
     required this.screenWidth,
     required this.screenHeight,
     required this.animationController,
-    required this.onRideToggle,
+    required this.startPosition,
   }) : super(key: key);
 
   @override
@@ -20,12 +21,18 @@ class StartRideButton extends StatefulWidget {
 
 class _StartRideButtonState extends State<StartRideButton> {
   bool isRiding = false;
+  DateTime? start = null;
+  DateTime? end = null;
 
   void _toggleRide() {
-    setState(() {
-      isRiding = !isRiding;
-    });
-    widget.onRideToggle(isRiding);
+    if (isRiding) {
+      _showDialog();
+    } else {
+      setState(() {
+        isRiding = !isRiding;
+        start = DateTime.now();
+      });
+    }
   }
 
   @override
@@ -41,14 +48,19 @@ class _StartRideButtonState extends State<StartRideButton> {
           gradient: LinearGradient(
             colors: isRiding
                 ? [Colors.redAccent, Colors.red]
-                : [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+                : [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.secondary
+                  ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: isRiding ? Colors.red.withOpacity(0.4) : Theme.of(context).colorScheme.primary.withOpacity(0.4),
+              color: isRiding
+                  ? Colors.red.withOpacity(0.4)
+                  : Theme.of(context).colorScheme.primary.withOpacity(0.4),
               blurRadius: 12,
               offset: Offset(4, 6),
             ),
@@ -81,5 +93,57 @@ class _StartRideButtonState extends State<StartRideButton> {
         ),
       ),
     );
+  }
+
+  void _showDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Are you want to finish the ride?'),
+            actionsAlignment: MainAxisAlignment.spaceEvenly,
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  "Continue",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isRiding = !isRiding;
+                    end = DateTime.now();
+                  });
+                  Navigator.of(context).pop();
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AddNewRideDialog(
+                          startOfRide: start ?? DateTime.now(),
+                          endOfRide: end ?? DateTime.now(),
+                          startPosition: widget.startPosition,
+                        );
+                      });
+                },
+                child: Text(
+                  "Finish",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              )
+            ],
+          );
+        });
   }
 }
