@@ -1,12 +1,19 @@
-import 'package:car_log/services/Routes.dart';
-import 'package:car_log/widgets/theme/application_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:car_log/services/car_service.dart';
+// car_ride_screen.dart
 import 'package:car_log/model/car.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:car_log/screens/car_ride/widgets/car_details_card.dart';
+import 'package:car_log/screens/car_ride/widgets/odometer_display.dart';
+import 'package:car_log/screens/car_ride/widgets/start_ride_button.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:car_log/services/car_service.dart';
+import 'package:car_log/services/location_service.dart';
+import 'package:flutter_map/flutter_map.dart' as flutterMap;
 import 'package:latlong2/latlong.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:car_log/widgets/theme/application_bar.dart';
+import 'package:car_log/services/Routes.dart';
 import 'package:lottie/lottie.dart';
+import 'dart:async';
 
 class CarRideScreen extends StatefulWidget {
   @override
@@ -18,31 +25,52 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
   late Car activeCar;
   bool isRiding = false;
   late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
-  late Animation<Alignment> _alignmentAnimation;
+  late LocationService _locationService;
+  LatLng? _currentPosition;
+  late StreamSubscription<String> _locationSubscription;
+  final flutterMap.MapController _mapController = flutterMap.MapController();
 
   @override
   void initState() {
     super.initState();
     activeCar = _carService.getActiveCar();
-
+    _locationService = LocationService();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 600),
     );
 
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
+    _locationSubscription = _locationService.locationStream.listen((location) {
+      _fetchCoordinates(location);
+    }, onError: (error) {
+      print('Location error: $error');
+    });
+
+    _locationService.requestLocation();
+  }
+
+  void _fetchCoordinates(String location) async {
+    List<Location> locations = await locationFromAddress(location);
+    if (locations.isNotEmpty) {
+      setState(() {
+        _currentPosition = LatLng(locations.first.latitude, locations.first.longitude);
+        _mapController.move(_currentPosition!, 14.0);
+      });
+    }
+  }
+
+  void _toggleRide(bool rideStatus) {
+    setState(() {
+      isRiding = rideStatus;
+    });
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _alignmentAnimation = AlignmentTween(
-      begin: Alignment.center,
-      end: Alignment.bottomCenter,
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+  void dispose() {
+    _animationController.dispose();
+    _locationSubscription.cancel();
+    _locationService.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,7 +89,7 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(child: _buildCarDetailsCard()),
+                  Expanded(child: CarDetailsCard(car: activeCar)),
                   const SizedBox(width: 16),
                   GestureDetector(
                     onTap: () {
@@ -70,7 +98,7 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
                       );
                     },
                     child: Lottie.asset(
-                      'assets/animations/calling_phone.json',
+                      'assets/animations/urgent_call.json',
                       width: screenWidth * 0.15,
                       height: screenWidth * 0.15,
                       repeat: true,
@@ -79,7 +107,7 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
                 ],
               ),
               const SizedBox(height: 24),
-              _buildOdometerDisplay(),
+              OdometerDisplay(odometer: activeCar.odometerStatus),
               const SizedBox(height: 24),
               Container(
                 height: screenHeight * 0.25,
@@ -90,113 +118,48 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: FlutterMap(
-                    options: MapOptions(
-                      initialCenter: LatLng(51.5, -0.09),
+                  child: flutterMap.FlutterMap(
+                    mapController: _mapController,
+                    options: flutterMap.MapOptions(
+                      initialCenter: _currentPosition ?? LatLng(51.5, -0.09),
                       initialZoom: 14.0,
                     ),
                     children: [
-                      TileLayer(
+                      flutterMap.TileLayer(
                         urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         subdomains: ['a', 'b', 'c'],
                       ),
+                      if (_currentPosition != null)
+                        flutterMap.MarkerLayer(
+                          markers: [
+                            flutterMap.Marker(
+                              point: _currentPosition!,
+                              width: 50,
+                              height: 50,
+                              child: Icon(
+                                Icons.location_pin,
+                                color: Colors.red,
+                                size: 40,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
               ),
-              Center(child: _buildStartRideButton(screenWidth)),
+              const SizedBox(height: 24),
+              Center(
+                child: StartRideButton(
+                  screenWidth: screenWidth,
+                  animationController: _animationController,
+                  onRideToggle: _toggleRide,
+                ),
+              ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCarDetailsCard() {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            Icon(Icons.directions_car, size: 60),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  activeCar.name,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'License: ${activeCar.licensePlate}',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[700]),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildOdometerDisplay() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.blueGrey[50],
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.blueAccent, width: 1.5),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Odometer Status',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${activeCar.odometerStatus} km',
-            style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.black87),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStartRideButton(double screenWidth) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isRiding = !isRiding;
-          isRiding ? _animationController.forward() : _animationController
-              .reverse();
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(
-              isRiding ? 'Ride Started Successfully!' : 'Ride Stopped!')
-          ),
-        );
-      },
-      child: ClipPath(
-        child: Container(
-          width: screenWidth * 1,
-          height: screenWidth * 0.6,
-          child: Lottie.asset(
-            'assets/animations/start-stop.json',
-            controller: _animationController,
-            repeat: false,
-            animate: true,
-            onLoaded: (composition) {
-              setState(() {
-                _animationController.duration = composition.duration;
-              });
-            },
-          ),
-        ),
-      ),
-
     );
   }
 }
