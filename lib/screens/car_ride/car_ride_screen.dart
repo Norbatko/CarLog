@@ -47,6 +47,9 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: ApplicationBar(title: 'Start Ride', userDetailRoute: Routes.userDetail),
       body: Padding(
@@ -68,8 +71,8 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
                     },
                     child: Lottie.asset(
                       'assets/animations/calling_phone.json',
-                      width: 80,
-                      height: 80,
+                      width: screenWidth * 0.15,
+                      height: screenWidth * 0.15,
                       repeat: true,
                     ),
                   ),
@@ -78,22 +81,30 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
               const SizedBox(height: 24),
               _buildOdometerDisplay(),
               const SizedBox(height: 24),
-              SizedBox(
-                height: 200,
-                child: FlutterMap(
-                  options: MapOptions(
-                    initialCenter: LatLng(51.5, -0.09),
-                    initialZoom: 14.0,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: ['a', 'b', 'c'],
+              Container(
+                height: screenHeight * 0.25,
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey[50],
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.blueAccent, width: 1.5),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: FlutterMap(
+                    options: MapOptions(
+                      initialCenter: LatLng(51.5, -0.09),
+                      initialZoom: 14.0,
                     ),
-                  ],
+                    children: [
+                      TileLayer(
+                        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        subdomains: ['a', 'b', 'c'],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Center(child: _buildStartRideButton()),
+              Center(child: _buildStartRideButton(screenWidth)),
             ],
           ),
         ),
@@ -154,24 +165,38 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
     );
   }
 
-  Widget _buildStartRideButton() {
+  Widget _buildStartRideButton(double screenWidth) {
     return GestureDetector(
       onTap: () {
         setState(() {
           isRiding = !isRiding;
-          isRiding ? _animationController.forward() : _animationController.reverse();
+          isRiding ? _animationController.forward() : _animationController
+              .reverse();
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(isRiding ? 'Ride Started Successfully!' : 'Ride Stopped!')),
+          SnackBar(content: Text(
+              isRiding ? 'Ride Started Successfully!' : 'Ride Stopped!')
+          ),
         );
       },
-      child: Lottie.asset(
-        'assets/animations/start-stop.json',
-        controller: _animationController,
-        repeat: false,
-        animate: true,
-        onLoaded: (composition) => setState(() => _animationController.duration = composition.duration),
+      child: ClipPath(
+        child: Container(
+          width: screenWidth * 1,
+          height: screenWidth * 0.6,
+          child: Lottie.asset(
+            'assets/animations/start-stop.json',
+            controller: _animationController,
+            repeat: false,
+            animate: true,
+            onLoaded: (composition) {
+              setState(() {
+                _animationController.duration = composition.duration;
+              });
+            },
+          ),
+        ),
       ),
+
     );
   }
 }
