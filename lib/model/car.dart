@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Car {
   String id;
   String name;
@@ -52,5 +54,18 @@ class Car {
         'icon': icon,
       }
     };
+  }
+
+  IconData getCarIcon() {
+    switch (icon) {
+      case 0:
+        return Icons.directions_car;
+      case 1:
+        return Icons.directions_bus;
+      case 2:
+        return Icons.local_shipping;
+      default:
+        return Icons.directions_car;
+    }
   }
 }
