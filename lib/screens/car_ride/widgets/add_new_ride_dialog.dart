@@ -84,7 +84,9 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
       actions: [
         ElevatedButton(
           onPressed: () {
-            _saveRide();
+            setState(() {
+              _saveRide();
+            });
           },
           child: Text("Add Ride"),
         ),
