@@ -118,6 +118,7 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
               Center(
                 child: StartRideButton(
                   screenWidth: screenWidth,
+                  screenHeight: screenHeight,
                   animationController: _animationController,
                   onRideToggle: _toggleRide,
                 ),
