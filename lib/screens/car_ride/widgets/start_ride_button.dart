@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 class StartRideButton extends StatefulWidget {
   final double screenWidth;
+  final double screenHeight;
   final AnimationController animationController;
   final Function(bool) onRideToggle;
 
   const StartRideButton({
     Key? key,
     required this.screenWidth,
+    required this.screenHeight,
     required this.animationController,
     required this.onRideToggle,
   }) : super(key: key);
@@ -34,7 +36,7 @@ class _StartRideButtonState extends State<StartRideButton> {
         duration: Duration(milliseconds: 400),
         curve: Curves.easeInOut,
         width: isRiding ? widget.screenWidth * 0.8 : widget.screenWidth * 1,
-        height: 60,
+        height: widget.screenHeight * 0.08,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isRiding
@@ -46,7 +48,7 @@ class _StartRideButtonState extends State<StartRideButton> {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: isRiding ? Colors.red.withOpacity(0.4) : Colors.green.withOpacity(0.4),
+              color: isRiding ? Colors.red.withOpacity(0.4) : Theme.of(context).colorScheme.primary.withOpacity(0.4),
               blurRadius: 12,
               offset: Offset(4, 6),
             ),
