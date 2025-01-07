@@ -107,6 +107,7 @@ flutter:
     - assets/animations/assistance.json
     - assets/animations/assistance_2.json
     - assets/animations/calling_phone.json
+    - assets/animations/urgent_call.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
