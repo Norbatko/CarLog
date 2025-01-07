@@ -1,13 +1,13 @@
-// car_ride_screen.dart
 import 'package:car_log/model/car.dart';
 import 'package:car_log/screens/car_ride/widgets/car_details_card.dart';
 import 'package:car_log/screens/car_ride/widgets/odometer_display.dart';
 import 'package:car_log/screens/car_ride/widgets/start_ride_button.dart';
+import 'package:car_log/screens/car_ride/widgets/ride_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:get_it/get_it.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/location_service.dart';
-import 'package:flutter_map/flutter_map.dart' as flutterMap;
 import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:car_log/widgets/theme/application_bar.dart';
@@ -28,7 +28,7 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
   late LocationService _locationService;
   LatLng? _currentPosition;
   late StreamSubscription<String> _locationSubscription;
-  final flutterMap.MapController _mapController = flutterMap.MapController();
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -109,44 +109,10 @@ class _CarRideScreenState extends State<CarRideScreen> with SingleTickerProvider
               const SizedBox(height: 24),
               OdometerDisplay(odometer: activeCar.odometerStatus),
               const SizedBox(height: 24),
-              Container(
-                height: screenHeight * 0.25,
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey[50],
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.blueAccent, width: 1.5),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: flutterMap.FlutterMap(
-                    mapController: _mapController,
-                    options: flutterMap.MapOptions(
-                      initialCenter: _currentPosition ?? LatLng(51.5, -0.09),
-                      initialZoom: 14.0,
-                    ),
-                    children: [
-                      flutterMap.TileLayer(
-                        urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        subdomains: ['a', 'b', 'c'],
-                      ),
-                      if (_currentPosition != null)
-                        flutterMap.MarkerLayer(
-                          markers: [
-                            flutterMap.Marker(
-                              point: _currentPosition!,
-                              width: 50,
-                              height: 50,
-                              child: Icon(
-                                Icons.location_pin,
-                                color: Colors.red,
-                                size: 40,
-                              ),
-                            ),
-                          ],
-                        ),
-                    ],
-                  ),
-                ),
+              RideMap(
+                mapController: _mapController,
+                currentPosition: _currentPosition,
+                screenHeight: screenHeight,
               ),
               const SizedBox(height: 24),
               Center(
