@@ -1,6 +1,5 @@
 import 'package:car_log/screens/car_ride/widgets/add_new_ride_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 
 class StartRideButton extends StatefulWidget {
   final double screenWidth;
