@@ -16,19 +16,24 @@ import 'package:lottie/lottie.dart';
 import 'dart:async';
 
 class CarRideScreen extends StatefulWidget {
+  final bool isVisible;
+
+  const CarRideScreen({Key? key, required this.isVisible}) : super(key: key);
+
   @override
   _CarRideScreenState createState() => _CarRideScreenState();
 }
 
 class _CarRideScreenState extends State<CarRideScreen>
     with SingleTickerProviderStateMixin {
-  final CarService _carService = GetIt.instance<CarService>();
   late Car activeCar;
-  late AnimationController _animationController;
+  final CarService _carService = GetIt.instance<CarService>();
   late LocationService _locationService;
+  late AnimationController _animationController;
+  final MapController _mapController = MapController();
   LatLng? _currentPosition;
   late StreamSubscription<String> _locationSubscription;
-  final MapController _mapController = MapController();
+  late StreamController<String> _odometerController;
 
   @override
   void initState() {
@@ -37,16 +42,48 @@ class _CarRideScreenState extends State<CarRideScreen>
     _locationService = LocationService();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 600),
     );
 
+    _odometerController = StreamController<String>.broadcast();
+
+    // Immediately set the current odometer value
+    _odometerController.add(activeCar.odometerStatus);
+
+    _carService.carStream.listen((car) {
+      if (mounted) {
+        _odometerController.add(car.odometerStatus);
+      }
+    });
+
+    if (widget.isVisible) {
+      _startLocationUpdates();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _odometerController.add(activeCar.odometerStatus);
+  }
+
+  void _startLocationUpdates() {
     _locationSubscription = _locationService.locationStream.listen((location) {
       _fetchCoordinates(location);
     }, onError: (error) {
       print('Location error: $error');
     });
-
     _locationService.requestLocation();
+  }
+
+  @override
+  void didUpdateWidget(covariant CarRideScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isVisible && !oldWidget.isVisible) {
+      _startLocationUpdates();
+    } else if (!widget.isVisible && oldWidget.isVisible) {
+      _locationSubscription.cancel();
+    }
   }
 
   void _fetchCoordinates(String location) async {
@@ -65,11 +102,16 @@ class _CarRideScreenState extends State<CarRideScreen>
     _animationController.dispose();
     _locationSubscription.cancel();
     _locationService.dispose();
+    _odometerController.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.isVisible) {
+      return const Offstage();
+    }
+
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -90,7 +132,7 @@ class _CarRideScreenState extends State<CarRideScreen>
                   GestureDetector(
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Assistance Request Sent!')),
+                        const SnackBar(content: Text('Assistance Request Sent!')),
                       );
                     },
                     child: Lottie.asset(
@@ -103,7 +145,9 @@ class _CarRideScreenState extends State<CarRideScreen>
                 ],
               ),
               const SizedBox(height: 24),
-              OdometerDisplay(odometer: activeCar.odometerStatus),
+              OdometerDisplay(
+                  odometerStream: _odometerController.stream,
+                  initialOdometer: _carService.activeCar.odometerStatus),
               const SizedBox(height: 24),
               RideMap(
                 mapController: _mapController,
