@@ -1,5 +1,4 @@
 import 'package:car_log/screens/cars_list/widgets/car_details_widget.dart';
-import 'package:car_log/screens/cars_list/widgets/car_icon_widget.dart';
 import 'package:car_log/screens/cars_list/widgets/favorite_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/model/car.dart';
@@ -35,7 +34,7 @@ class CarTileWidget extends StatelessWidget {
         border: Border.all(color: theme.colorScheme.primary),
       ),
       child: ListTile(
-        leading: CarIconWidget(),
+        leading: Icon(car.getCarIcon()),
         title: CarDetailsWidget(car: car),
         onTap: onNavigate,
         trailing: FavoriteButtonWidget(

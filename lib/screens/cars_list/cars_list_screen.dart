@@ -1,5 +1,5 @@
+import 'package:car_log/widgets/loader/circular_car_loader_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:rxdart/rxdart.dart';
 import 'widgets/cars_list.dart';
 
@@ -41,7 +41,7 @@ class CarsListScreen extends StatelessWidget {
         stream: combinedStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildLoading();
+            return CircularCarLoaderIndicator();
           } else if (snapshot.hasError) {
             return _buildError(snapshot.error);
           }
@@ -65,10 +65,6 @@ class CarsListScreen extends StatelessWidget {
       }
     }
   }
-
-  Widget _buildLoading() => Center(
-      child: Lottie.network(
-          "https://lottie.host/630f73c1-22b6-42aa-8a56-83629d3a1792/TyXDBpswR2.json"));
 
   Widget _buildError(Object? error) =>
       Center(child: Text('Error loading cars: $error'));
