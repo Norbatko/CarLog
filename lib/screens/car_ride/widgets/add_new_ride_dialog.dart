@@ -141,7 +141,7 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
 
     Ride newRide = Ride(
         userId: _userService.currentUser!.id,
-        userName: _userService.currentUser!.name ?? '',
+        userName: _userService.currentUser!.name,
         startedAt: widget.startOfRide,
         finishedAt: widget.endOfRide,
         rideType: _controllers['Odometer']!.text,
