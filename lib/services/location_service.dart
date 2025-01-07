@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:latlong2/latlong.dart';
 
 class LocationService {
   final StreamController<String> _locationController = StreamController.broadcast();
@@ -52,6 +53,22 @@ class LocationService {
       _locationController.addError('Failed to fetch location.');
     }
   }
+
+  Future<String> reverseGeocode(LatLng point) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        point.latitude,
+        point.longitude,
+      );
+      Placemark place = placemarks.isNotEmpty ? placemarks[0] : Placemark();
+      String address = '${place.street ?? ''}, ${place.locality ?? ''}, ${place.country ?? ''}';
+
+      return address.trim().isNotEmpty ? address : 'Unknown location';
+    } catch (e) {
+      return '';
+    }
+  }
+
 
   Future<void> _fetchCoordinatesFromLocation(String address) async {
     try {
