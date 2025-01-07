@@ -116,6 +116,9 @@ class _CarRideScreenState extends State<CarRideScreen>
                   screenWidth: screenWidth,
                   screenHeight: screenHeight,
                   animationController: _animationController,
+                  startPosition: _currentPosition != null
+                      ? _currentPosition.toString()
+                      : '',
                 ),
               ),
             ],
