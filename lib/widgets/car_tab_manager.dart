@@ -24,7 +24,7 @@ class _CarTabManagerState extends State<CarTabManager> {
     _screens = [
       CarDetailScreen(),
       CarExpensesScreen(),
-      CarRideScreen(),
+      CarRideScreen(isVisible: _currentIndex == 2),
       CarHistoryScreen(isVisible: _currentIndex == 3),
       CarNotesScreen(),
     ];
@@ -35,6 +35,7 @@ class _CarTabManagerState extends State<CarTabManager> {
       setState(() {
         _currentIndex = index;
         _screens[3] = CarHistoryScreen(isVisible: index == 3);
+        _screens[2] = CarRideScreen(isVisible: index == 2);
       });
     }
   }
@@ -84,8 +85,6 @@ class _CarTabManagerState extends State<CarTabManager> {
           selectedColor: Theme.of(context).colorScheme.primary,
           unSelectedColor: Colors.grey,
           title: const Text('Notes'),
-          //badge: const Text('9+'),
-          //showBadge: _currentIndex != 4, TODO: this made overflows when switching tabs
         ),
       ],
       option: BubbleBarOptions(

@@ -101,7 +101,7 @@ class _StartRideButtonState extends State<StartRideButton> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Are you want to finish the ride?'),
+            title: Center(child: Text('Are you sure you want to finish the ride?')),
             actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: [
               ElevatedButton(

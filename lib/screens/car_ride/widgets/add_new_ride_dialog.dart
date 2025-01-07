@@ -149,7 +149,9 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
         locationStart: widget.startPosition);
 
     if (_errorMessages.isEmpty) {
-      _rideService.saveRide(newRide, _carService.activeCar.id).listen((_) {});
+      _rideService.saveRide(newRide, _carService.activeCar.id).listen((_) {
+        _carService.updateOdometer(_odometerStatus);
+      });
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
