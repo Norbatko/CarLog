@@ -15,7 +15,7 @@ class CarDetailsCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            Icon(Icons.directions_car, size: 60),
+            Icon(car.getCarIcon(), size: 60),
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

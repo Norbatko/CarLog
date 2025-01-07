@@ -13,6 +13,7 @@ class AddRideButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      foregroundColor: Theme.of(context).primaryColor,
       onPressed: () {
         final activeUser = get<UserService>().currentUser;
 
