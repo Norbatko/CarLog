@@ -151,6 +151,22 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
     if (_errorMessages.isEmpty) {
       _rideService.saveRide(newRide, _carService.activeCar.id).listen((_) {});
       Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Container(
+            padding: EdgeInsets.only(bottom: 15.0, top: 15),
+            child: Row(
+              children: [
+                Expanded(
+                  child: const Text('Your ride has been added!'),
+                ),
+              ],
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.zero,
+        ),
+      );
     }
   }
 
