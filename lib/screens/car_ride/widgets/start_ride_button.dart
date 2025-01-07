@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class StartRideButton extends StatefulWidget {
   final double screenWidth;
@@ -20,38 +19,63 @@ class StartRideButton extends StatefulWidget {
 class _StartRideButtonState extends State<StartRideButton> {
   bool isRiding = false;
 
+  void _toggleRide() {
+    setState(() {
+      isRiding = !isRiding;
+    });
+    widget.onRideToggle(isRiding);
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          isRiding = !isRiding;
-          isRiding ? widget.animationController.forward() : widget.animationController.reverse();
-        });
-        widget.onRideToggle(isRiding);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isRiding ? 'Ride Started Successfully!' : 'Ride Stopped!',
+      onTap: _toggleRide,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+        width: isRiding ? widget.screenWidth * 0.8 : widget.screenWidth * 1,
+        height: 60,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isRiding
+                ? [Colors.redAccent, Colors.red]
+                : [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: isRiding ? Colors.red.withOpacity(0.4) : Colors.green.withOpacity(0.4),
+              blurRadius: 12,
+              offset: Offset(4, 6),
             ),
-          ),
-        );
-      },
-      child: ClipPath(
-        child: Container(
-          width: widget.screenWidth * 1,
-          height: widget.screenWidth * 0.6,
-          child: Lottie.asset(
-            'assets/animations/start-stop.json',
-            controller: widget.animationController,
-            repeat: false,
-            animate: true,
-            onLoaded: (composition) {
-              setState(() {
-                widget.animationController.duration = composition.duration;
-              });
-            },
-          ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedRotation(
+              duration: Duration(milliseconds: 400),
+              turns: isRiding ? 1 : 0,
+              child: Icon(
+                isRiding ? Icons.stop_circle_outlined : Icons.play_circle_fill,
+                size: 40,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(width: 12),
+            AnimatedDefaultTextStyle(
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              style: TextStyle(
+                fontSize: isRiding ? 22 : 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              child: Text(isRiding ? 'STOP RIDE' : 'START RIDE'),
+            ),
+          ],
         ),
       ),
     );
