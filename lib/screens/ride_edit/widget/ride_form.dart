@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:car_log/model/ride.dart';
+import 'package:car_log/screens/ride_edit/ride_map/ride_map_selector.dart';
 import 'package:car_log/screens/ride_edit/utils/build_card_section.dart';
 import 'package:car_log/screens/ride_edit/utils/ride_form_constants.dart';
 import 'package:car_log/screens/ride_edit/widget/date_time_picker_tile.dart';
 import 'package:car_log/screens/ride_edit/widget/dialog_helper.dart';
-import 'package:car_log/screens/ride_edit/widget/location_field.dart';
 import 'package:car_log/screens/ride_edit/widget/save_ride_button.dart';
 import 'package:car_log/services/car_service.dart';
 import 'package:car_log/services/location_service.dart';
@@ -12,6 +12,8 @@ import 'package:car_log/services/ride_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart' as flutterMap;
+import 'package:latlong2/latlong.dart';
 
 class RideForm extends StatefulWidget {
   final Ride ride;
@@ -33,6 +35,7 @@ class _RideFormState extends State<RideForm> {
 
   final RideService rideService = get<RideService>();
   final LocationService locationService = get<LocationService>();
+  late flutterMap.MapController _mapController;
   late StreamSubscription<String> _locationSubscription;
   bool _isUpdatingStartLocation = true;
 
@@ -46,6 +49,7 @@ class _RideFormState extends State<RideForm> {
     _locationEndController = TextEditingController(text: widget.ride.locationEnd);
     _selectedStartDateTime = widget.ride.startedAt;
     _selectedFinishDateTime = widget.ride.finishedAt;
+    _mapController = flutterMap.MapController();
     _locationSubscription = locationService.locationStream.listen((location) {
     });
   }
@@ -70,16 +74,38 @@ class _RideFormState extends State<RideForm> {
             context: context,
             title: RideFormConstants.LOCATION_DETAILS_TITLE,
             children: [
-              LocationField(
+              RideFormMapField(
                 controller: _locationStartController,
+                mapController: _mapController,
                 label: RideFormConstants.START_LOCATION_LABEL,
-                onPressed: () => _requestLocation(true),
+                isStartLocation: true,
+                onLocationSelected: (LatLng point) {
+                  locationService.reverseGeocode(point).then((address) {
+                    _locationStartController.text = address;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Start location updated to $address.')),
+                    );
+                  }).catchError((_) {
+                    _locationStartController.text = '${point.latitude}, ${point.longitude}';
+                  });
+                },
               ),
               const SizedBox(height: RideFormConstants.FIELD_SPACING),
-              LocationField(
+              RideFormMapField(
                 controller: _locationEndController,
+                mapController: _mapController,
                 label: RideFormConstants.END_LOCATION_LABEL,
-                onPressed: () => _requestLocation(false),
+                isStartLocation: false,
+                onLocationSelected: (LatLng point) {
+                  locationService.reverseGeocode(point).then((address) {
+                    _locationEndController.text = address;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('End location updated to $address.')),
+                    );
+                  }).catchError((_) {
+                    _locationEndController.text = '${point.latitude}, ${point.longitude}';
+                  });
+                },
               ),
             ],
           ),
@@ -155,10 +181,17 @@ class _RideFormState extends State<RideForm> {
     );
 
     rideService.saveRide(updatedRide, get<CarService>().activeCar.id).listen((_) {
-      DialogHelper.showSnackBar(context, RideFormConstants.RIDE_SAVED_MESSAGE);
-      Navigator.pop(context);
+      if (mounted) {
+        DialogHelper.showSnackBar(context, RideFormConstants.RIDE_SAVED_MESSAGE);
+        Navigator.pop(context);
+      }
+    }).onError((_) {
+      if (mounted) {
+        DialogHelper.showSnackBar(context, 'Failed to save ride.');
+      }
     });
   }
+
 
   bool _isValidTime() {
     if (_selectedStartDateTime != null && _selectedFinishDateTime != null &&
