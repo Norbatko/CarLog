@@ -33,7 +33,7 @@ class _CarExpenseAddDialogState extends State<CarExpenseAddDialog> {
   final Map<String, String> _expenseFields = {};
   final Map<String, ExpenseType> _expenseTypes = {
     'Fuel': ExpenseType.fuel,
-    'Maintenance': ExpenseType.maintenance,
+    'Service': ExpenseType.service,
     'Repair': ExpenseType.repair,
     'Insurance': ExpenseType.insurance,
     'Other': ExpenseType.other,

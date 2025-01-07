@@ -1,6 +1,6 @@
 enum ExpenseType {
   fuel,
-  maintenance,
+  service,
   repair,
   insurance,
   other,
