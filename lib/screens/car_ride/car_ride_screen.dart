@@ -3,6 +3,7 @@ import 'package:car_log/screens/car_ride/widgets/car_details_card.dart';
 import 'package:car_log/screens/car_ride/widgets/odometer_display.dart';
 import 'package:car_log/screens/car_ride/widgets/start_ride_button.dart';
 import 'package:car_log/screens/car_ride/widgets/ride_map.dart';
+import 'package:car_log/screens/help_call/help_call_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get_it/get_it.dart';
@@ -130,11 +131,7 @@ class _CarRideScreenState extends State<CarRideScreen>
                   Expanded(child: CarDetailsCard(car: activeCar)),
                   const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Assistance Request Sent!')),
-                      );
-                    },
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCallPage(car: activeCar),)),
                     child: Lottie.asset(
                       'assets/animations/urgent_call.json',
                       width: screenWidth * 0.15,

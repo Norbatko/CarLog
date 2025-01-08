@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
               Routes.userDetail: (context) => const UserDetailScreen(),
               Routes.carDetail: (context) => CarTabManager(),
               Routes.carNavigation: (context) => TabManager(),
-              Routes.expenseDetail: (context) => CarExpenseDetailScreen()
+              Routes.expenseDetail: (context) => CarExpenseDetailScreen(),
             },
           );
         });
