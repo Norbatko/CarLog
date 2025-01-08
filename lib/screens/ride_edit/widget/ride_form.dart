@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:car_log/model/ride.dart';
+import 'package:car_log/model/ride_type.dart';
 import 'package:car_log/screens/ride_edit/ride_map/ride_map_selector.dart';
 import 'package:car_log/screens/ride_edit/utils/build_card_section.dart';
 import 'package:car_log/screens/ride_edit/utils/ride_form_constants.dart';
@@ -113,17 +114,46 @@ class _RideFormState extends State<RideForm> {
             context: context,
             title: RideFormConstants.RIDE_DETAILS_TITLE,
             children: [
-              TextFormField(
-                controller: _distanceController,
-                decoration: const InputDecoration(
-                  labelText: RideFormConstants.DISTANCE_LABEL,
-                  prefixIcon: Icon(Icons.directions_car),
-                ),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _distanceController,
+                      decoration: const InputDecoration(
+                        labelText: RideFormConstants.DISTANCE_LABEL,
+                        prefixIcon: Icon(Icons.directions_car),
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: DropdownButtonFormField<RideType>(
+                      value: stringToRideType(_rideTypeController.text),  // Convert initial string to enum
+                      decoration: const InputDecoration(
+                        labelText: 'Ride Type',
+                        prefixIcon: Icon(Icons.category),
+                      ),
+                      items: RideType.values.map((RideType type) {
+                        return DropdownMenuItem(
+                          value: type,
+                          child: Text(type.toString().split('.').last),  // Display readable enum values
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          _rideTypeController.text = newValue.toString().split('.').last;
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+
           BuildCardSection(
             context: context,
             title: RideFormConstants.TIME_DETAILS_TITLE,
