@@ -17,18 +17,24 @@ class CarDetailsCard extends StatelessWidget {
           children: [
             Icon(car.getCarIcon(), size: 60),
             const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  car.name,
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'License: ${car.licensePlate}',
-                  style: TextStyle(fontSize: 18, color: Colors.grey[700]),
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    car.name,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,  //...
+                    maxLines: 1,
+                  ),
+                  Text(
+                    'License: ${car.licensePlate}',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[700]),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ],
+              ),
             ),
           ],
         ),
