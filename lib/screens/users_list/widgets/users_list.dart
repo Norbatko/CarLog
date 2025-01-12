@@ -1,6 +1,7 @@
 import 'package:car_log/model/user.dart';
 import 'package:car_log/screens/users_list/widgets/user_tile_widget.dart';
 import 'package:car_log/services/user_service.dart';
+import 'package:car_log/widgets/filters/admin_filter.dart';
 import 'package:car_log/widgets/filters/name_filter.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,8 @@ class UsersList extends StatefulWidget {
 
 class _UsersListState extends State<UsersList> {
   late List<User> filteredUsers;
+  String _searchQuery = '';
+  bool _isAdminFilter = false;
 
   @override
   void initState() {
@@ -44,16 +47,62 @@ class _UsersListState extends State<UsersList> {
       filteredUsers.removeWhere((user) => user.id == widget.currentUser!.id);
     }
 
+    // If the filtered list is empty, show the search bar and "No users available"
+    if (filteredUsers.isEmpty && _searchQuery.isNotEmpty) {
+      return Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: NameFilter(
+                  onChanged: (query) {
+                    setState(() {
+                      _searchQuery = query;
+                      _filterUsers();
+                    });
+                  },
+                ),
+              ),
+              AdminFilter(
+                onChanged: (bool isAdminFilter) {
+                  setState(() {
+                    _isAdminFilter = isAdminFilter;
+                    _filterUsers();
+                  });
+                },
+              ),
+            ],
+          ),
+          const Center(child: Text('No users found')),
+        ],
+      );
+    }
+
     return filteredUsers.isEmpty
         ? const Center(child: Text('No users available'))
         : Column(
             children: [
-              NameFilter(
-                onChanged: (query) {
-                  setState(() {
-                    _filterUsers(query);
-                  });
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: NameFilter(
+                      onChanged: (query) {
+                        setState(() {
+                          _searchQuery = query;
+                          _filterUsers();
+                        });
+                      },
+                    ),
+                  ),
+                  AdminFilter(
+                    onChanged: (bool isAdminFilter) {
+                      setState(() {
+                        _isAdminFilter = isAdminFilter;
+                        _filterUsers();
+                      });
+                    },
+                  )
+                ],
               ),
               Expanded(
                 child: ListView.builder(
@@ -75,13 +124,21 @@ class _UsersListState extends State<UsersList> {
           );
   }
 
-  void _filterUsers(String query) {
-    final lowerCaseQuery = query.toLowerCase();
+  void _filterUsers() {
     filteredUsers = widget.users.where((user) {
+      // Apply search filter
       final userName = user.name.toLowerCase();
       final userEmail = user.email.toLowerCase();
-      return userName.contains(lowerCaseQuery) ||
+      final lowerCaseQuery = _searchQuery.toLowerCase();
+      bool matchesQuery = userName.contains(lowerCaseQuery) ||
           userEmail.contains(lowerCaseQuery);
+
+      // Apply isAdmin filter (if any)
+      if (_isAdminFilter) {
+        matchesQuery = matchesQuery && user.isAdmin == true;
+      }
+
+      return matchesQuery;
     }).toList();
 
     // Sort the filtered list by admin status
