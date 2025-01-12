@@ -13,11 +13,14 @@ class _AdminFilterState extends State<AdminFilter> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Show Admins Only'),
+          Text(
+            'Admins',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           Switch(
             value: _isAdminFilterOn,
             onChanged: (value) {
