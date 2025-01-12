@@ -1,5 +1,6 @@
 import 'package:car_log/screens/car_expense_detail/car_expense_detail_screen.dart';
 import 'package:car_log/screens/login/animated_car_screen.dart';
+import 'package:car_log/screens/ride_add/ride_add_screen.dart';
 import 'package:car_log/screens/user_detail/user_detail_screen.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/car_tab_manager.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
               Routes.carDetail: (context) => CarTabManager(),
               Routes.carNavigation: (context) => TabManager(),
               Routes.expenseDetail: (context) => CarExpenseDetailScreen(),
+              Routes.rideAdd: (context) => RideAddScreen()
             },
           );
         });
