@@ -43,7 +43,12 @@ class _FilterDialogState extends State<FilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Select Filters'),
+      title: Text(
+        'Filter Cars',
+        style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold),
+      ),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
