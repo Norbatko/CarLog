@@ -27,6 +27,7 @@ class FuelTypeFilter extends StatelessWidget {
                 color: Colors.black87,
               ),
         ),
+        Divider(thickness: 1.0, color: Theme.of(context).primaryColor),
         Wrap(
           spacing: 8.0, // Space between chips
           runSpacing: 4.0,
