@@ -55,6 +55,7 @@ class _UsersListState extends State<UsersList> {
             children: [
               Expanded(
                 child: NameFilter(
+                  hintText: "Name or Email",
                   onChanged: (query) {
                     setState(() {
                       _searchQuery = query;
@@ -86,6 +87,7 @@ class _UsersListState extends State<UsersList> {
                 children: [
                   Expanded(
                     child: NameFilter(
+                      hintText: "Name or Email",
                       onChanged: (query) {
                         setState(() {
                           _searchQuery = query;
