@@ -152,9 +152,26 @@ class _CarsListState extends State<CarsList> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
+                    icon: Icon(Icons.filter_alt),
+                    label: Text(
+                      "Filters",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12.0,
+                        horizontal: 12.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          12.0,
+                        ),
+                      ),
+                    ),
                     onPressed: _openFilterDialog,
-                    child: const Text('Filter'),
                   ),
                 ),
               ],
