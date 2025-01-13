@@ -43,6 +43,11 @@ class CarIconFilter extends StatelessWidget {
     return FilterChip(
       label: Icon(icon),
       selected: selectedIcons.contains(value),
+      elevation: 3,
+      pressElevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
       onSelected: (isSelected) {
         final newSelection = Set<int>.from(selectedIcons);
         if (isSelected) {

@@ -35,17 +35,22 @@ class ResponsiblePersonFilter extends StatelessWidget {
           spacing: 8.0, // Space between chips
           runSpacing: 4.0,
           children: uniqueResponsiblePersons.map((responsiblePerson) {
-            return _buildFilterChip(responsiblePerson);
+            return _buildFilterChip(responsiblePerson, context);
           }).toList(),
         ),
       ],
     );
   }
 
-  Widget _buildFilterChip(String label) {
+  Widget _buildFilterChip(String label, BuildContext context) {
     return FilterChip(
       label: Text(label),
       selected: selectedResponsiblePersons.contains(label),
+      elevation: 3,
+      pressElevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
       onSelected: (isSelected) {
         final newSelection = Set<String>.from(selectedResponsiblePersons);
         if (isSelected) {
