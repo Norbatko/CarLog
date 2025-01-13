@@ -20,7 +20,13 @@ class FuelTypeFilter extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Fuel Types'),
+        Text(
+          'Fuel Types',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+        ),
         Wrap(
           spacing: 8.0, // Space between chips
           runSpacing: 4.0,

@@ -23,7 +23,14 @@ class ResponsiblePersonFilter extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Responsible Persons'),
+        Text(
+          'Responsible Persons',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+        ),
+        const Divider(thickness: 1.0, color: Colors.grey),
         Wrap(
           spacing: 8.0, // Space between chips
           runSpacing: 4.0,
