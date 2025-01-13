@@ -47,6 +47,11 @@ class InsuranceFilter extends StatelessWidget {
     return FilterChip(
       label: Text(label),
       selected: selectedInsurance.contains(label),
+      elevation: 3,
+      pressElevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
       onSelected: (isSelected) {
         final newSelection = Set<String>.from(selectedInsurance);
         if (isSelected) {
