@@ -131,7 +131,11 @@ class _CarRideScreenState extends State<CarRideScreen>
                   Expanded(child: CarDetailsCard(car: activeCar)),
                   const SizedBox(width: 16),
                   GestureDetector(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => HelpCallPage(car: activeCar),)),
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HelpCallPage(car: activeCar),
+                        )),
                     child: Lottie.asset(
                       'assets/animations/urgent_call.json',
                       width: screenWidth * 0.15,
@@ -157,7 +161,7 @@ class _CarRideScreenState extends State<CarRideScreen>
                   screenWidth: screenWidth,
                   screenHeight: screenHeight,
                   animationController: _animationController,
-                  startPosition: _currentPosition != null
+                  position: _currentPosition != null
                       ? _currentPosition.toString()
                       : '',
                 ),

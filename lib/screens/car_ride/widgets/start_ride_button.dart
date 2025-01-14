@@ -5,14 +5,14 @@ class StartRideButton extends StatefulWidget {
   final double screenWidth;
   final double screenHeight;
   final AnimationController animationController;
-  final String startPosition;
+  final String position;
 
   const StartRideButton({
     Key? key,
     required this.screenWidth,
     required this.screenHeight,
     required this.animationController,
-    required this.startPosition,
+    required this.position,
   }) : super(key: key);
 
   @override
@@ -23,6 +23,8 @@ class _StartRideButtonState extends State<StartRideButton> {
   bool isRiding = false;
   DateTime? start = null;
   DateTime? end = null;
+  String startPosition = '';
+  String endPosition = '';
 
   void _toggleRide() {
     if (isRiding) {
@@ -31,6 +33,7 @@ class _StartRideButtonState extends State<StartRideButton> {
       setState(() {
         isRiding = !isRiding;
         start = DateTime.now();
+        startPosition = widget.position;
       });
     }
   }
@@ -101,7 +104,8 @@ class _StartRideButtonState extends State<StartRideButton> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Center(child: Text('Are you sure you want to finish the ride?')),
+            title: Center(
+                child: Text('Are you sure you want to finish the ride?')),
             actionsAlignment: MainAxisAlignment.spaceEvenly,
             actions: [
               ElevatedButton(
@@ -120,6 +124,7 @@ class _StartRideButtonState extends State<StartRideButton> {
                   setState(() {
                     isRiding = !isRiding;
                     end = DateTime.now();
+                    endPosition = widget.position;
                   });
                   Navigator.of(context).pop();
                   showDialog(
@@ -129,7 +134,8 @@ class _StartRideButtonState extends State<StartRideButton> {
                         return AddNewRideDialog(
                           startOfRide: start ?? DateTime.now(),
                           endOfRide: end ?? DateTime.now(),
-                          startPosition: widget.startPosition,
+                          startPosition: startPosition,
+                          endPosition: endPosition,
                         );
                       });
                 },
