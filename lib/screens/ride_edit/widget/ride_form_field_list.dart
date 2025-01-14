@@ -16,6 +16,8 @@ class RideFormFieldList extends StatefulWidget {
   final TextEditingController locationEndController;
   final TextEditingController rideTypeController;
   final flutterMap.MapController mapController;
+  final DateTime? selectedStartDateTime;
+  final DateTime? selectedFinishDateTime;
   final void Function(DateTime? start, DateTime? finish) onDatesChanged;
 
   const RideFormFieldList(
@@ -25,16 +27,15 @@ class RideFormFieldList extends StatefulWidget {
       required this.distanceController,
       required this.mapController,
       required this.rideTypeController,
-      required this.onDatesChanged});
+      required this.onDatesChanged,
+      this.selectedStartDateTime,
+      this.selectedFinishDateTime});
 
   @override
   State<RideFormFieldList> createState() => _RideFormFieldListState();
 }
 
 class _RideFormFieldListState extends State<RideFormFieldList> {
-  DateTime? _selectedStartDateTime;
-  DateTime? _selectedFinishDateTime;
-
   final LocationService locationService = get<LocationService>();
 
   @override
@@ -138,12 +139,12 @@ class _RideFormFieldListState extends State<RideFormFieldList> {
           children: [
             DateTimePickerTile(
               label: RideFormConstants.STARTED_AT_LABEL,
-              dateTime: _selectedStartDateTime,
+              dateTime: widget.selectedStartDateTime,
               onTap: () => _selectDateTime(context, true),
             ),
             DateTimePickerTile(
               label: RideFormConstants.FINISHED_AT_LABEL,
-              dateTime: _selectedFinishDateTime,
+              dateTime: widget.selectedFinishDateTime,
               onTap: () => _selectDateTime(context, false),
             ),
           ],
@@ -154,8 +155,9 @@ class _RideFormFieldListState extends State<RideFormFieldList> {
 
   Future<void> _selectDateTime(
       BuildContext context, bool isStartDateTime) async {
-    final initialDate =
-        isStartDateTime ? _selectedStartDateTime : _selectedFinishDateTime;
+    final initialDate = isStartDateTime
+        ? widget.selectedStartDateTime
+        : widget.selectedFinishDateTime;
     final selectedDate = await showDatePicker(
       context: context,
       initialDate: initialDate ?? DateTime.now(),
@@ -177,9 +179,11 @@ class _RideFormFieldListState extends State<RideFormFieldList> {
       selectedTime.hour,
       selectedTime.minute,
     );
-    setState(() => isStartDateTime
-        ? _selectedStartDateTime = selectedDateTime
-        : _selectedFinishDateTime = selectedDateTime);
-    widget.onDatesChanged(_selectedStartDateTime, _selectedFinishDateTime);
+
+    if (isStartDateTime) {
+      widget.onDatesChanged(selectedDateTime, widget.selectedFinishDateTime);
+    } else {
+      widget.onDatesChanged(widget.selectedStartDateTime, selectedDateTime);
+    }
   }
 }
