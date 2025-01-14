@@ -11,11 +11,14 @@ class AddNewRideDialog extends StatefulWidget {
   final DateTime startOfRide;
   final DateTime endOfRide;
   final String startPosition;
+  final String endPosition;
+
   const AddNewRideDialog({
     super.key,
     required this.startOfRide,
     required this.endOfRide,
     required this.startPosition,
+    required this.endPosition,
   });
 
   @override
@@ -146,7 +149,8 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
         finishedAt: widget.endOfRide,
         rideType: _controllers['Odometer']!.text,
         distance: distance,
-        locationStart: widget.startPosition);
+        locationStart: widget.startPosition,
+        locationEnd: widget.endPosition);
 
     if (_errorMessages.isEmpty) {
       _rideService.saveRide(newRide, _carService.activeCar.id).listen((_) {
