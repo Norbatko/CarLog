@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/buttons/floating_add_action_button.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/features/ride/services/ride_service.dart';
@@ -12,11 +13,9 @@ class AddRideButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      foregroundColor: Theme.of(context).primaryColor,
+    return FloatingAddActionButton(
       onPressed: () {
         final activeUser = get<UserService>().currentUser;
-
         Navigator.pushNamed(
           context,
           Routes.rideAdd,
@@ -26,8 +25,6 @@ class AddRideButton extends StatelessWidget {
           ),
         );
       },
-      child: const Icon(Icons.add),
-      heroTag: 'addRideFAB',
     );
   }
 }

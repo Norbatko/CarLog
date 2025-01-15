@@ -1,4 +1,5 @@
 import 'package:car_log/base/controllers/field_controller.dart';
+import 'package:car_log/base/widgets/buttons/floating_add_action_button.dart';
 import 'package:car_log/features/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
@@ -82,12 +83,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      child: Icon(Icons.add, color: Theme.of(context).colorScheme.onSecondary),
-      onPressed: () => {_showAddCarDialog(context)},
-      heroTag: 'addCarFAB',
-    );
+    return FloatingAddActionButton(onPressed:() => {_showAddCarDialog(context)},);
   }
 
   void _showAddCarDialog(BuildContext context) {
@@ -97,7 +93,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: _buildDialogTitle(),
+              title: _isSubmitting ? Text("New car added") : Text('Add Car'),
               content: _buildDialogContent(setState),
               actions: _buildDialogActions(context, setState),
             );
@@ -108,10 +104,6 @@ class _CarAddDialogState extends State<CarAddDialog> {
       _clearAllErrorMessages();
       _clearAllControllers();
     });
-  }
-
-  Widget _buildDialogTitle() {
-    return _isSubmitting ? Text("New car added") : Text('Add Car');
   }
 
   Widget _buildDialogContent(void Function(void Function()) setState) {
