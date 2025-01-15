@@ -4,7 +4,7 @@ import 'package:car_log/features/ride/ride_add/widgets/base_action_button.dart';
 import 'package:car_log/features/ride/ride_add/widgets/user_dropdown.dart';
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';
 import 'package:car_log/features/ride/ride_edit/widget/dialog_helper.dart';
-import 'package:car_log/features/ride/ride_edit/widget/ride_form_field_list.dart';
+import 'package:car_log/features/ride/ride_edit/widget/ride_form/ride_form_field_list.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/ride/services/ride_service.dart';
 import 'package:car_log/base/services/user_service.dart';
@@ -14,14 +14,14 @@ import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_map/flutter_map.dart' as flutterMap;
 
-class RideForm extends StatefulWidget {
-  const RideForm({Key? key}) : super(key: key);
+class AddRideForm extends StatefulWidget {
+  const AddRideForm({Key? key}) : super(key: key);
 
   @override
-  State<RideForm> createState() => _RideFormState();
+  State<AddRideForm> createState() => _AddRideFormState();
 }
 
-class _RideFormState extends State<RideForm> {
+class _AddRideFormState extends State<AddRideForm> {
   final _locationStartController = TextEditingController();
   final _locationEndController = TextEditingController();
   final _distanceController = TextEditingController();

@@ -1,4 +1,4 @@
-import 'package:car_log/features/ride/ride_edit/widget/ride_form.dart';
+import 'package:car_log/features/ride/ride_edit/widget/edit_ride_form.dart';
 import 'package:flutter/material.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 
@@ -20,7 +20,7 @@ class RideEditScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: RideForm(ride: ride),
+        child: EditRideForm(ride: ride),
       ),
     );
   }
