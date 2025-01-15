@@ -77,12 +77,11 @@ class _CarsListState extends State<CarsList> {
   void _applyFilters() {
     filteredCars = widget.cars.where((car) {
       return (selectedFuelTypes.isEmpty ||
-              selectedFuelTypes.contains(car.fuelType.toLowerCase())) &&
+              selectedFuelTypes.contains(car.fuelType)) &&
           (selectedResponsiblePersons.isEmpty ||
-              selectedResponsiblePersons
-                  .contains(car.responsiblePerson.toLowerCase())) &&
+              selectedResponsiblePersons.contains(car.responsiblePerson)) &&
           (selectedInsurances.isEmpty ||
-              selectedInsurances.contains(car.insurance.toLowerCase())) &&
+              selectedInsurances.contains(car.insurance)) &&
           (selectedIcons.isEmpty || selectedIcons.contains(car.icon)) &&
           (car.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
               car.licensePlate
