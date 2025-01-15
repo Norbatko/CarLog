@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:car_log/base/models/user.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/base/services/user_service.dart';
+import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/car_expenses/models/receipt.dart';
 import 'package:car_log/features/car_expenses/services/cloud_api.dart';
@@ -85,9 +86,7 @@ class ExpenseReceiptList extends StatelessWidget {
           endActionPane: ActionPane(
             motion: const ScrollMotion(),
             dismissible: DismissiblePane(onDismissed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Receipt ${receipt.id} deleted')),
-              );
+              TopSnackBar.show(context, 'Receipt ${receipt.id} deleted');
               receiptService
                   .deleteReceipt(
                       carService.activeCar.id, currentExpense.id, receipt.id)
@@ -98,9 +97,7 @@ class ExpenseReceiptList extends StatelessWidget {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Receipt ${receipt.id} deleted')),
-                  );
+                  TopSnackBar.show(context, 'Receipt ${receipt.id} deleted');
                   receiptService
                       .deleteReceipt(carService.activeCar.id, currentExpense.id,
                           receipt.id)

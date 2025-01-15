@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/features/ride/model/ride_type.dart';
 import 'package:car_log/features/ride/main_car_ride/widgets/ride_add_field_list.dart';
@@ -157,22 +158,7 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
         _carService.updateOdometer(_odometerStatus);
       });
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Container(
-            padding: EdgeInsets.only(bottom: 15.0, top: 15),
-            child: Row(
-              children: [
-                Expanded(
-                  child: const Text('Your ride has been added!'),
-                ),
-              ],
-            ),
-          ),
-          behavior: SnackBarBehavior.floating,
-          margin: EdgeInsets.zero,
-        ),
-      );
+      TopSnackBar.show(context, 'Ride added successfully');
     }
   }
 
