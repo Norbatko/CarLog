@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/features/ride/model/ride_type.dart';
@@ -86,22 +87,22 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
       ),
       actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: [
-        ElevatedButton(
+        SaveOrDeleteButton(
           onPressed: () {
             setState(() {
               _saveRide();
             });
           },
-          child: Text("Add Ride"),
+          saveText: "Add Ride",
         ),
-        ElevatedButton(
+        SaveOrDeleteButton(
+          isDeleteButton: true,
+          deleteText: "Cancel",
           onPressed: () {
             _clearAllErrorMessages();
             Navigator.of(context).pop();
           },
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-          child: Text("Cancel Ride"),
-        )
+        ),
       ],
     );
   }
