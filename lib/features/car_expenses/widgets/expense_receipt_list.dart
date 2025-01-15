@@ -31,94 +31,92 @@ class ExpenseReceiptList extends StatelessWidget {
     final carService = get<CarService>();
     final receiptService = get<ReceiptService>();
     final currentExpense = expenseService.activeExpense!;
-    return Expanded(
-      child: ListView.builder(
-        itemCount: receipts.length,
-        itemBuilder: (context, index) {
-          final receipt = receipts[index];
-          return Slidable(
-            key: ValueKey(receipt.id),
-            child: ListTile(
-              leading: const Icon(Icons.image),
-              title: Text("Receipt: ${receipt.id}"),
-              trailing: StreamBuilder<User?>(
-                stream: userService.getUserData(receipt.userId),
-                builder: (context, snapshot) {
-                  return TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/user/detail',
-                        arguments: receipt.userId,
-                      );
-                    },
-                    child: Text(snapshot.data?.login ??
-                        'Unknown User'), // Show the user name or a fallback
-                  );
-                },
-              ),
-              onTap: () async {
-                var navigator = Navigator.of(context);
-                var cloudFileName =
-                    "${currentExpense.id}/${currentExpense.userId}/${receipt.id}";
-                Uint8List imageBytes = await cloudApi.download(cloudFileName);
-                _showImageDialog(navigator.context, imageBytes);
+
+    return ListView.builder(
+      itemCount: receipts.length,
+      itemBuilder: (context, index) {
+        final receipt = receipts[index];
+        return Slidable(
+          key: ValueKey(receipt.id),
+          child: ListTile(
+            leading: const Icon(Icons.image),
+            title: Text("Receipt: ${receipt.id}"),
+            trailing: StreamBuilder<User?>(
+              stream: userService.getUserData(receipt.userId),
+              builder: (context, snapshot) {
+                return TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/user/detail',
+                      arguments: receipt.userId,
+                    );
+                  },
+                  child: Text(snapshot.data?.login ??
+                      'Unknown User'), // Show the user name or a fallback
+                );
               },
             ),
-            startActionPane:
-                ActionPane(motion: const ScrollMotion(), children: [
-              SlidableAction(
-                onPressed: (context) =>
-                    _downloadFile(currentExpense, receipt, context),
-                backgroundColor: const Color(0xFF7BC043),
-                foregroundColor: Colors.white,
-                icon: Icons.save_alt,
-                label: 'Download',
-              ),
-              SlidableAction(
-                onPressed: (context) => _showInfoImageDialog(context, receipt),
-                backgroundColor: Colors.blueAccent,
-                foregroundColor: Colors.white,
-                icon: Icons.info,
-                label: 'Info',
-              ),
-            ]),
-            endActionPane: ActionPane(
-              motion: const ScrollMotion(),
-              dismissible: DismissiblePane(onDismissed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Receipt ${receipt.id} deleted')),
-                );
-                receiptService
-                    .deleteReceipt(
-                        carService.activeCar.id, currentExpense.id, receipt.id)
-                    .listen((_) {});
-                cloudApi.deleteFile(
-                    "${currentExpense.id}/${currentExpense.userId}/${receipt.id}");
-              }),
-              children: [
-                SlidableAction(
-                  onPressed: (context) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Receipt ${receipt.id} deleted')),
-                    );
-                    receiptService
-                        .deleteReceipt(carService.activeCar.id,
-                            currentExpense.id, receipt.id)
-                        .listen((_) {});
-                    cloudApi.deleteFile(
-                        "${currentExpense.id}/${currentExpense.userId}/${receipt.id}");
-                  },
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  icon: Icons.delete,
-                  label: 'Delete',
-                ),
-              ],
+            onTap: () async {
+              var navigator = Navigator.of(context);
+              var cloudFileName =
+                  "${currentExpense.id}/${currentExpense.userId}/${receipt.id}";
+              Uint8List imageBytes = await cloudApi.download(cloudFileName);
+              _showImageDialog(navigator.context, imageBytes);
+            },
+          ),
+          startActionPane: ActionPane(motion: const ScrollMotion(), children: [
+            SlidableAction(
+              onPressed: (context) =>
+                  _downloadFile(currentExpense, receipt, context),
+              backgroundColor: const Color(0xFF7BC043),
+              foregroundColor: Colors.white,
+              icon: Icons.save_alt,
+              label: 'Download',
             ),
-          );
-        },
-      ),
+            SlidableAction(
+              onPressed: (context) => _showInfoImageDialog(context, receipt),
+              backgroundColor: Colors.blueAccent,
+              foregroundColor: Colors.white,
+              icon: Icons.info,
+              label: 'Info',
+            ),
+          ]),
+          endActionPane: ActionPane(
+            motion: const ScrollMotion(),
+            dismissible: DismissiblePane(onDismissed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Receipt ${receipt.id} deleted')),
+              );
+              receiptService
+                  .deleteReceipt(
+                      carService.activeCar.id, currentExpense.id, receipt.id)
+                  .listen((_) {});
+              cloudApi.deleteFile(
+                  "${currentExpense.id}/${currentExpense.userId}/${receipt.id}");
+            }),
+            children: [
+              SlidableAction(
+                onPressed: (context) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Receipt ${receipt.id} deleted')),
+                  );
+                  receiptService
+                      .deleteReceipt(carService.activeCar.id, currentExpense.id,
+                          receipt.id)
+                      .listen((_) {});
+                  cloudApi.deleteFile(
+                      "${currentExpense.id}/${currentExpense.userId}/${receipt.id}");
+                },
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                icon: Icons.delete,
+                label: 'Delete',
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
