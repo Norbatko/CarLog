@@ -47,7 +47,7 @@ class _CarsListState extends State<CarsList> {
   }
 
   void _toggleFavorite(String carId) async {
-    await userService.toggleFavoriteCar(carId);
+    await userService.toggleFavoriteCar(carId).listen((_) {});
     setState(_applyFilters);
   }
 
