@@ -4,7 +4,8 @@ import 'package:car_log/features/cars_list/widgets/fuel_type_dropdown.dart';
 import 'package:flutter/material.dart';
 
 class CarAddFieldList extends StatelessWidget {
-  final Map<String, FieldController> controllers;
+  final Map<String, FieldController> textControllers;
+  final Map<String, FieldController> numericControllers;
   final Map<String, String?> errorMessages;
   final List<String> fuelTypes;
   final String selectedFuelType;
@@ -15,7 +16,6 @@ class CarAddFieldList extends StatelessWidget {
 
   const CarAddFieldList({
     super.key,
-    required this.controllers,
     required this.errorMessages,
     required this.fuelTypes,
     required this.selectedFuelType,
@@ -23,6 +23,8 @@ class CarAddFieldList extends StatelessWidget {
     required this.selectedCarIcon,
     required this.onFuelTypeChanged,
     required this.onCarIconChanged,
+    required this.textControllers,
+    required this.numericControllers,
   });
 
   @override
@@ -31,12 +33,21 @@ class CarAddFieldList extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ...controllers.entries.map((entry) {
+          ...textControllers.entries.map((entry) {
             return CarAddField(
               controller: entry.value.controller,
               errorMessage: errorMessages[entry.key],
               nameOfField: entry.key,
               isRequired: entry.value.isRequired,
+            );
+          }).toList(),
+          ...numericControllers.entries.map((entry) {
+            return CarAddField(
+              controller: entry.value.controller,
+              errorMessage: errorMessages[entry.key],
+              nameOfField: entry.key,
+              isRequired: entry.value.isRequired,
+              isNumeric: true,
             );
           }).toList(),
           FuelTypeDropdown(

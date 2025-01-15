@@ -16,16 +16,19 @@ class CarAddDialog extends StatefulWidget {
 }
 
 class _CarAddDialogState extends State<CarAddDialog> {
-  final Map<String, FieldController> _controllers = {
+  final Map<String, FieldController> _textControllers = {
     'Name':
         FieldController(controller: TextEditingController(), isRequired: true),
     'License Plate':
         FieldController(controller: TextEditingController(), isRequired: true),
+    'Responsible Person':
+        FieldController(controller: TextEditingController(), isRequired: true),
+  };
+
+  final Map<String, FieldController> _numericControllers = {
     'Insurance Contact':
         FieldController(controller: TextEditingController(), isRequired: true),
     'Odometer Status':
-        FieldController(controller: TextEditingController(), isRequired: true),
-    'Responsible Person':
         FieldController(controller: TextEditingController(), isRequired: true),
   };
 
@@ -121,7 +124,8 @@ class _CarAddDialogState extends State<CarAddDialog> {
       );
     } else {
       return CarAddFieldList(
-        controllers: _controllers,
+        textControllers: _textControllers,
+        numericControllers: _numericControllers,
         errorMessages: _errorMessages,
         fuelTypes: _fuelTypes,
         selectedFuelType: _selectedFuelType,
@@ -170,7 +174,18 @@ class _CarAddDialogState extends State<CarAddDialog> {
   void _validateFieldsAndSubmit() {
     bool isValid = true;
     _clearAllErrorMessages();
-    for (var entry in _controllers.entries) {
+    for (var entry in _textControllers.entries) {
+      if (entry.value.controller.text.trim().isEmpty) {
+        _errorMessages[entry.key] = entry.value.controller.text.trim().isEmpty
+            ? '${entry.key} is required'
+            : null;
+        isValid = false;
+      } else {
+        _carFields[entry.key] = entry.value.controller.text.trim();
+      }
+    }
+
+    for (var entry in _numericControllers.entries) {
       if (entry.value.controller.text.trim().isEmpty) {
         _errorMessages[entry.key] = entry.value.controller.text.trim().isEmpty
             ? '${entry.key} is required'
@@ -193,7 +208,11 @@ class _CarAddDialogState extends State<CarAddDialog> {
   }
 
   void _clearAllControllers() {
-    for (final value in _controllers.values) {
+    for (final value in _textControllers.values) {
+      value.controller.clear();
+    }
+
+    for (final value in _numericControllers.values) {
       value.controller.clear();
     }
   }
