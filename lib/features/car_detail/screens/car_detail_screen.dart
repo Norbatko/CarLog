@@ -19,7 +19,8 @@ class CarDetailScreen extends StatefulWidget {
 
 class _CarDetailScreenState extends State<CarDetailScreen> {
   final CarService carService = get<CarService>();
-  final Map<String, FieldController> _controllers = {};
+  final Map<String, FieldController> _numericControllers = {};
+  final Map<String, FieldController> _textControllers = {};
 
   final List<String> _fuelTypes = [
     'Gasoline',
@@ -49,19 +50,11 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
   void initState() {
     super.initState();
     var activeCar = carService.getActiveCar();
-    _controllers.addAll({
+    _textControllers.addAll({
       'Name': FieldController(
           controller: _createController(activeCar.name), isRequired: true),
       'License Plate': FieldController(
           controller: _createController(activeCar.licensePlate),
-          isRequired: true),
-      'Insurance': FieldController(
-          controller: _createController(activeCar.insurance), isRequired: true),
-      'Insurance Contact': FieldController(
-          controller: _createController(activeCar.insuranceContact),
-          isRequired: true),
-      'Odometer Status (km)': FieldController(
-          controller: _createController(activeCar.odometerStatus),
           isRequired: true),
       'Responsible Person': FieldController(
           controller: _createController(activeCar.responsiblePerson),
@@ -69,6 +62,16 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
       'Description': FieldController(
           controller: _createController(activeCar.description),
           isRequired: false),
+      'Insurance': FieldController(
+          controller: _createController(activeCar.insurance), isRequired: true)
+    });
+    _numericControllers.addAll({
+      'Insurance Contact': FieldController(
+          controller: _createController(activeCar.insuranceContact),
+          isRequired: true),
+      'Odometer Status (km)': FieldController(
+          controller: _createController(activeCar.odometerStatus),
+          isRequired: true),
     });
     _selectedFuelType = activeCar.fuelType;
     _selectedCarIcon = activeCar.icon;
@@ -85,7 +88,8 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
           child: Column(
             children: [
               CarAddFieldList(
-                controllers: _controllers,
+                textControllers: _textControllers,
+                numericControllers: _numericControllers,
                 errorMessages: _errorMessages,
                 fuelTypes: _fuelTypes,
                 selectedFuelType: _selectedFuelType,
@@ -141,7 +145,19 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
   void _validateFieldsAndSubmit() {
     bool isValid = true;
     _clearAllErrorMessages();
-    for (var entry in _controllers.entries) {
+    for (var entry in _textControllers.entries) {
+      if (entry.value.controller.text.trim().isEmpty &&
+          entry.value.isRequired) {
+        _errorMessages[entry.key] = entry.value.controller.text.trim().isEmpty
+            ? '${entry.key} is required'
+            : null;
+        isValid = false;
+      } else {
+        _carFields[entry.key] = entry.value.controller.text.trim();
+      }
+    }
+
+    for (var entry in _numericControllers.entries) {
       if (entry.value.controller.text.trim().isEmpty &&
           entry.value.isRequired) {
         _errorMessages[entry.key] = entry.value.controller.text.trim().isEmpty
