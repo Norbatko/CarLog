@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:car_log/model/expense.dart';
-import 'package:car_log/services/car_service.dart';
-import 'package:car_log/services/cloud_api.dart';
-import 'package:car_log/services/receipt_service.dart';
+import 'package:car_log/base/services/car_service.dart';
+import 'package:car_log/features/car_expenses/services/cloud_api.dart';
+import 'package:car_log/features/car_expenses/services/receipt_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

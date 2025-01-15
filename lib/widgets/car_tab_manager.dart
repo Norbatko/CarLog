@@ -1,9 +1,9 @@
-import 'package:car_log/screens/car_detail/car_detail_screen.dart';
-import 'package:car_log/screens/car_expenses/car_expenses_screen.dart';
-import 'package:car_log/screens/car_history/car_history_screen.dart';
-import 'package:car_log/screens/car_notes/car_notes_screen.dart';
+import 'package:car_log/features/car_detail/screens/car_detail_screen.dart';
+import 'package:car_log/features/car_expenses/screens/car_expenses_screen.dart';
+import 'package:car_log/features/car_history/car_history_screen.dart';
+import 'package:car_log/features/car_notes/screens/car_notes_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:car_log/screens/car_ride/car_ride_screen.dart';
+import 'package:car_log/features/ride/main_car_ride/car_ride_screen.dart';
 import 'package:stylish_bottom_bar/stylish_bottom_bar.dart';
 
 class CarTabManager extends StatefulWidget {

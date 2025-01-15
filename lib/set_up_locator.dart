@@ -1,16 +1,16 @@
-import 'package:car_log/services/expense_service.dart';
-import 'package:car_log/services/receipt_service.dart';
-import 'package:car_log/services/location_service.dart';
+import 'package:car_log/features/car_expenses/services/expense_service.dart';
+import 'package:car_log/features/car_expenses/services/receipt_service.dart';
+import 'package:car_log/features/ride/services/location_service.dart';
 import 'package:get_it/get_it.dart';
-import 'package:car_log/services/auth_service.dart';
+import 'package:car_log/features/login/services/auth_service.dart';
 import 'package:car_log/services/database_service.dart';
-import 'package:car_log/services/user_service.dart';
-import 'package:car_log/services/car_service.dart';
-import 'package:car_log/services/note_service.dart';
-import 'package:car_log/services/ride_service.dart';
+import 'package:car_log/base/services/user_service.dart';
+import 'package:car_log/base/services/car_service.dart';
+import 'package:car_log/features/car_notes/services/note_service.dart';
+import 'package:car_log/features/ride/services/ride_service.dart';
 import 'package:car_log/model/car_model.dart';
 import 'package:car_log/model/user_model.dart';
-import 'package:car_log/widgets/theme/theme_setter.dart';
+import 'package:car_log/base/theme/theme_setter.dart';
 import 'package:flutter/material.dart';
 
 final get = GetIt.instance;

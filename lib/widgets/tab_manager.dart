@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:car_log/screens/cars_list/cars_list_screen.dart';
-import 'package:car_log/screens/users_list/users_list_screen.dart';
+import 'package:car_log/features/cars_list/cars_list_screen.dart';
+import 'package:car_log/features/users_list/users_list_screen.dart';
 
 class TabManager extends StatefulWidget {
   const TabManager({Key? key}) : super(key: key);
