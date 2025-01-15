@@ -24,14 +24,10 @@ class SetUpLocator {
     get.registerSingleton<RideService>(RideService());
 
     get.registerLazySingleton<LocationService>(() => LocationService());
-    get.registerLazySingleton<AuthService>(
-      () => AuthService(databaseService: get<DatabaseService>()),
-    );
+    get.registerLazySingleton<UserService>(() => UserService());
 
-    get.registerLazySingleton<UserService>(
-      () => UserService(
-        databaseService: get<DatabaseService>(),
-      ),
+    get.registerLazySingleton<AuthService>(
+      () => AuthService(userService: get<UserService>()),
     );
 
     get.registerLazySingleton<CarService>(
