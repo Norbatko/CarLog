@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/ride/ride_edit/ride_map/ride_form_map_field.dart';
 import 'package:car_log/features/ride/ride_edit/utils/build_card_section.dart';
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';
@@ -48,9 +49,7 @@ class LocationDetailsSection extends StatelessWidget {
   void _updateLocation(LatLng point, TextEditingController controller, BuildContext context) {
     locationService.reverseGeocode(point).then((address) {
       controller.text = address;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Location updated to $address.')),
-      );
+      TopSnackBar.show(context, 'Location updated to $address.');
     }).catchError((_) {
       controller.text = '${point.latitude}, ${point.longitude}';
     });

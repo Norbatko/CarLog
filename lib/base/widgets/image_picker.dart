@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/car_expenses/services/cloud_api.dart';
@@ -35,12 +36,12 @@ class ImagePickerHandler {
       try {
         await _uploadImage();
         Navigator.of(context).pop(); // Close progress dialog
-        _showSnackBar(context, 'Image uploaded successfully!');
+        TopSnackBar.show(context, 'Image uploaded successfully!');
       } catch (e) {
-        _showSnackBar(context, 'Upload failed: $e');
+        TopSnackBar.show(context, 'Upload failed: $e');
       }
     } else {
-      _showSnackBar(context, 'No image selected.');
+      TopSnackBar.show(context, 'No image selected.');
     }
   }
 
@@ -55,12 +56,6 @@ class ImagePickerHandler {
             _image.path.hashCode.toString(),
             userID: expense.userId, date: DateTime.now())
         .listen((_) {});
-  }
-
-  void _showSnackBar(BuildContext context, String text) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(text)),
-    );
   }
 
   void _showProgressDialog(BuildContext context) {

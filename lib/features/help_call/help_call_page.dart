@@ -62,7 +62,7 @@ class HelpCallPage extends StatelessWidget {
                   child: Column(
                     children: [
                       const Text(
-                        'EMERGENCY NUMBER',
+                        'INSURANCE CONTACT',
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.redAccent,
