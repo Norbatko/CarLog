@@ -9,7 +9,6 @@ class RideFormConstants {
   static const  START_LOCATION_LABEL = 'Start Location';
   static const  END_LOCATION_LABEL = 'End Location';
   static const  DISTANCE_LABEL = 'Distance (km)';
-  static const  SAVE_BUTTON_LABEL = 'Save Ride';
   static const  DELETE_BUTTON_LABEL = 'Delete Ride';
 
   static const  LOCATION_UPDATED_MESSAGE = 'Location updated.';

@@ -3,7 +3,7 @@ import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';
 import 'package:car_log/features/ride/ride_edit/widget/dialog_helper.dart';
 import 'package:car_log/features/ride/ride_edit/widget/ride_form/ride_form_field_list.dart';
-import 'package:car_log/features/ride/ride_edit/widget/save_ride_button.dart';
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/ride/services/location_service.dart';
 import 'package:car_log/features/ride/services/ride_service.dart';
@@ -88,12 +88,13 @@ class _EditRideFormState extends State<EditRideForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              BaseActionRideButton(
+              SaveOrDeleteButton(
                 onPressed: _saveOrUpdateRide,
                 isDeleteButton: false,
+                saveText: 'Save Ride',
               ),
               const SizedBox(width: RideFormConstants.FIELD_SPACING),
-              BaseActionRideButton(
+              SaveOrDeleteButton(
                 onPressed: _deleteRide,
                 isDeleteButton: true,
               ),
