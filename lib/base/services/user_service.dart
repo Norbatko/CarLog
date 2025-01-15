@@ -2,15 +2,10 @@ import 'dart:async';
 import 'package:car_log/base/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:car_log/services/database_service.dart';
 
 class UserService with ChangeNotifier {
-  final DatabaseService _databaseService;
   final CollectionReference usersCollection =
   FirebaseFirestore.instance.collection('users');
-
-  UserService({required DatabaseService databaseService})
-      : _databaseService = databaseService;
 
   User? _currentUser;
 
@@ -20,11 +15,17 @@ class UserService with ChangeNotifier {
   }
 
   Stream<User?> getUserData(String userId) {
-    return _databaseService.getUserById(userId);
+    return usersCollection.doc(userId).snapshots().map((snapshot) {
+      if (snapshot.exists) {
+        final userData = snapshot.data() as Map<String, dynamic>;
+        return User.fromMap(userId, userData);
+      }
+      return null;
+    });
   }
 
   Stream<User?> getLoggedInUserData(String userId) async* {
-    yield* _databaseService.getUserById(userId).map((user) {
+    yield* getUserData(userId).map((user) {
       _currentUser = user;
       notifyListeners();
       return user;
