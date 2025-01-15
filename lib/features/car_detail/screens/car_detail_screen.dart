@@ -1,4 +1,4 @@
-import 'package:car_log/model/controllers/field_controller.dart';
+import 'package:car_log/base/controllers/field_controller.dart';
 import 'package:car_log/features/car_detail/widgets/car_delete_dialog.dart';
 import 'package:car_log/features/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/routes.dart';

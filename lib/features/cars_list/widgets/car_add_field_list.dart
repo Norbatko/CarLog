@@ -1,4 +1,4 @@
-import 'package:car_log/model/controllers/field_controller.dart';
+import 'package:car_log/base/controllers/field_controller.dart';
 import 'package:car_log/features/cars_list/widgets/car_add_field.dart';
 import 'package:car_log/features/cars_list/widgets/fuel_type_dropdown.dart';
 import 'package:flutter/material.dart';

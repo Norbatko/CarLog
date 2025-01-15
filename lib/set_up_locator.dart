@@ -1,3 +1,4 @@
+import 'package:car_log/base/models/car_model.dart';
 import 'package:car_log/features/car_expenses/services/expense_service.dart';
 import 'package:car_log/features/car_expenses/services/receipt_service.dart';
 import 'package:car_log/features/ride/services/location_service.dart';
@@ -8,8 +9,6 @@ import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/car_notes/services/note_service.dart';
 import 'package:car_log/features/ride/services/ride_service.dart';
-import 'package:car_log/model/car_model.dart';
-import 'package:car_log/model/user_model.dart';
 import 'package:car_log/base/theme/theme_setter.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +18,6 @@ class SetUpLocator {
   static void init() {
     get.registerSingleton<DatabaseService>(DatabaseService());
     get.registerSingleton<CarModel>(CarModel());
-    get.registerSingleton<UserModel>(UserModel());
     get.registerSingleton<ExpenseService>(ExpenseService());
     get.registerSingleton<ReceiptService>(ReceiptService());
     get.registerSingleton<NoteService>(NoteService());
@@ -33,7 +31,6 @@ class SetUpLocator {
     get.registerLazySingleton<UserService>(
       () => UserService(
         databaseService: get<DatabaseService>(),
-        userModel: get<UserModel>(),
       ),
     );
 

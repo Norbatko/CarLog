@@ -1,4 +1,4 @@
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/base/builders/stream_custom_builder.dart';
 import 'package:car_log/base/theme/application_bar.dart';

@@ -1,4 +1,4 @@
-import 'package:car_log/model/expense.dart';
+import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_tile_widget.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/features/car_expenses/services/expense_service.dart';

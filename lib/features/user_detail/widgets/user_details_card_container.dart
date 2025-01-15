@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/user_detail/widgets/user_details_card.dart';
 
 class UserDetailsCardContainer extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:car_log/routes.dart';
-import 'package:car_log/widgets/tab_manager.dart';
+import 'package:car_log/base/tab_managers/tab_manager.dart';
 import 'package:flutter/material.dart';
 
 const _ANIMATION_TWEEN_BEGIN = -0.08;

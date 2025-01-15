@@ -1,11 +1,11 @@
+import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/features/login/screens/animated_car_screen.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:car_log/features/login/services/auth_service.dart';
-import 'package:car_log/model/user.dart';
-import 'package:car_log/model/user_model.dart';
+import 'package:car_log/base/models/user.dart';
 
 const _LOGO_WIDTH = 150.0;
 
@@ -18,7 +18,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final AuthService authService = get<AuthService>();
-  final UserModel userModel = get<UserModel>();
+  final UserService userService = get<UserService>();
 
   Stream<String?> _authenticateUser(LoginData data) {
     return authService.authUser(data);
@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
             favoriteCars: [],
           );
 
-          await userModel.addUser(newUser);
+          await for (final _ in userService.addUser(newUser)) {}
           _onLoginSuccess();
         }
         yield null;

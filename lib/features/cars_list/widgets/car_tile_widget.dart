@@ -1,7 +1,7 @@
 import 'package:car_log/features/cars_list/widgets/car_details_widget.dart';
 import 'package:car_log/features/cars_list/widgets/favorite_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:car_log/model/car.dart';
+import 'package:car_log/base/models/car.dart';
 
 const _BORDER_RADIUS = 16.0;
 const _MARGIN = 8.0;
