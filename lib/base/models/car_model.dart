@@ -1,5 +1,6 @@
+import 'package:car_log/base/models/car.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'car.dart';
+
 
 class CarModel {
   final CollectionReference carsCollection =

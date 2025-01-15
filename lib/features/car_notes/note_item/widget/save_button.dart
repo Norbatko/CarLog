@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:car_log/model/note.dart';
+import 'package:car_log/features/car_notes/models/note.dart';
 import 'package:car_log/features/car_notes/services/note_service.dart';
 
 const _SAVE_TEXT = Text('Save');

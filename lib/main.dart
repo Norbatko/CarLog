@@ -3,14 +3,14 @@ import 'package:car_log/features/login/screens/animated_car_screen.dart';
 import 'package:car_log/features/ride/ride_add/ride_add_screen.dart';
 import 'package:car_log/features/user_detail/user_detail_screen.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/widgets/car_tab_manager.dart';
-import 'package:car_log/widgets/tab_manager.dart';
+import 'package:car_log/base/tab_managers/car_tab_manager.dart';
+import 'package:car_log/base/tab_managers/tab_manager.dart';
 import 'package:car_log/base/theme/theme_setter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:car_log/features/login/screens/login_screen.dart';
 import 'package:geolocator/geolocator.dart';
-import 'firebase_db/firebase_options.dart';
+import 'firebase_options.dart';
 import 'package:car_log/routes.dart';
 
 void main() async {

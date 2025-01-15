@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/user.dart';
 
 const _EDGE_INSETS = 5.0;
 const _BORDER_RADIUS = 16.0;

@@ -1,6 +1,6 @@
 import 'package:car_log/features/car_notes/widgets/reply_message_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:car_log/model/note.dart';
+import 'package:car_log/features/car_notes/models/note.dart';
 import 'package:car_log/features/car_notes/services/note_service.dart';
 import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';

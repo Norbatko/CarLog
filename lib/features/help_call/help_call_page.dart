@@ -2,7 +2,7 @@ import 'package:car_log/features/help_call/widgets/slider_to_call.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/base/theme/application_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:car_log/model/car.dart';
+import 'package:car_log/base/models/car.dart';
 
 class HelpCallPage extends StatelessWidget {
   final Car car;

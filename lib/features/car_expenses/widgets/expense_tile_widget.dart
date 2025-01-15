@@ -1,4 +1,4 @@
-import 'package:car_log/model/expense.dart';
+import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_details_widget.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_icon_widget.dart';
 import 'package:flutter/material.dart';

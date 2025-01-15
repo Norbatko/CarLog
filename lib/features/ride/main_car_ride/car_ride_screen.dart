@@ -1,4 +1,4 @@
-import 'package:car_log/model/car.dart';
+import 'package:car_log/base/models/car.dart';
 import 'package:car_log/features/ride/main_car_ride/widgets/car_details_card.dart';
 import 'package:car_log/features/ride/main_car_ride/widgets/odometer_display.dart';
 import 'package:car_log/features/ride/main_car_ride/widgets/start_ride_button.dart';

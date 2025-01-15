@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:car_log/model/note.dart';
+import 'package:car_log/features/car_notes/models/note.dart';
 
 class NoteService {
   final CollectionReference carsCollection =

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:car_log/features/login/services/auth_service.dart';
 import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/user_detail/widgets/log_out_button.dart';
 import 'package:car_log/base/theme/theme_color_picker.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:car_log/model/expense.dart';
-import 'package:car_log/model/receipt.dart';
-import 'package:car_log/model/user.dart';
+import 'package:car_log/features/car_expenses/models/expense.dart';
+import 'package:car_log/features/car_expenses/models/receipt.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/car_expenses/services/cloud_api.dart';
@@ -11,7 +11,7 @@ import 'package:car_log/features/car_expenses/services/receipt_service.dart';
 import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/base/builders/stream_custom_builder.dart';
-import 'package:car_log/widgets/image_picker.dart';
+import 'package:car_log/base/widgets/image_picker.dart';
 import 'package:car_log/base/theme/application_bar.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:car_log/model/car.dart';
+import 'package:car_log/base/models/car.dart';
 import 'package:car_log/base/filters/car/car_icon_filter.dart';
 import 'package:car_log/base/filters/car/fuel_type_filter.dart';
 import 'package:car_log/base/filters/car/insurance_filter.dart';

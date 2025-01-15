@@ -1,4 +1,4 @@
-import 'package:car_log/model/car.dart';
+import 'package:car_log/base/models/car.dart';
 import 'package:flutter/material.dart';
 
 class ResponsiblePersonFilter extends StatelessWidget {

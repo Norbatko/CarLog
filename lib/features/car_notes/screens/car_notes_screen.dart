@@ -5,7 +5,7 @@ import 'package:car_log/routes.dart';
 import 'package:car_log/base/theme/application_bar.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:car_log/model/note.dart';
+import 'package:car_log/features/car_notes/models/note.dart';
 
 class CarNotesScreen extends StatelessWidget {
   final CarService _carService = get<CarService>();

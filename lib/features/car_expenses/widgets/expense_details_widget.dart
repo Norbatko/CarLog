@@ -1,4 +1,4 @@
-import 'package:car_log/model/expense.dart';
+import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:flutter/material.dart';
 
 const _EXPENSE_NAME_FONT_SIZE = 16.0;

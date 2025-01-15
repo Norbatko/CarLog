@@ -1,5 +1,5 @@
 import 'package:car_log/features/ride/model/ride.dart';
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/ride/ride_add/widgets/base_action_button.dart';
 import 'package:car_log/features/ride/ride_add/widgets/user_dropdown.dart';
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';

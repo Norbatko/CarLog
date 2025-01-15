@@ -1,4 +1,4 @@
-import 'package:car_log/model/expense.dart';
+import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_add_field_list.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/car_expenses/services/expense_service.dart';
@@ -47,7 +47,7 @@ class _CarExpenseAddDialogState extends State<CarExpenseAddDialog> {
     });
 
     expenseService
-        .addExpenses(carService.activeCar.id,
+        .addExpense(carService.activeCar.id,
             type: _expenseTypes[_selectedExpenseType]!,
             userID: userService.currentUser!.id,
             amount: double.parse(_expenseFields['Amount']!),

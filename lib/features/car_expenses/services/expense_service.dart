@@ -1,56 +1,87 @@
-import 'package:car_log/model/expense.dart';
-import 'package:car_log/model/expense_model.dart';
+import 'package:car_log/features/car_expenses/models/expense.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExpenseService {
-  final ExpenseModel expenseModel;
+  final CollectionReference carsCollection =
+  FirebaseFirestore.instance.collection('cars');
+
   Expense? _activeExpense;
 
-  ExpenseService._private(this.expenseModel);
+  ExpenseService._private();
 
-  static final ExpenseService _instance =
-      ExpenseService._private(ExpenseModel());
+  static final ExpenseService _instance = ExpenseService._private();
 
-  factory ExpenseService() {
-    return _instance;
+  factory ExpenseService() => _instance;
+
+  Stream<List<Expense>> getExpenses(String carId) {
+    return carsCollection
+        .doc(carId)
+        .collection('expenses')
+        .snapshots()
+        .map((querySnapshot) {
+      return querySnapshot.docs.map((doc) {
+        return Expense.fromMap(doc.id, doc.data());
+      }).toList();
+    });
   }
 
-  Stream<List<Expense>> getExpenses(String carId) =>
-      expenseModel.getExpenses(carId);
-
-  Expense? get activeExpense => _activeExpense;
-
-  Stream<void> addExpenses(
-    String carId, {
-    required ExpenseType type,
-    required String userID,
-    required double amount,
-    required DateTime date,
-  }) async* {
+  Stream<void> addExpense(
+      String carId, {
+        required ExpenseType type,
+        required String userID,
+        required double amount,
+        required DateTime date,
+      }) async* {
     Expense expense = Expense(
-      id: '',
       userId: userID,
       type: type,
       amount: amount,
       date: date,
     );
 
-    yield* expenseModel.addExpense(carId, expense);
-  }
-
-  Stream<void> deleteExpense(String carId, String expenseId) async* {
-    yield* expenseModel.deleteExpense(carId, expenseId);
+    await carsCollection.doc(carId).collection('expenses').add(expense.toMap());
+    yield null;
   }
 
   Stream<void> updateExpense(
-      String carId, String expenseId, Expense expense) async* {
-    yield* expenseModel.updateExpense(carId, expenseId, expense);
+      String carId,
+      String expenseId,
+      Expense updatedExpense,
+      ) async* {
+    await carsCollection
+        .doc(carId)
+        .collection('expenses')
+        .doc(expenseId)
+        .update(updatedExpense.toMap());
+    yield null;
+  }
+
+  Stream<void> deleteExpense(String carId, String expenseId) async* {
+    await carsCollection
+        .doc(carId)
+        .collection('expenses')
+        .doc(expenseId)
+        .delete();
+    yield null;
+  }
+
+  Stream<Expense?> getExpenseById(String carId, String expenseId) async* {
+    final docSnapshot = await carsCollection
+        .doc(carId)
+        .collection('expenses')
+        .doc(expenseId)
+        .get();
+
+    if (docSnapshot.exists) {
+      yield Expense.fromMap(expenseId, docSnapshot.data() as Map<String, dynamic>);
+    } else {
+      yield null;
+    }
   }
 
   void setActiveExpense(Expense expense) {
     _activeExpense = expense;
   }
 
-  Expense? getActiveExpense() {
-    return _activeExpense;
-  }
+  Expense? get activeExpense => _activeExpense;
 }

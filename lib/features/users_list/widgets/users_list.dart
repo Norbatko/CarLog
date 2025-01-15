@@ -1,4 +1,4 @@
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/users_list/widgets/user_tile_widget.dart';
 import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/base/filters/admin_filter.dart';

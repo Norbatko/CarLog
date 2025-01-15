@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:car_log/model/note.dart';
+import 'package:car_log/features/car_notes/models/note.dart';
 import 'package:car_log/features/car_notes/note_item/message_bubble.dart';
 import 'package:car_log/features/car_notes/note_item/user_info_note_item.dart';
 import 'package:car_log/features/car_notes/widgets/reply_message_widget.dart';

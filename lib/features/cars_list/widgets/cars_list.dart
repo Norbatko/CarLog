@@ -1,5 +1,5 @@
-import 'package:car_log/model/car.dart';
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/car.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/cars_list/widgets/car_tile_widget.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/features/login/services/auth_service.dart';

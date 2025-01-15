@@ -1,20 +1,23 @@
 import 'dart:async';
-
-import 'package:car_log/model/user.dart';
-import 'package:car_log/model/user_model.dart';
-import 'package:car_log/services/database_service.dart';
+import 'package:car_log/base/models/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:car_log/services/database_service.dart';
 
 class UserService with ChangeNotifier {
   final DatabaseService _databaseService;
-  final UserModel userModel;
+  final CollectionReference usersCollection =
+  FirebaseFirestore.instance.collection('users');
 
-  UserService({
-    required this.userModel,
-    required DatabaseService databaseService,
-  }) : _databaseService = databaseService;
+  UserService({required DatabaseService databaseService})
+      : _databaseService = databaseService;
 
   User? _currentUser;
+
+  Stream<void> addUser(User user) async* {
+    await usersCollection.doc(user.id).set(user.toMap());
+    yield null;
+  }
 
   Stream<User?> getUserData(String userId) {
     return _databaseService.getUserById(userId);
@@ -32,25 +35,31 @@ class UserService with ChangeNotifier {
     return _currentUser?.favoriteCars.contains(carId) ?? false;
   }
 
-  Stream<void> toggleFavoriteCar(String carId) {
+  Stream<void> toggleFavoriteCar(String carId) async* {
+    if (_currentUser == null) return;
+
     if (isFavoriteCar(carId)) {
       _currentUser!.favoriteCars.remove(carId);
     } else {
       _currentUser!.favoriteCars.add(carId);
     }
-    _databaseService
-        .updateUserFavorites(_currentUser!.id, _currentUser!.favoriteCars)
-        .listen((_) {
-      notifyListeners();
+
+    yield* updateUserFavorites(_currentUser!.id, _currentUser!.favoriteCars);
+    notifyListeners();
+  }
+
+  Stream<void> updateUserFavorites(String userId, List<String> favoriteCars) async* {
+    await usersCollection.doc(userId).update({'favoriteCars': favoriteCars});
+    yield null;
+  }
+
+  Stream<List<User>> get users {
+    return usersCollection.snapshots().map((querySnapshot) {
+      return querySnapshot.docs.map((doc) {
+        return User.fromMap(doc.id, doc.data() as Map<String, dynamic>);
+      }).toList();
     });
-    return Stream.empty();
   }
-
-  Stream<void> updateUserFavorites(String userId, List<String> favoriteCars) {
-    return _databaseService.updateUserFavorites(userId, favoriteCars);
-  }
-
-  Stream<List<User>> get users => userModel.getUsers();
 
   User? get currentUser => _currentUser;
 }

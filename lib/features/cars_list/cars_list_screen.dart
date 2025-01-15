@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'widgets/cars_list.dart';
 
-import 'package:car_log/model/user.dart';
+import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/cars_list/widgets/car_add_dialog.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/base/theme/application_bar.dart';
 import 'package:car_log/features/login/services/auth_service.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/base/services/user_service.dart';
-import 'package:car_log/model/car.dart';
+import 'package:car_log/base/models/car.dart';
 import 'package:car_log/routes.dart';
 
 class CarsListScreen extends StatelessWidget {

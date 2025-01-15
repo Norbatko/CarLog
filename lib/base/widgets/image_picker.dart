@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:car_log/model/expense.dart';
+import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/car_expenses/services/cloud_api.dart';
 import 'package:car_log/features/car_expenses/services/receipt_service.dart';
