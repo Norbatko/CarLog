@@ -1,4 +1,5 @@
 import 'package:car_log/base/controllers/field_controller.dart';
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/features/car_detail/widgets/car_delete_dialog.dart';
 import 'package:car_log/features/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/routes.dart';
@@ -114,23 +115,11 @@ class _CarDetailScreenState extends State<CarDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
+                  SaveOrDeleteButton(
                     onPressed: _isChanged
-                        ? () {
-                            setState(() {
-                              _validateFieldsAndSubmit();
-                            });
-                          }
+                        ? () => setState(() => _validateFieldsAndSubmit())
                         : null,
-                    style: ElevatedButton.styleFrom(
-                      disabledBackgroundColor: Colors.grey,
-                    ),
-                    child: Text(
-                      "Update Car Detail",
-                      style: _isChanged
-                          ? TextStyle(color: Colors.black)
-                          : TextStyle(color: Colors.white60),
-                    ),
+                    saveText: "Save updates",
                   ),
                   CarDeleteDialog(),
                 ],

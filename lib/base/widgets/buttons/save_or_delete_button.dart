@@ -1,14 +1,18 @@
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';
 import 'package:flutter/material.dart';
 
-class BaseActionRideButton extends StatelessWidget {
-  final VoidCallback onPressed;
+class SaveOrDeleteButton extends StatelessWidget {
+  final VoidCallback? onPressed;
   final bool isDeleteButton;
+  final String saveText;
+  final String deleteText;
 
-  const BaseActionRideButton({
+  const SaveOrDeleteButton({
     Key? key,
     required this.onPressed,
     this.isDeleteButton = false,
+    this.saveText = 'Save',
+    this.deleteText = 'Delete',
   }) : super(key: key);
 
   @override
@@ -18,14 +22,13 @@ class BaseActionRideButton extends StatelessWidget {
           ? RideFormConstants.DELETE_ICON
           : RideFormConstants.SAVE_ICON,
       label: Text(
-        isDeleteButton
-            ? RideFormConstants.DELETE_BUTTON_LABEL
-            : RideFormConstants.SAVE_BUTTON_LABEL,
+        isDeleteButton ? deleteText : saveText,
       ),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor:
-        isDeleteButton ? RideFormConstants.DELETE_BUTTON_COLOR : Theme.of(context).primaryColor,
+        backgroundColor: isDeleteButton
+            ? RideFormConstants.DELETE_BUTTON_COLOR
+            : Theme.of(context).primaryColor,
         padding: const EdgeInsets.symmetric(
           vertical: RideFormConstants.BUTTON_VERTICAL_PADDING,
           horizontal: RideFormConstants.BUTTON_HORIZONTAL_PADDING,

@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
@@ -34,16 +35,9 @@ class _CarDeleteDialogState extends State<CarDeleteDialog>
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () => _showDeleteCarDialog(context),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
-        textStyle: const TextStyle(color: Colors.black),
-      ),
-      child: const Text(
-        "Delete Car",
-        style: TextStyle(color: Colors.black),
-      ),
+    return SaveOrDeleteButton(
+      isDeleteButton: true,
+      onPressed: () => _showDeleteCarDialog(context)
     );
   }
 
