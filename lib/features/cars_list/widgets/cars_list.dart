@@ -99,6 +99,7 @@ class _CarsListState extends State<CarsList> {
 
   @override
   Widget build(BuildContext context) {
+    _applyFilters();
     // If the filtered list is empty, show the search bar and "No users available"
     if (filteredCars.isEmpty && _searchQuery.isNotEmpty) {
       return Column(
