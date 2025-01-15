@@ -1,15 +1,14 @@
+import 'package:car_log/base/services/user_service.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_login/flutter_login.dart';
-import 'package:car_log/services/database_service.dart';
 import 'package:car_log/base/models/user.dart';
 
 class AuthService {
   final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
-  final DatabaseService _databaseService;
+  final UserService _userService;
 
-  AuthService({required DatabaseService databaseService})
-      : _databaseService = databaseService;
-
+  AuthService({required UserService userService})
+      : _userService = userService;
   Stream<String?> authUser(LoginData data) async* {
     try {
       final firebase_auth.UserCredential userCredential =
@@ -20,7 +19,7 @@ class AuthService {
 
       final userId = userCredential.user?.uid;
       if (userId != null) {
-        _databaseService.getUserById(userId).listen((_) {});
+        _userService.getUserData(userId).listen((_) {});
       }
       yield null;
     } on firebase_auth.FirebaseAuthException catch (e) {
@@ -62,7 +61,7 @@ class AuthService {
   Stream<User?> getCurrentUser() {
     return _auth.authStateChanges().asyncMap((firebaseUser) {
       if (firebaseUser != null) {
-        return _databaseService.getUserById(firebaseUser.uid).first;
+        return _userService.getUserData(firebaseUser.uid).first;
       }
       return null;
     });
