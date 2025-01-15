@@ -10,7 +10,7 @@ import 'package:car_log/base/theme/application_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:car_log/features/car_expenses/utils/car_expense_constants.dart';  // Import constants
+import 'package:car_log/features/car_expenses/utils/car_expense_constants.dart'; // Import constants
 
 class CarExpensesScreen extends StatelessWidget {
   final CarService carService = get<CarService>();
@@ -55,10 +55,10 @@ class CarExpensesScreen extends StatelessWidget {
       elevation: CARD_ELEVATION,
       child: InkWell(
         onTap: () {
+          expenseService.setActiveExpense(expense);
           Navigator.pushNamed(
             context,
             Routes.expenseDetail,
-            arguments: expense,
           );
         },
         borderRadius: BorderRadius.circular(CARD_RADIUS),
