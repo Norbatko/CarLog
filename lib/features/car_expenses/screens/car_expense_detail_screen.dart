@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/action_button.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_add_receipt.dart';
@@ -69,82 +70,40 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
           ),
           child: Scaffold(
               appBar: ApplicationBar(
-                  title: 'Expense Detail', userDetailRoute: Routes.userDetail),
+                title: 'Expense Detail',
+                userDetailRoute: Routes.userDetail,
+              ),
               body: Padding(
                 padding: const EdgeInsets.fromLTRB(
-                    _EDGE_INSETS, _EDGE_INSETS, _EDGE_INSETS, _EDGE_INSETS * 2),
+                  _EDGE_INSETS,
+                  _EDGE_INSETS,
+                  _EDGE_INSETS,
+                  _EDGE_INSETS * 2,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     _buildExpenseDetailRow(
-                        'Type: ', expenseTypeToString(_currentExpense.type)),
-                    const SizedBox(height: 8),
-                    _buildExpenseDetailRow('Amount:',
-                        '\$${_currentExpense.amount.toInt() == _currentExpense.amount ? _currentExpense.amount.toInt().toString() : _currentExpense.amount.toStringAsFixed(2)}'),
-                    const SizedBox(height: 8),
-                    _buildExpenseDetailRow('Created By:',
-                        _userService.getUserData(_currentExpense.userId)),
-                    const SizedBox(height: 8),
-                    _buildExpenseDetailRow('Date:',
-                        '${_currentExpense.date.toLocal()}'.split(' ')[0]),
+                      'Type:',
+                      expenseTypeToString(_currentExpense.type),
+                    ),
+                    _buildExpenseDetailRow(
+                      'Amount:',
+                      _formatAmount(_currentExpense.amount),
+                    ),
+                    _buildExpenseDetailRow(
+                      'Created By:',
+                      _userService.getUserData(_currentExpense.userId),
+                    ),
+                    _buildExpenseDetailRow(
+                      'Date:',
+                      _currentExpense.date.toLocal().toString().split(' ')[0],
+                    ),
                     const SizedBox(height: 16, child: Divider()),
                     const Text("Receipts", style: _boldTextStyle),
-                    StreamCustomBuilder(
-                        stream: _receiptService.getReceiptsByUserId(
-                            _carService.activeCar.id,
-                            _currentExpense.id,
-                            _userService.currentUser!.id),
-                        builder: (context, receipts) {
-                          return receipts.isEmpty
-                              ? Expanded(
-                                  child: const Center(
-                                    child: Text(
-                                      'No receipts available',
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.grey),
-                                    ),
-                                  ),
-                                )
-                              : ExpenseReceiptList(
-                                  receipts: receipts,
-                                  cloudApi: _cloudApi,
-                                );
-                        }),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.edit),
-                          label: const Text('Edit'),
-                        ),
-                        const SizedBox(width: 5),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              _expenseService
-                                  .deleteExpense(_carService.activeCar.id,
-                                      _currentExpense.id)
-                                  .listen((_) {});
-                              _cloudApi.deleteFolder("${_currentExpense.id}/");
-                            });
-                            Navigator.of(context).pop();
-                          },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                          ),
-                          label: const Text(
-                            'Delete',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
+                    _buildReceiptList(),
+                    _buildActionButtons(context)
                   ],
                 ),
               ),
@@ -157,18 +116,78 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
   }
 
   Widget _buildExpenseDetailRow(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: _boldTextStyle),
+          value is Stream<User?>
+              ? StreamBuilder<User?>(
+                  stream: value,
+                  builder: (_, snapshot) =>
+                      Text(snapshot.data?.email ?? 'Unknown User'),
+                )
+              : Text(value),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReceiptList() {
+    return Expanded(
+      child: StreamCustomBuilder(
+        stream: _receiptService.getReceiptsByUserId(
+          _carService.activeCar.id,
+          _currentExpense.id,
+          _userService.currentUser!.id,
+        ),
+        builder: (context, receipts) {
+          if (receipts.isEmpty) {
+            return const Center(
+              child: Text('No receipts available',
+                  style: TextStyle(fontSize: 18, color: Colors.grey)),
+            );
+          }
+          return ExpenseReceiptList(receipts: receipts, cloudApi: _cloudApi);
+        },
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(label, style: _boldTextStyle),
-        value is Stream<User?>
-            ? StreamBuilder<User?>(
-                stream: value,
-                builder: (_, snapshot) =>
-                    Text(snapshot.data?.email ?? 'Unknown User'),
-              )
-            : Text(value),
+        ActionButton(
+          buttonLabel: 'Edit',
+          buttonIcon: const Icon(Icons.edit),
+          onPressed: () {
+            // Implement edit functionality
+          },
+        ),
+        const SizedBox(width: 8),
+        ActionButton(
+          buttonLabel: 'Delete',
+          buttonIcon: const Icon(Icons.delete),
+          isDeleteButton: true,
+          onPressed: () => _deleteExpense(context),
+        ),
       ],
     );
+  }
+
+  void _deleteExpense(BuildContext context) {
+    _expenseService
+        .deleteExpense(_carService.activeCar.id, _currentExpense.id)
+        .listen((_) {});
+    _cloudApi.deleteFolder("${_currentExpense.id}/");
+    Navigator.of(context).pop();
+  }
+
+  String _formatAmount(double amount) {
+    return amount.toInt() == amount
+        ? '\$${amount.toInt()}'
+        : '\$${amount.toStringAsFixed(2)}';
   }
 }
