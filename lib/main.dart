@@ -1,17 +1,17 @@
-import 'package:car_log/screens/car_expense_detail/car_expense_detail_screen.dart';
-import 'package:car_log/screens/login/animated_car_screen.dart';
-import 'package:car_log/screens/ride_add/ride_add_screen.dart';
-import 'package:car_log/screens/user_detail/user_detail_screen.dart';
+import 'package:car_log/features/car_expenses/screens/car_expense_detail_screen.dart';
+import 'package:car_log/features/login/screens/animated_car_screen.dart';
+import 'package:car_log/features/ride/ride_add/ride_add_screen.dart';
+import 'package:car_log/features/user_detail/user_detail_screen.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/widgets/car_tab_manager.dart';
 import 'package:car_log/widgets/tab_manager.dart';
-import 'package:car_log/widgets/theme/theme_setter.dart';
+import 'package:car_log/base/theme/theme_setter.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:car_log/screens/login/login_screen.dart';
+import 'package:car_log/features/login/screens/login_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'firebase_db/firebase_options.dart';
-import 'package:car_log/services/Routes.dart';
+import 'package:car_log/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
