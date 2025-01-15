@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_add_field_list.dart';
 import 'package:car_log/base/services/car_service.dart';
@@ -123,22 +124,23 @@ class _CarExpenseAddDialogState extends State<CarExpenseAddDialog> {
       return [];
     } else {
       return [
-        TextButton(
+        SaveOrDeleteButton(
+          onPressed: () {
+            setState(() {
+              _validateFieldsAndSubmit();
+            });
+          },
+          saveText: 'Submit',
+        ),
+        SaveOrDeleteButton(
           onPressed: () {
             Navigator.of(context).pop();
             _clearAllErrorMessages();
             _clearAllControllers();
             _selectedExpenseType = 'Fuel';
           },
-          child: Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _validateFieldsAndSubmit();
-            });
-          },
-          child: Text('Submit'),
+          isDeleteButton: true,
+          deleteText: 'Cancel',
         ),
       ];
     }
