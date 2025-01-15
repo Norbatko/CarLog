@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';
 import 'package:car_log/features/ride/ride_edit/widget/dialog_helper.dart';
-import 'package:car_log/features/ride/ride_edit/widget/ride_form_field_list.dart';
+import 'package:car_log/features/ride/ride_edit/widget/ride_form/ride_form_field_list.dart';
 import 'package:car_log/features/ride/ride_edit/widget/save_ride_button.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/features/ride/services/location_service.dart';
@@ -11,16 +11,16 @@ import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart' as flutterMap;
 
-class RideForm extends StatefulWidget {
+class EditRideForm extends StatefulWidget {
   final Ride ride;
 
-  const RideForm({Key? key, required this.ride}) : super(key: key);
+  const EditRideForm({Key? key, required this.ride}) : super(key: key);
 
   @override
-  _RideFormState createState() => _RideFormState();
+  _EditRideFormState createState() => _EditRideFormState();
 }
 
-class _RideFormState extends State<RideForm> {
+class _EditRideFormState extends State<EditRideForm> {
   late TextEditingController _rideTypeController;
   late TextEditingController _distanceController;
   late TextEditingController _userNameController;
