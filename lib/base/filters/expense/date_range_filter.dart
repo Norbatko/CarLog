@@ -58,12 +58,12 @@ class _DateRangeFilterState extends State<DateRangeFilter> {
       children: [
         Text(
           'Date Range',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
         ),
-        const SizedBox(height: 8),
+        Divider(thickness: 1.0, color: Theme.of(context).primaryColor),
         Row(
           children: [
             Expanded(
