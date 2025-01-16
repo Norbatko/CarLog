@@ -1,5 +1,6 @@
 import 'package:car_log/base/controllers/field_controller.dart';
 import 'package:car_log/base/widgets/buttons/floating_add_action_button.dart';
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/features/cars_list/widgets/car_add_field_list.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/set_up_locator.dart';
@@ -83,7 +84,9 @@ class _CarAddDialogState extends State<CarAddDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingAddActionButton(onPressed:() => {_showAddCarDialog(context)},);
+    return FloatingAddActionButton(
+      onPressed: () => {_showAddCarDialog(context)},
+    );
   }
 
   void _showAddCarDialog(BuildContext context) {
@@ -143,21 +146,20 @@ class _CarAddDialogState extends State<CarAddDialog> {
       return [];
     } else {
       return [
-        TextButton(
+        SaveOrDeleteButton(
+          saveText: 'Submit',
+          onPressed: () {
+            _validateFieldsAndSubmit();
+          },
+        ),
+        SaveOrDeleteButton(
+          isDeleteButton: true,
           onPressed: () {
             Navigator.of(context).pop();
             _clearAllErrorMessages();
             _clearAllControllers();
           },
-          child: Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _validateFieldsAndSubmit();
-            });
-          },
-          child: Text('Submit'),
+          deleteText: 'Cancel',
         ),
       ];
     }
