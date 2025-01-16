@@ -44,11 +44,34 @@ class _CarFilterDialogState extends State<CarFilterDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
-        'Filter Cars',
-        style: TextStyle(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.bold),
+      title: Column(
+        children: [
+          Text(
+            'Filter Cars',
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 5),
+          SaveOrDeleteButton(
+            isDeleteButton: true,
+            deleteText: 'Clear all filters',
+            onPressed: () {
+              setState(() {
+                _fuelTypes.clear();
+                _responsiblePersons.clear();
+                _icons.clear();
+                _insurances.clear();
+              });
+              Navigator.of(context).pop({
+                'fuelTypes': _fuelTypes.toList(),
+                'responsiblePersons': _responsiblePersons.toList(),
+                'insurances': _insurances.toList(),
+                'icons': _icons.toList(),
+              });
+            },
+          ),
+        ],
       ),
       content: SingleChildScrollView(
         child: Column(
