@@ -7,17 +7,10 @@ class EditExpenseDialog extends StatelessWidget {
   final TextEditingController amountController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
   final String selectedExpenseType;
+  final List<String> expenseTypes;
   final ValueChanged<String?> onExpenseTypeChanged;
   final void Function(String, String) onSave;
   final VoidCallback onCancel;
-
-  final Map<String, ExpenseType> _expenseTypes = {
-    'Fuel': ExpenseType.fuel,
-    'Service': ExpenseType.service,
-    'Repair': ExpenseType.repair,
-    'Insurance': ExpenseType.insurance,
-    'Other': ExpenseType.other,
-  };
 
   EditExpenseDialog({
     super.key,
@@ -28,6 +21,7 @@ class EditExpenseDialog extends StatelessWidget {
     required this.onCancel,
     required this.selectedExpenseType,
     required this.onExpenseTypeChanged,
+    required this.expenseTypes,
   }) {
     amountController.text = initialAmount.toStringAsFixed(2);
     dateController.text = initialDate.toIso8601String();
@@ -47,7 +41,7 @@ class EditExpenseDialog extends StatelessWidget {
           children: [
             ExpenseTypeDropdown(
                 selectedExpenseType: selectedExpenseType,
-                expenseTypes: _expenseTypes.keys.toList(),
+                expenseTypes: expenseTypes,
                 onChanged: onExpenseTypeChanged),
             const SizedBox(height: 16),
             TextField(
