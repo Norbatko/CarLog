@@ -120,25 +120,30 @@ class _ExpenseFilterDialogState extends State<ExpenseFilterDialog> {
         ),
       ),
       actions: [
-        SaveOrDeleteButton(
-          saveText: 'Apply',
-          saveIcon: Icon(Icons.filter_alt),
-          onPressed: () {
-            Navigator.of(context).pop({
-              'expenseTypes': _expenseTypes.toList(),
-              'startDate': _startDate,
-              'endDate': _endDate,
-              'minAmount': _minAmount,
-              'maxAmount': _maxAmount,
-            });
-          },
-        ),
-        SaveOrDeleteButton(
-          isDeleteButton: true,
-          deleteText: 'Cancel',
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SaveOrDeleteButton(
+              saveText: 'Apply',
+              saveIcon: Icon(Icons.filter_alt),
+              onPressed: () {
+                Navigator.of(context).pop({
+                  'expenseTypes': _expenseTypes.toList(),
+                  'startDate': _startDate,
+                  'endDate': _endDate,
+                  'minAmount': _minAmount,
+                  'maxAmount': _maxAmount,
+                });
+              },
+            ),
+            SaveOrDeleteButton(
+              isDeleteButton: true,
+              deleteText: 'Cancel',
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         ),
       ],
     );

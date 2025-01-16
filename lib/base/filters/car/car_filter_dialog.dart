@@ -3,6 +3,7 @@ import 'package:car_log/base/filters/car/car_icon_filter.dart';
 import 'package:car_log/base/filters/car/fuel_type_filter.dart';
 import 'package:car_log/base/filters/car/insurance_filter.dart';
 import 'package:car_log/base/filters/car/responsible_person_filter.dart';
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:flutter/material.dart';
 
 class CarFilterDialog extends StatefulWidget {
@@ -96,23 +97,30 @@ class _CarFilterDialogState extends State<CarFilterDialog> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context)
-                .pop(null); // Close dialog without applying filters
-          },
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(context).pop({
-              'fuelTypes': _fuelTypes.toList(),
-              'responsiblePersons': _responsiblePersons.toList(),
-              'insurances': _insurances.toList(),
-              'icons': _icons.toList(),
-            });
-          },
-          child: const Text('Apply'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SaveOrDeleteButton(
+              saveIcon: Icon(Icons.filter_alt),
+              saveText: 'Apply',
+              onPressed: () {
+                Navigator.of(context).pop({
+                  'fuelTypes': _fuelTypes.toList(),
+                  'responsiblePersons': _responsiblePersons.toList(),
+                  'insurances': _insurances.toList(),
+                  'icons': _icons.toList(),
+                });
+              },
+            ),
+            SaveOrDeleteButton(
+              isDeleteButton: true,
+              deleteText: 'Cancel',
+              onPressed: () {
+                Navigator.of(context)
+                    .pop(null); // Close dialog without applying filters
+              },
+            ),
+          ],
         ),
       ],
     );
