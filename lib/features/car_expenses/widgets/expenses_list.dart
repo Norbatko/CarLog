@@ -5,6 +5,7 @@ import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/car_expenses/utils/car_expense_constants.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_list_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class ExpensesList extends StatefulWidget {
@@ -166,8 +167,15 @@ class _ExpensesListState extends State<ExpensesList> {
       return (selectedExpenseTypes.isEmpty ||
               selectedExpenseTypes.contains(expense.type)) &&
           (expenseTypeToString(expense.type)
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()));
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ||
+              expense.amount
+                  .toString()
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ||
+              DateFormat(DATE_FORMAT)
+                  .format(expense.date)
+                  .contains(_searchQuery));
     }).toList();
 
     filteredExpenses.sort((a, b) {
