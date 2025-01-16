@@ -1,7 +1,6 @@
-import 'package:car_log/base/widgets/buttons/action_button.dart';
+import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/base/models/user.dart';
-import 'package:car_log/features/car_expenses/widgets/car_expense_add_dialog.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_add_receipt.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_edit_dialog.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_receipt_list.dart';
@@ -164,17 +163,15 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ActionButton(
-          buttonLabel: 'Edit',
-          buttonIcon: const Icon(Icons.edit),
+        SaveOrDeleteButton(
+          saveText: 'Edit',
+          saveIcon: const Icon(Icons.edit),
           onPressed: () {
             _showEditDialog(context);
           },
         ),
         const SizedBox(width: 8),
-        ActionButton(
-          buttonLabel: 'Delete',
-          buttonIcon: const Icon(Icons.delete),
+        SaveOrDeleteButton(
           isDeleteButton: true,
           onPressed: () => _deleteExpense(context),
         ),
