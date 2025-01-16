@@ -34,7 +34,10 @@ class RideCard extends StatelessWidget {
             children: [
               RideInfo(icon: Icons.calendar_today, label: formattedDate),
               RideInfo(icon: Icons.person, label: ride.userName),
-              RideInfo(icon: Icons.directions_car, label: '${ride.distance} km', iconColor: Colors.green),
+              RideInfo(
+                  icon: Icons.directions_car,
+                  label: '${ride.distance} km',
+                  iconColor: Colors.green),
             ],
           ),
         ),
