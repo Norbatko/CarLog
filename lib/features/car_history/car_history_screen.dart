@@ -1,4 +1,5 @@
 import 'package:car_log/features/car_history/widgets/add_ride_button.dart';
+import 'package:car_log/features/car_history/widgets/ride_list.dart';
 import 'package:car_log/features/ride/ride_edit/ride_edit_screen.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/base/services/car_service.dart';
@@ -22,119 +23,15 @@ class CarHistoryScreen extends StatelessWidget {
     final activeCar = get<CarService>().getActiveCar();
 
     return Scaffold(
-      appBar: ApplicationBar(title: CAR_HISTORY_TITLE, userDetailRoute: Routes.userDetail),
+      appBar: ApplicationBar(
+          title: CAR_HISTORY_TITLE, userDetailRoute: Routes.userDetail),
       body: StreamCustomBuilder<List<Ride>>(
         stream: rideService.getRides(activeCar.id),
         builder: (context, rides) {
-          return _buildRideList(rides, context);
+          return RideList(rides: rides, isVisible: isVisible);
         },
       ),
       floatingActionButton: AddRideButton(),
-    );
-  }
-
-  Widget _buildRideList(List<Ride> rides, BuildContext context) {
-    if (rides.isEmpty) return _buildEmptyState(context, isVisible);
-
-    return ListView.builder(
-      itemCount: rides.length,
-      padding: const EdgeInsets.symmetric(vertical: SECTION_PADDING),
-      itemBuilder: (context, index) {
-        String formattedDate =
-            '${rides[index].finishedAt.day.toString().padLeft(2, '0')}.${rides[index].finishedAt.month.toString().padLeft(2, '0')}.${rides[index].finishedAt.year.toString().substring(2)}';
-        return _buildRideCard(context, rides[index], formattedDate);
-      },
-    );
-  }
-
-  Widget _buildRideCard(BuildContext context, Ride ride, String formattedDate) {
-    return Card(
-      margin: RIDE_CARD_EDGE_SYMMETRIC,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CARD_RADIUS),
-      ),
-      elevation: CARD_ELEVATION,
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => RideEditScreen(ride: ride),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(CARD_RADIUS),
-        child: Padding(
-          padding: const EdgeInsets.all(SPACING_VERTICAL),
-          child: Row(
-            children: [
-              _buildRideInfo(
-                icon: Icons.calendar_today,
-                label: formattedDate,
-                alignment: TextAlign.start,
-              ),
-              _buildRideInfo(
-                icon: Icons.person,
-                label: ride.userName,
-                alignment: TextAlign.center,
-              ),
-              _buildRideInfo(
-                icon: Icons.directions_car,
-                label: '${ride.distance} km',
-                alignment: TextAlign.end,
-                iconColor: Colors.green,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  Widget _buildRideInfo({
-    required IconData icon,
-    required String label,
-    TextAlign alignment = TextAlign.start,
-    Color iconColor = Colors.blue,
-  }) {
-    return Expanded(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 28,  // Fixed width to align all icons
-            child: Icon(icon, size: ICON_SIZE, color: iconColor),
-          ),
-          SIZED_BOX_WIDTH_12,
-          Expanded(
-            child: Text(
-              label,
-              style: TEXT_STYLE,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context, bool isVisible) {
-    return Offstage(
-      offstage: !isVisible,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (isVisible)
-              Lottie.asset('assets/animations/nothing.json', width: 220, height: 220),
-            SIZED_BOX_HEIGHT_24,
-            NO_RIDE_HISTORY_TEXT,
-            SIZED_BOX_HEIGHT_10,
-            ADD_FIRST_RIDE_TEXT,
-          ],
-        ),
-      ),
     );
   }
 }
