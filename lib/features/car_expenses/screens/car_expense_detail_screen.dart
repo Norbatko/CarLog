@@ -1,7 +1,9 @@
 import 'package:car_log/base/widgets/buttons/action_button.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/base/models/user.dart';
+import 'package:car_log/features/car_expenses/widgets/car_expense_add_dialog.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_add_receipt.dart';
+import 'package:car_log/features/car_expenses/widgets/expense_edit_dialog.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_receipt_list.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/base/services/car_service.dart';
@@ -34,12 +36,15 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
   late CloudApi _cloudApi;
   late Future<void> _initializeCloudApi;
   late final Expense _currentExpense;
+  late final String _selectedExpenseType;
 
   @override
   void initState() {
     super.initState();
     _initializeCloudApi = _initializeApi();
     _currentExpense = _expenseService.activeExpense!;
+    _selectedExpenseType =
+        expenseTypeToString(_expenseService.activeExpense!.type);
   }
 
   Future<void> _initializeApi() async {
@@ -163,7 +168,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
           buttonLabel: 'Edit',
           buttonIcon: const Icon(Icons.edit),
           onPressed: () {
-            // Implement edit functionality
+            _showEditDialog(context);
           },
         ),
         const SizedBox(width: 8),
@@ -189,5 +194,45 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
     return amount.toInt() == amount
         ? '\$${amount.toInt()}'
         : '\$${amount.toStringAsFixed(2)}';
+  }
+
+  void _showEditDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return EditExpenseDialog(
+          initialExpenseType:
+              expenseTypeToString(_expenseService.activeExpense!.type),
+          initialAmount: _expenseService.activeExpense!.amount,
+          initialDate: _expenseService.activeExpense!.date,
+          onSave: (String amount, String date) {
+            _saveExpense(amount, date);
+            Navigator.of(context).pop();
+          },
+          onCancel: () {
+            Navigator.of(context).pop();
+          },
+          selectedExpenseType: _selectedExpenseType,
+          onExpenseTypeChanged: (newValue) {
+            setState(() {
+              _selectedExpenseType = newValue!;
+            });
+          },
+        );
+      },
+    );
+  }
+
+  void _saveExpense(String amount, String date) {
+    Expense updatedExpense = _currentExpense.copyWith(
+      type: expenseTypeFromString(_selectedExpenseType),
+      amount: double.parse(amount),
+      date: DateTime.parse(date),
+    );
+
+    _expenseService
+        .updateExpense(
+            _carService.activeCar.id, _currentExpense.id, updatedExpense)
+        .listen((_) {});
   }
 }
