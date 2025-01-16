@@ -7,7 +7,7 @@ import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:car_log/base/builders/stream_custom_builder.dart';
-import 'package:car_log/base/filters/car/filter_dialog.dart';
+import 'package:car_log/base/filters/car/car_filter_dialog.dart';
 import 'package:car_log/base/filters/name_filter.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +54,7 @@ class _CarsListState extends State<CarsList> {
   void _openFilterDialog() async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) => FilterDialog(
+      builder: (context) => CarFilterDialog(
         selectedFuelTypes: selectedFuelTypes,
         selectedResponsiblePersons: selectedResponsiblePersons,
         selectedIcons: selectedIcons,
