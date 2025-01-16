@@ -1,3 +1,5 @@
+import 'package:car_log/base/filters/expense/amount_range_filter.dart';
+import 'package:car_log/base/filters/expense/date_range_filter.dart';
 import 'package:car_log/base/filters/expense/expense_type_filter.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +20,20 @@ class ExpenseFilterDialog extends StatefulWidget {
 
 class _ExpenseFilterDialogState extends State<ExpenseFilterDialog> {
   late Set<String> _expenseTypes;
+  DateTime? _startDate;
+  DateTime? _endDate;
+  double? _minAmount;
+  double? _maxAmount;
 
   @override
   void initState() {
     super.initState();
     _expenseTypes = Set<String>.from(widget.selectedExpenseTypes);
+    final amounts = widget.expenses.map((e) => e.amount).toList();
+    _minAmount =
+        amounts.isNotEmpty ? amounts.reduce((a, b) => a < b ? a : b) : 0.0;
+    _maxAmount =
+        amounts.isNotEmpty ? amounts.reduce((a, b) => a > b ? a : b) : 0.0;
   }
 
   @override
@@ -48,6 +59,27 @@ class _ExpenseFilterDialogState extends State<ExpenseFilterDialog> {
               },
             ),
             const SizedBox(height: 16),
+            DateRangeFilter(
+              initialStartDate: _startDate,
+              initialEndDate: _endDate,
+              onDateRangeChanged: (startDate, endDate) {
+                setState(() {
+                  _startDate = startDate;
+                  _endDate = endDate;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            AmountFilter(
+              minAmount: _minAmount!,
+              maxAmount: _maxAmount!,
+              onAmountRangeChanged: (minAmount, maxAmount) {
+                setState(() {
+                  _minAmount = minAmount;
+                  _maxAmount = maxAmount;
+                });
+              },
+            ),
           ],
         ),
       ),
