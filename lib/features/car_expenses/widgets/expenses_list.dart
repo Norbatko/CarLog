@@ -164,10 +164,10 @@ class _ExpensesListState extends State<ExpensesList> {
         selectedExpenseTypes = result['expenseTypes'] != null
             ? Set.from(result['expenseTypes'])
             : selectedExpenseTypes;
-        startDate = result['startDate'] ?? startDate;
-        endDate = result['endDate'] ?? endDate;
-        minAmount = result['minAmount'] ?? minAmount;
-        maxAmount = result['maxAmount'] ?? maxAmount;
+        startDate = result['startDate'];
+        endDate = result['endDate'];
+        minAmount = result['minAmount'] ?? -1;
+        maxAmount = result['maxAmount'] ?? -1;
         _applyFilters();
       });
     }

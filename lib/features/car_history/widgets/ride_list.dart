@@ -6,7 +6,6 @@ import 'package:car_log/features/car_history/widgets/car_history_constants.dart'
 import 'package:flutter/material.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/features/car_history/widgets/ride_card.dart';
-import 'package:car_log/features/car_history/widgets/empty_state.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
@@ -23,8 +22,8 @@ class RideList extends StatefulWidget {
 class _RideListState extends State<RideList> {
   late List<Ride> filteredRides;
   Set<String> selectedUser = {};
-  double minDistance = -1;
-  double maxDistance = -1;
+  int minDistance = -1;
+  int maxDistance = -1;
   DateTime? startDate = null;
   DateTime? endDate = null;
   String searchQuery = '';
@@ -129,9 +128,9 @@ class _RideListState extends State<RideList> {
                       const EdgeInsets.symmetric(vertical: SECTION_PADDING),
                   itemBuilder: (context, index) {
                     String formattedDate =
-                        '${widget.rides[index].finishedAt.day.toString().padLeft(2, '0')}.${widget.rides[index].finishedAt.month.toString().padLeft(2, '0')}.${widget.rides[index].finishedAt.year.toString().substring(2)}';
+                        '${filteredRides[index].finishedAt.day.toString().padLeft(2, '0')}.${filteredRides[index].finishedAt.month.toString().padLeft(2, '0')}.${widget.rides[index].finishedAt.year.toString().substring(2)}';
                     return RideCard(
-                        ride: widget.rides[index],
+                        ride: filteredRides[index],
                         formattedDate: formattedDate);
                   },
                 ),
@@ -154,19 +153,20 @@ class _RideListState extends State<RideList> {
       setState(() {
         selectedUser =
             result['users'] != null ? Set.from(result['users']) : selectedUser;
-        startDate = result['startDate'] ?? startDate;
-        endDate = result['endDate'] ?? endDate;
-        minDistance = result['minDistance'] ?? minDistance;
-        maxDistance = result['maxDistance'] ?? maxDistance;
+        startDate = result['startDate'];
+        endDate = result['endDate'];
+        minDistance = result['minDistance'] ?? -1;
+        maxDistance = result['maxDistance'] ?? -1;
         _applyFilters();
       });
     }
   }
 
   void _applyFilters() {
+    print("StartDate => $startDate");
     filteredRides = widget.rides.where((ride) {
       return (selectedUser.isEmpty || selectedUser.contains(ride.userName)) &&
-          (startDate == null || startDate!.isBefore(ride.startedAt)) &&
+          (startDate == null || startDate!.isBefore(ride.finishedAt)) &&
           (endDate == null || endDate!.isAfter(ride.finishedAt)) &&
           (minDistance == -1 || minDistance <= ride.distance) &&
           (maxDistance == -1 || maxDistance >= ride.distance) &&
@@ -183,6 +183,11 @@ class _RideListState extends State<RideList> {
                   .contains(searchQuery));
     }).toList();
 
+    // print("--------");
+    // for (var i in filteredRides) {
+    //   print("Ride => ${i.distance}, username => ${i.userName}");
+    // }
+    // print("--------");
     filteredRides.sort((a, b) {
       return b.finishedAt
           .compareTo(a.finishedAt); // Descending order: newest dates first
