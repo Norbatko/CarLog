@@ -86,6 +86,8 @@ class _AddRideFormState extends State<AddRideForm> {
             distanceController: _distanceController,
             mapController: _mapController,
             rideTypeController: _rideTypeController,
+            selectedStartDateTime: _selectedStartDateTime,
+            selectedFinishDateTime: _selectedFinishDateTime,
             onDatesChanged: (DateTime? start, DateTime? finish) {
               setState(() {
                 _selectedStartDateTime = start;
