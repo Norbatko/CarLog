@@ -53,7 +53,7 @@ class _ExpenseFilterDialogState extends State<ExpenseFilterDialog> {
           SizedBox(height: 5),
           SaveOrDeleteButton(
             isDeleteButton: true,
-            deleteText: 'Remove',
+            deleteText: 'Clear all filters',
             onPressed: () {
               setState(() {
                 _expenseTypes.clear();
