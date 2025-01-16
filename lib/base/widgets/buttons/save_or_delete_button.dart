@@ -20,9 +20,7 @@ class SaveOrDeleteButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-      icon: isDeleteButton
-          ? RideFormConstants.DELETE_ICON
-          : RideFormConstants.SAVE_ICON,
+      icon: isDeleteButton ? RideFormConstants.DELETE_ICON : saveIcon,
       label: Text(
         isDeleteButton ? deleteText : saveText,
       ),
