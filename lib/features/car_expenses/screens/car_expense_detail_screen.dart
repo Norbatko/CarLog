@@ -205,25 +205,29 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return EditExpenseDialog(
-          initialExpenseType:
-              expenseTypeToString(_expenseService.activeExpense!.type),
-          initialAmount: _expenseService.activeExpense!.amount,
-          initialDate: _expenseService.activeExpense!.date,
-          onSave: (String amount, String date) {
-            _saveExpense(amount, date);
-            Navigator.of(context).pop();
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return EditExpenseDialog(
+              initialExpenseType:
+                  expenseTypeToString(_expenseService.activeExpense!.type),
+              initialAmount: _expenseService.activeExpense!.amount,
+              initialDate: _expenseService.activeExpense!.date,
+              onSave: (String amount, String date) {
+                _saveExpense(amount, date);
+                Navigator.of(context).pop();
+              },
+              onCancel: () {
+                Navigator.of(context).pop();
+              },
+              selectedExpenseType: _selectedExpenseType,
+              onExpenseTypeChanged: (newValue) {
+                setState(() {
+                  _selectedExpenseType = newValue!;
+                });
+              },
+              expenseTypes: _expenseTypes.keys.toList(),
+            );
           },
-          onCancel: () {
-            Navigator.of(context).pop();
-          },
-          selectedExpenseType: _selectedExpenseType,
-          onExpenseTypeChanged: (newValue) {
-            setState(() {
-              _selectedExpenseType = newValue!;
-            });
-          },
-          expenseTypes: _expenseTypes.keys.toList(),
         );
       },
     );
