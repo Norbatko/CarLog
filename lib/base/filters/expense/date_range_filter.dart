@@ -21,11 +21,21 @@ class _DateRangeFilterState extends State<DateRangeFilter> {
   DateTime? _startDate;
   DateTime? _endDate;
 
+  final TextEditingController _startDateController = TextEditingController();
+  final TextEditingController _endDateController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     _startDate = widget.initialStartDate;
     _endDate = widget.initialEndDate;
+
+    if (_startDate != null) {
+      _startDateController.text = _formatDate(_startDate!);
+    }
+    if (_endDate != null) {
+      _endDateController.text = _formatDate(_endDate!);
+    }
   }
 
   Future<void> _selectDate(BuildContext context,
@@ -43,12 +53,25 @@ class _DateRangeFilterState extends State<DateRangeFilter> {
       setState(() {
         if (isStartDate) {
           _startDate = selectedDate;
+          _startDateController.text = _formatDate(selectedDate);
         } else {
           _endDate = selectedDate;
+          _endDateController.text = _formatDate(selectedDate);
         }
       });
       widget.onDateRangeChanged(_startDate, _endDate);
     }
+  }
+
+  String _formatDate(DateTime date) {
+    return "${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year.toString().substring(2)}";
+  }
+
+  @override
+  void dispose() {
+    _startDateController.dispose();
+    _endDateController.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,31 +91,31 @@ class _DateRangeFilterState extends State<DateRangeFilter> {
           children: [
             Expanded(
               child: TextField(
+                controller: _startDateController,
                 readOnly: true,
                 onTap: () => _selectDate(context, isStartDate: true),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Start Date',
-                  hintText: _startDate != null
-                      ? _startDate!.toLocal().toString().split(' ')[0]
-                      : 'Select start date',
-                  prefixIcon: const Icon(Icons.calendar_today),
-                  border: const OutlineInputBorder(),
+                  hintText: 'Select start date',
+                  prefixIcon: Icon(Icons.calendar_today),
+                  border: OutlineInputBorder(),
                 ),
+                style: TextStyle(fontSize: 14),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: TextField(
+                controller: _endDateController,
                 readOnly: true,
                 onTap: () => _selectDate(context, isStartDate: false),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'End Date',
-                  hintText: _endDate != null
-                      ? _endDate!.toLocal().toString().split(' ')[0]
-                      : 'Select end date',
-                  prefixIcon: const Icon(Icons.calendar_today),
-                  border: const OutlineInputBorder(),
+                  hintText: 'Select end date',
+                  prefixIcon: Icon(Icons.calendar_today),
+                  border: OutlineInputBorder(),
                 ),
+                style: TextStyle(fontSize: 14),
               ),
             ),
           ],
