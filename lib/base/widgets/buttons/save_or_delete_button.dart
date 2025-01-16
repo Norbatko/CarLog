@@ -5,6 +5,7 @@ class SaveOrDeleteButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isDeleteButton;
   final String saveText;
+  final Icon saveIcon;
   final String deleteText;
 
   const SaveOrDeleteButton({
@@ -13,6 +14,7 @@ class SaveOrDeleteButton extends StatelessWidget {
     this.isDeleteButton = false,
     this.saveText = 'Save',
     this.deleteText = 'Delete',
+    this.saveIcon = RideFormConstants.SAVE_ICON,
   }) : super(key: key);
 
   @override
