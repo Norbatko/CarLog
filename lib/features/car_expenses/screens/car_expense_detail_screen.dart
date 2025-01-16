@@ -227,8 +227,6 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
       date: DateTime.parse(date),
     );
 
-    print("Updated expense amount => ${updatedExpense.amount.toString()}");
-
     _expenseService
         .updateExpense(
             _carService.activeCar.id, _currentExpense.id, updatedExpense)
