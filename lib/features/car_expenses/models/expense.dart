@@ -39,6 +39,23 @@ class Expense {
       'date': date.toIso8601String(),
     };
   }
+
+  Expense copyWith({
+    String? id,
+    String? userId,
+    String? userName,
+    ExpenseType? type,
+    double? amount,
+    DateTime? date,
+  }) {
+    return Expense(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      type: type ?? this.type,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+    );
+  }
 }
 
 // used for view
