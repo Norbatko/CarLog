@@ -154,7 +154,7 @@ class _ExpensesListState extends State<ExpensesList> {
       context: context,
       builder: (context) => ExpenseFilterDialog(
         selectedExpenseTypes: selectedExpenseTypes,
-        expenses: widget.expenses,
+        expenses: filteredExpenses,
       ),
     );
 
