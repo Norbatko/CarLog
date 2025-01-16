@@ -51,7 +51,7 @@ class _ExpenseFilterDialogState extends State<ExpenseFilterDialog> {
           children: [
             ExpenseTypeFilter(
               expenses: widget.expenses,
-              selectedExpenseTypes: widget.selectedExpenseTypes,
+              selectedExpenseTypes: _expenseTypes,
               onSelectionChanged: (newSelection) {
                 setState(() {
                   _expenseTypes = newSelection;
@@ -95,6 +95,10 @@ class _ExpenseFilterDialogState extends State<ExpenseFilterDialog> {
           onPressed: () {
             Navigator.of(context).pop({
               'expenseTypes': _expenseTypes.toList(),
+              'startDate': _startDate,
+              'endDate': _endDate,
+              'minAmount': _minAmount,
+              'maxAmount': _maxAmount,
             });
           },
           child: const Text('Apply'),
