@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';
-import 'package:car_log/features/ride/ride_edit/widget/dialog_helper.dart';
 import 'package:car_log/features/ride/ride_edit/widget/ride_form/ride_form_field_list.dart';
 import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
 import 'package:car_log/base/services/car_service.dart';
@@ -33,7 +33,6 @@ class _EditRideFormState extends State<EditRideForm> {
   final LocationService locationService = get<LocationService>();
   late flutterMap.MapController _mapController;
   late StreamSubscription<String> _locationSubscription;
-  bool _isUpdatingStartLocation = true;
 
   @override
   void initState() {
@@ -116,13 +115,12 @@ class _EditRideFormState extends State<EditRideForm> {
             int.parse(carService.activeCar.odometerStatus) - rideDistance;
         carService.updateOdometer(newOdometerValue < 0 ? 0 : newOdometerValue);
 
-        DialogHelper.showSnackBar(
-            context, RideFormConstants.RIDE_DELETED_MESSAGE);
+        TopSnackBar.show(context, RideFormConstants.RIDE_DELETED_MESSAGE);
         Navigator.pop(context);
       }
     }).onError((_) {
       if (mounted) {
-        DialogHelper.showSnackBar(context, 'Failed to delete ride.');
+        TopSnackBar.show(context, 'Failed to delete ride.');
       }
     });
   }
@@ -149,28 +147,13 @@ class _EditRideFormState extends State<EditRideForm> {
                 updatedRide.distance;
         get<CarService>().updateOdometer(newOdometerValue);
 
-        DialogHelper.showSnackBar(
-            context, RideFormConstants.RIDE_SAVED_MESSAGE);
+        TopSnackBar.show(context, RideFormConstants.RIDE_SAVED_MESSAGE);
         Navigator.pop(context);
       }
     }).onError((_) {
       if (mounted) {
-        DialogHelper.showSnackBar(context, 'Failed to save ride.');
+        TopSnackBar.show(context, 'Failed to save ride.');
       }
     });
-  }
-
-  void _requestLocation(bool isStartLocation) {
-    _isUpdatingStartLocation = isStartLocation;
-    _locationSubscription = locationService.locationStream.listen((location) {
-      if (mounted) {
-        setState(() => _isUpdatingStartLocation
-            ? _locationStartController.text = location
-            : _locationEndController.text = location);
-        DialogHelper.showSnackBar(
-            context, RideFormConstants.LOCATION_UPDATED_MESSAGE);
-      }
-    });
-    locationService.requestLocation();
   }
 }

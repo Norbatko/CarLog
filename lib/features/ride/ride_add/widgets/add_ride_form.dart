@@ -1,3 +1,4 @@
+import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/ride/ride_add/widgets/base_action_button.dart';
@@ -139,15 +140,12 @@ class _AddRideFormState extends State<AddRideForm> {
             int.parse(_carService.activeCar.odometerStatus) + newRide.distance;
         _carService.updateOdometer(newOdometerValue);
 
-        DialogHelper.showSnackBar(
-          context,
-          RideFormConstants.RIDE_SAVED_MESSAGE,
-        );
+        TopSnackBar.show(context, RideFormConstants.RIDE_SAVED_MESSAGE);
         _clearFormAndPop();
       }
     }).onError((error) {
       if (mounted) {
-        DialogHelper.showSnackBar(context, 'Failed to save ride: $error');
+        TopSnackBar.show(context, 'Failed to save ride: $error');
       }
     });
   }
