@@ -34,7 +34,6 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
   final _expenseService = get<ExpenseService>();
   late CloudApi _cloudApi;
   late Future<void> _initializeCloudApi;
-  late final Expense _currentExpense;
   late String _selectedExpenseType;
 
   final Map<String, ExpenseType> _expenseTypes = {
@@ -49,7 +48,6 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
   void initState() {
     super.initState();
     _initializeCloudApi = _initializeApi();
-    _currentExpense = _expenseService.activeExpense!;
     _selectedExpenseType =
         expenseTypeToString(_expenseService.activeExpense!.type);
   }
@@ -98,19 +96,23 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
                   children: [
                     _buildExpenseDetailRow(
                       'Type:',
-                      expenseTypeToString(_currentExpense.type),
+                      expenseTypeToString(_expenseService.activeExpense!.type),
                     ),
                     _buildExpenseDetailRow(
                       'Amount:',
-                      _formatAmount(_currentExpense.amount),
+                      _formatAmount(_expenseService.activeExpense!.amount),
                     ),
                     _buildExpenseDetailRow(
                       'Created By:',
-                      _userService.getUserData(_currentExpense.userId),
+                      _userService
+                          .getUserData(_expenseService.activeExpense!.userId),
                     ),
                     _buildExpenseDetailRow(
                       'Date:',
-                      _currentExpense.date.toLocal().toString().split(' ')[0],
+                      _expenseService.activeExpense!.date
+                          .toLocal()
+                          .toString()
+                          .split(' ')[0],
                     ),
                     const SizedBox(height: 16, child: Divider()),
                     const Text("Receipts", style: _boldTextStyle),
@@ -151,7 +153,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
       child: StreamCustomBuilder(
         stream: _receiptService.getReceiptsByUserId(
           _carService.activeCar.id,
-          _currentExpense.id,
+          _expenseService.activeExpense!.id,
           _userService.currentUser!.id,
         ),
         builder: (context, receipts) {
@@ -189,9 +191,10 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
 
   void _deleteExpense(BuildContext context) {
     _expenseService
-        .deleteExpense(_carService.activeCar.id, _currentExpense.id)
+        .deleteExpense(
+            _carService.activeCar.id, _expenseService.activeExpense!.id)
         .listen((_) {});
-    _cloudApi.deleteFolder("${_currentExpense.id}/");
+    _cloudApi.deleteFolder("${_expenseService.activeExpense!.id}/");
     Navigator.of(context).pop();
   }
 
@@ -230,19 +233,23 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
           },
         );
       },
-    );
+    ).then((_) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        setState(() {});
+      });
+    });
   }
 
   void _saveExpense(String amount, String date) {
-    Expense updatedExpense = _currentExpense.copyWith(
+    Expense updatedExpense = _expenseService.activeExpense!.copyWith(
       type: _expenseTypes[_selectedExpenseType],
       amount: double.parse(amount),
       date: DateTime.parse(date),
     );
 
     _expenseService
-        .updateExpense(
-            _carService.activeCar.id, _currentExpense.id, updatedExpense)
+        .updateExpense(_carService.activeCar.id,
+            _expenseService.activeExpense!.id, updatedExpense)
         .listen((_) {});
   }
 }
