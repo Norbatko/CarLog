@@ -91,12 +91,12 @@ class EditExpenseDialog extends StatelessWidget {
       ),
       actions: [
         SaveOrDeleteButton(
-          onPressed: onCancel,
-        ),
-        SaveOrDeleteButton(
           onPressed: () {
             onSave(amountController.text, dateController.text);
           },
+        ),
+        SaveOrDeleteButton(
+          onPressed: onCancel,
           isDeleteButton: true,
         ),
       ],
