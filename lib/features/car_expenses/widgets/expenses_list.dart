@@ -20,13 +20,17 @@ class ExpensesList extends StatefulWidget {
 class _ExpensesListState extends State<ExpensesList> {
   late List<Expense> filteredExpenses;
   Set<String> selectedExpenseTypes = {};
-  String _searchQuery = '';
+  double minAmount = -1;
+  double maxAmount = -1;
+  DateTime? startDate = null;
+  DateTime? endDate = null;
+  String searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     _applyFilters();
     // If the filtered list is empty, show the search bar and "No users available"
-    if (filteredExpenses.isEmpty && _searchQuery.isNotEmpty) {
+    if (filteredExpenses.isEmpty && searchQuery.isNotEmpty) {
       return Column(
         children: [
           Row(
@@ -36,7 +40,7 @@ class _ExpensesListState extends State<ExpensesList> {
                   hintText: "Name or License Plate",
                   onChanged: (query) {
                     setState(() {
-                      _searchQuery = query;
+                      searchQuery = query;
                       _applyFilters();
                     });
                   },
@@ -82,7 +86,7 @@ class _ExpensesListState extends State<ExpensesList> {
                 hintText: "Date, Type or Amount",
                 onChanged: (query) {
                   setState(() {
-                    _searchQuery = query;
+                    searchQuery = query;
                     _applyFilters();
                   });
                 },
@@ -156,7 +160,13 @@ class _ExpensesListState extends State<ExpensesList> {
 
     if (result != null) {
       setState(() {
-        selectedExpenseTypes = Set.from(result['expenses']);
+        selectedExpenseTypes = result['expenseTypes'] != null
+            ? Set.from(result['expenseTypes'])
+            : selectedExpenseTypes;
+        startDate = result['startDate'] ?? startDate;
+        endDate = result['endDate'] ?? endDate;
+        minAmount = result['minAmount'] ?? minAmount;
+        maxAmount = result['maxAmount'] ?? maxAmount;
         _applyFilters();
       });
     }
@@ -166,16 +176,20 @@ class _ExpensesListState extends State<ExpensesList> {
     filteredExpenses = widget.expenses.where((expense) {
       return (selectedExpenseTypes.isEmpty ||
               selectedExpenseTypes.contains(expense.type)) &&
+          // (startDate == null || startDate!.isBefore(expense.date)) &&
+          // (endDate == null || endDate!.isAfter(expense.date)) &&
+          (minAmount == -1 || minAmount <= expense.amount) &&
+          (maxAmount == -1 || maxAmount >= expense.amount) &&
           (expenseTypeToString(expense.type)
                   .toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ||
+                  .contains(searchQuery.toLowerCase()) ||
               expense.amount
                   .toString()
                   .toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ||
+                  .contains(searchQuery.toLowerCase()) ||
               DateFormat(DATE_FORMAT)
                   .format(expense.date)
-                  .contains(_searchQuery));
+                  .contains(searchQuery));
     }).toList();
 
     filteredExpenses.sort((a, b) {
