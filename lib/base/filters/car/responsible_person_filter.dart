@@ -32,7 +32,7 @@ class ResponsiblePersonFilter extends StatelessWidget {
         ),
         Divider(thickness: 1.0, color: Theme.of(context).primaryColor),
         Wrap(
-          spacing: 8.0, // Space between chips
+          spacing: 8.0,
           runSpacing: 4.0,
           children: uniqueResponsiblePersons.map((responsiblePerson) {
             return _buildFilterChip(responsiblePerson, context);

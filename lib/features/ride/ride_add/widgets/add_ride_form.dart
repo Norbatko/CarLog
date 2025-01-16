@@ -2,7 +2,6 @@ import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/base/models/user.dart';
 import 'package:car_log/features/ride/ride_add/widgets/base_action_button.dart';
-import 'package:car_log/features/ride/ride_add/widgets/user_dropdown.dart';
 import 'package:car_log/features/ride/ride_edit/utils/ride_form_constants.dart';
 import 'package:car_log/features/ride/ride_edit/widget/dialog_helper.dart';
 import 'package:car_log/features/ride/ride_edit/widget/ride_form/ride_form_field_list.dart';
@@ -11,7 +10,6 @@ import 'package:car_log/features/ride/services/ride_service.dart';
 import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/set_up_locator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_map/flutter_map.dart' as flutterMap;
 

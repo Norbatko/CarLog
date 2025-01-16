@@ -1,4 +1,3 @@
-import 'package:car_log/base/filters/car/car_filter_dialog.dart';
 import 'package:car_log/base/filters/expense/expense_filter_dialog.dart';
 import 'package:car_log/base/filters/name_filter.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';

@@ -1,6 +1,5 @@
 import 'package:car_log/features/car_history/widgets/add_ride_button.dart';
 import 'package:car_log/features/car_history/widgets/ride_list.dart';
-import 'package:car_log/features/ride/ride_edit/ride_edit_screen.dart';
 import 'package:car_log/routes.dart';
 import 'package:car_log/base/services/car_service.dart';
 import 'package:car_log/base/builders/stream_custom_builder.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:car_log/features/ride/services/ride_service.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:car_log/set_up_locator.dart';
-import 'package:lottie/lottie.dart';
 import 'package:car_log/features/car_history/widgets/car_history_constants.dart';
 
 class CarHistoryScreen extends StatelessWidget {
