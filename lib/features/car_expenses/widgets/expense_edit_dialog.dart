@@ -1,5 +1,4 @@
 import 'package:car_log/base/widgets/buttons/save_or_delete_button.dart';
-import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/car_expenses/widgets/expense_type_dropdown.dart';
 import 'package:flutter/material.dart';
 

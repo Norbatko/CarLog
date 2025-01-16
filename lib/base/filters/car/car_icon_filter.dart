@@ -29,7 +29,7 @@ class CarIconFilter extends StatelessWidget {
         ),
         Divider(thickness: 1.0, color: Theme.of(context).primaryColor),
         Wrap(
-          spacing: 8.0, // Space between chips
+          spacing: 8.0,
           runSpacing: 4.0,
           children: uniqueIconsCars.map((iconNumber) {
             return _buildFilterChip(getCarIcon(iconNumber), iconNumber);

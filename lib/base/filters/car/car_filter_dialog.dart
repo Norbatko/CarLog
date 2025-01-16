@@ -139,8 +139,7 @@ class _CarFilterDialogState extends State<CarFilterDialog> {
               isDeleteButton: true,
               deleteText: 'Cancel',
               onPressed: () {
-                Navigator.of(context)
-                    .pop(null); // Close dialog without applying filters
+                Navigator.of(context).pop(null);
               },
             ),
           ],

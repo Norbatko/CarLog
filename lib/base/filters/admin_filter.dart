@@ -24,11 +24,9 @@ class _AdminFilterState extends State<AdminFilter> {
           Switch(
             value: _isAdminFilterOn,
             onChanged: (value) {
-              // Update the internal state
               setState(() {
                 _isAdminFilterOn = value;
               });
-              // Also update the parent state via the callback
               widget.onChanged(value);
             },
           ),

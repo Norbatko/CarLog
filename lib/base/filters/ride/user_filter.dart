@@ -1,5 +1,3 @@
-import 'package:car_log/base/models/car.dart';
-import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/features/ride/model/ride.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +30,7 @@ class UserFilter extends StatelessWidget {
         ),
         Divider(thickness: 1.0, color: Theme.of(context).primaryColor),
         Wrap(
-          spacing: 8.0, // Space between chips
+          spacing: 8.0,
           runSpacing: 4.0,
           children: uniqueRidesUsers.map((userName) {
             return _buildFilterChip(userName);
