@@ -50,36 +50,37 @@ class _AddRideFormState extends State<AddRideForm> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          if (_userService.currentUser!.isAdmin)
-            Card(
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'User Details',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const Divider(height: 20),
-                    UserDropdown(
-                      userStream: _userService.users,
-                      onUserSelected: (user) {
-                        if (mounted) {
-                          SchedulerBinding.instance.addPostFrameCallback((_) {
-                            setState(() {
-                              _selectedUser = user!;
-                            });
-                          });
-                        }
-                        // _saveSelectedUser(user2);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          // Not working in the current situation TODO
+          // if (_userService.currentUser!.isAdmin)
+          //   Card(
+          //     margin: const EdgeInsets.symmetric(vertical: 12),
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(16),
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           Text(
+          //             'User Details',
+          //             style: Theme.of(context).textTheme.titleLarge,
+          //           ),
+          //           const Divider(height: 20),
+          //           UserDropdown(
+          //             userStream: _userService.users,
+          //             onUserSelected: (user) {
+          //               if (mounted) {
+          //                 SchedulerBinding.instance.addPostFrameCallback((_) {
+          //                   setState(() {
+          //                     _selectedUser = user!;
+          //                   });
+          //                 });
+          //               }
+          //               // _saveSelectedUser(user2);
+          //             },
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
           RideFormFieldList(
             locationStartController: _locationStartController,
             locationEndController: _locationEndController,
