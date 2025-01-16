@@ -38,9 +38,6 @@ class RideFormMapField extends StatelessWidget {
                   .reverseGeocode(point)
                   .then((address) {
                 controller.text = address;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$label updated to $address.')),
-                );
               }).catchError((_) {
                 controller.text = '${point.latitude}, ${point.longitude}';
               });
