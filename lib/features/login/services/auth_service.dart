@@ -1,4 +1,5 @@
 import 'package:car_log/base/services/user_service.dart';
+import 'package:car_log/features/login/model/sign_up_result.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter_login/flutter_login.dart';
 import 'package:car_log/base/models/user.dart';
@@ -27,16 +28,24 @@ class AuthService {
     }
   }
 
-  Stream<String?> signupUser(SignupData data) async* {
+  Stream<SignUpResult> signupUser(SignupData data) async* {
     try {
       final firebase_auth.UserCredential userCredential =
       await _auth.createUserWithEmailAndPassword(
         email: data.name!,
         password: data.password!,
       );
-      yield userCredential.user?.uid;
+      yield SignUpResult.success(userCredential.user?.uid); // Success with User ID
     } on firebase_auth.FirebaseAuthException catch (e) {
-      yield e.message;
+      if (e.code == 'email-already-in-use') {
+        yield SignUpResult.failure('This email is already in use. Please use a different email.');
+      } else if (e.code == 'weak-password') {
+        yield SignUpResult.failure('The password is too weak. Please choose a stronger password.');
+      } else if (e.code == 'invalid-email') {
+        yield SignUpResult.failure('The email address is not valid.');
+      } else {
+        yield SignUpResult.failure(e.message ?? 'Unknown error occurred.');
+      }
     }
   }
 

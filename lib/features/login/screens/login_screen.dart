@@ -26,14 +26,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Stream<String?> _onSignup(SignupData data) async* {
     try {
-      await for (final userId in authService.signupUser(data)) {
-        if (userId != null) {
-          String name = data.additionalSignupData?['name'] ?? '';
-          String login = data.additionalSignupData?['login'] ?? '';
-          String phoneNumber = data.additionalSignupData?['phoneNumber'] ?? '';
+      await for (final result in authService.signupUser(data)) {
+        if (!result.isSuccess) {
+          yield result.message;
+          return;
+        }
+        String name = data.additionalSignupData?['name'] ?? '';
+        String login = data.additionalSignupData?['login'] ?? '';
+        String phoneNumber = data.additionalSignupData?['phoneNumber'] ?? '';
 
           final newUser = User(
-            id: userId,
+            id: result.userId!,
             name: name,
             login: login,
             email: data.name!,
@@ -42,15 +45,16 @@ class _LoginScreenState extends State<LoginScreen> {
             favoriteCars: [],
           );
 
-          await for (final _ in userService.addUser(newUser)) {}
-          _onLoginSuccess();
-        }
-        yield null;
+        await for (final _ in userService.addUser(newUser)) {}
+        _onLoginSuccess();
+        yield null; // Sign-up successful
       }
     } catch (e) {
-      yield e.toString();
+      yield 'Sign-up failed: ${e.toString()}';
     }
   }
+
+
 
   void _onLoginSuccess() {
     Navigator.of(context).pushReplacement(
