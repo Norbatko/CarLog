@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ExpenseService {
   final CollectionReference carsCollection =
-  FirebaseFirestore.instance.collection('cars');
+      FirebaseFirestore.instance.collection('cars');
 
   Expense? _activeExpense;
 
@@ -26,12 +26,12 @@ class ExpenseService {
   }
 
   Stream<void> addExpense(
-      String carId, {
-        required ExpenseType type,
-        required String userID,
-        required double amount,
-        required DateTime date,
-      }) async* {
+    String carId, {
+    required ExpenseType type,
+    required String userID,
+    required double amount,
+    required DateTime date,
+  }) async* {
     Expense expense = Expense(
       userId: userID,
       type: type,
@@ -44,15 +44,16 @@ class ExpenseService {
   }
 
   Stream<void> updateExpense(
-      String carId,
-      String expenseId,
-      Expense updatedExpense,
-      ) async* {
+    String carId,
+    String expenseId,
+    Expense updatedExpense,
+  ) async* {
     await carsCollection
         .doc(carId)
         .collection('expenses')
         .doc(expenseId)
         .update(updatedExpense.toMap());
+    setActiveExpense(updatedExpense);
     yield null;
   }
 
@@ -73,7 +74,8 @@ class ExpenseService {
         .get();
 
     if (docSnapshot.exists) {
-      yield Expense.fromMap(expenseId, docSnapshot.data() as Map<String, dynamic>);
+      yield Expense.fromMap(
+          expenseId, docSnapshot.data() as Map<String, dynamic>);
     } else {
       yield null;
     }
