@@ -175,9 +175,10 @@ class _ExpensesListState extends State<ExpensesList> {
   void _applyFilters() {
     filteredExpenses = widget.expenses.where((expense) {
       return (selectedExpenseTypes.isEmpty ||
-              selectedExpenseTypes.contains(expense.type)) &&
-          // (startDate == null || startDate!.isBefore(expense.date)) &&
-          // (endDate == null || endDate!.isAfter(expense.date)) &&
+              selectedExpenseTypes
+                  .contains(expenseTypeToString(expense.type))) &&
+          (startDate == null || startDate!.isBefore(expense.date)) &&
+          (endDate == null || endDate!.isAfter(expense.date)) &&
           (minAmount == -1 || minAmount <= expense.amount) &&
           (maxAmount == -1 || maxAmount >= expense.amount) &&
           (expenseTypeToString(expense.type)
