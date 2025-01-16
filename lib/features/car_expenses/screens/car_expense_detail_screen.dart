@@ -35,7 +35,15 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
   late CloudApi _cloudApi;
   late Future<void> _initializeCloudApi;
   late final Expense _currentExpense;
-  late final String _selectedExpenseType;
+  late String _selectedExpenseType;
+
+  final Map<String, ExpenseType> _expenseTypes = {
+    'Fuel': ExpenseType.fuel,
+    'Service': ExpenseType.service,
+    'Repair': ExpenseType.repair,
+    'Insurance': ExpenseType.insurance,
+    'Other': ExpenseType.other,
+  };
 
   @override
   void initState() {
@@ -215,6 +223,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
               _selectedExpenseType = newValue!;
             });
           },
+          expenseTypes: _expenseTypes.keys.toList(),
         );
       },
     );
@@ -222,7 +231,7 @@ class _CarExpenseDetailScreenState extends State<CarExpenseDetailScreen> {
 
   void _saveExpense(String amount, String date) {
     Expense updatedExpense = _currentExpense.copyWith(
-      type: expenseTypeFromString(_selectedExpenseType),
+      type: _expenseTypes[_selectedExpenseType],
       amount: double.parse(amount),
       date: DateTime.parse(date),
     );
