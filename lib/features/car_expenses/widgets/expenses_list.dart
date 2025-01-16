@@ -78,7 +78,7 @@ class _ExpensesListState extends State<ExpensesList> {
           children: [
             Expanded(
               child: NameFilter(
-                hintText: "Name or License Plate",
+                hintText: "Date, Type or Amount",
                 onChanged: (query) {
                   setState(() {
                     _searchQuery = query;
