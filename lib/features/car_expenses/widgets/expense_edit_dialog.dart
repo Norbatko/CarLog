@@ -91,6 +91,7 @@ class EditExpenseDialog extends StatelessWidget {
         SaveOrDeleteButton(
           onPressed: onCancel,
           isDeleteButton: true,
+          deleteText: "Cancel",
         ),
       ],
     );
