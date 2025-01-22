@@ -83,9 +83,9 @@ class _DistanceFilterState extends State<DistanceFilter> {
                   widget.onDistanceRangeChanged(_selectedMin, _selectedMax);
                 },
                 decoration: InputDecoration(
-                  labelText: 'Max',
+                  labelText: 'End',
                   hintText: widget.maxDistance.toStringAsFixed(2),
-                  prefixIcon: const Icon(Icons.attach_money),
+                  prefixIcon: const Icon(Icons.directions_car_filled),
                   border: const OutlineInputBorder(),
                 ),
               ),

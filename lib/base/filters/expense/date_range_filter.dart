@@ -95,7 +95,7 @@ class _DateRangeFilterState extends State<DateRangeFilter> {
                 readOnly: true,
                 onTap: () => _selectDate(context, isStartDate: true),
                 decoration: const InputDecoration(
-                  labelText: 'Start Date',
+                  labelText: 'Start',
                   hintText: 'Select start date',
                   prefixIcon: Icon(Icons.calendar_today),
                   border: OutlineInputBorder(),
@@ -110,7 +110,7 @@ class _DateRangeFilterState extends State<DateRangeFilter> {
                 readOnly: true,
                 onTap: () => _selectDate(context, isStartDate: false),
                 decoration: const InputDecoration(
-                  labelText: 'End Date',
+                  labelText: 'End',
                   hintText: 'Select end date',
                   prefixIcon: Icon(Icons.calendar_today),
                   border: OutlineInputBorder(),
