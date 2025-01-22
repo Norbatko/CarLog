@@ -60,7 +60,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
 
   bool _isSubmitting = false;
 
-  void _submitForm() {
+  void _submitForm(void Function(void Function()) setState) {
     setState(() {
       _isSubmitting = true;
     });
@@ -77,8 +77,12 @@ class _CarAddDialogState extends State<CarAddDialog> {
         .listen((_) {});
 
     Future.delayed(const Duration(seconds: 2), () {
-      _isSubmitting = false;
-      Navigator.of(context).pop();
+      setState(() {
+        Navigator.of(context).pop();
+        _isSubmitting = false;
+        _clearAllControllers();
+        _clearAllErrorMessages();
+      });
     });
   }
 
@@ -149,7 +153,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
         SaveOrDeleteButton(
           saveText: 'Submit',
           onPressed: () {
-            _validateFieldsAndSubmit();
+            _validateFieldsAndSubmit(setState);
           },
         ),
         SaveOrDeleteButton(
@@ -165,7 +169,7 @@ class _CarAddDialogState extends State<CarAddDialog> {
     }
   }
 
-  void _validateFieldsAndSubmit() {
+  void _validateFieldsAndSubmit(void Function(void Function()) setState) {
     bool isValid = true;
     _clearAllErrorMessages();
     for (var entry in _textControllers.entries) {
@@ -191,9 +195,9 @@ class _CarAddDialogState extends State<CarAddDialog> {
     }
 
     if (isValid) {
-      setState(() {
-        _submitForm();
-      });
+      _submitForm(setState);
+    } else {
+      setState(() {});
     }
   }
 
