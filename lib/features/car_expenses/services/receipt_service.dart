@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReceiptService {
   final CollectionReference carsCollection =
-  FirebaseFirestore.instance.collection('cars');
+      FirebaseFirestore.instance.collection('cars');
 
   Receipt? _activeReceipt;
 
@@ -44,12 +44,12 @@ class ReceiptService {
   }
 
   Stream<void> addReceipt(
-      String carId,
-      String expenseId,
-      String receiptId,{
-        required String userID,
-        required DateTime date,
-      }) async* {
+    String carId,
+    String expenseId,
+    String receiptId, {
+    required String userID,
+    required DateTime date,
+  }) async* {
     Receipt receipt = Receipt(
       userId: userID,
       date: date,
@@ -60,12 +60,13 @@ class ReceiptService {
         .collection('expenses')
         .doc(expenseId)
         .collection('receipts')
-        .add(receipt.toMap());
+        .doc(receiptId)
+        .set(receipt.toMap());
     yield null;
   }
 
-  Stream<void> updateReceipt(
-      String carId, String expenseId, String receiptId, Receipt updatedReceipt) async* {
+  Stream<void> updateReceipt(String carId, String expenseId, String receiptId,
+      Receipt updatedReceipt) async* {
     await carsCollection
         .doc(carId)
         .collection('expenses')
@@ -76,7 +77,8 @@ class ReceiptService {
     yield null;
   }
 
-  Stream<void> deleteReceipt(String carId, String expenseId, String receiptId) async* {
+  Stream<void> deleteReceipt(
+      String carId, String expenseId, String receiptId) async* {
     await carsCollection
         .doc(carId)
         .collection('expenses')

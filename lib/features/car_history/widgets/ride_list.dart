@@ -163,7 +163,6 @@ class _RideListState extends State<RideList> {
   }
 
   void _applyFilters() {
-    print("StartDate => $startDate");
     filteredRides = widget.rides.where((ride) {
       return (selectedUser.isEmpty || selectedUser.contains(ride.userName)) &&
           (startDate == null || startDate!.isBefore(ride.finishedAt)) &&
