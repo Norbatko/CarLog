@@ -15,7 +15,6 @@ final get = GetIt.instance;
 class SetUpLocator {
   static void init() {
     get.registerSingleton<ExpenseService>(ExpenseService());
-    get.registerSingleton<ReceiptService>(ReceiptService());
     get.registerSingleton<NoteService>(NoteService());
     get.registerSingleton<RideService>(RideService());
 
@@ -28,6 +27,10 @@ class SetUpLocator {
 
     get.registerLazySingleton<CarService>(
       () => CarService(),
+    );
+
+    get.registerLazySingleton<ReceiptService>(
+      () => ReceiptService(userService: get<UserService>()),
     );
 
     get.registerSingleton<ThemeProvider>(

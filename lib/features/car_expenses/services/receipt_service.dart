@@ -1,17 +1,19 @@
+import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/features/car_expenses/models/receipt.dart';
+import 'package:car_log/set_up_locator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rxdart/rxdart.dart';
 
 class ReceiptService {
+  final UserService _userService;
+
   final CollectionReference carsCollection =
       FirebaseFirestore.instance.collection('cars');
 
   Receipt? _activeReceipt;
 
-  ReceiptService._private();
-
-  static final ReceiptService _instance = ReceiptService._private();
-
-  factory ReceiptService() => _instance;
+  ReceiptService({required UserService userService})
+      : _userService = userService;
 
   Stream<List<Receipt>> getReceipts(String carId, String expenseId) {
     return carsCollection
@@ -29,17 +31,40 @@ class ReceiptService {
 
   Stream<List<Receipt>> getReceiptsByUserId(
       String carId, String expenseId, String userId) {
-    return carsCollection
-        .doc(carId)
-        .collection('expenses')
-        .doc(expenseId)
-        .collection('receipts')
-        .where('userId', isEqualTo: userId)
-        .snapshots()
-        .map((querySnapshot) {
-      return querySnapshot.docs.map((doc) {
-        return Receipt.fromMap(doc.id, doc.data());
-      }).toList();
+    return _userService.getUserData(userId).switchMap((user) {
+      if (user == null) {
+        // Handle the case where the user does not exist
+        return Stream.value([]);
+      }
+
+      if (user.isAdmin) {
+        // Admin: Return all receipts
+        return carsCollection
+            .doc(carId)
+            .collection('expenses')
+            .doc(expenseId)
+            .collection('receipts')
+            .snapshots()
+            .map((querySnapshot) {
+          return querySnapshot.docs.map((doc) {
+            return Receipt.fromMap(doc.id, doc.data());
+          }).toList();
+        });
+      } else {
+        // Regular user: Return only their receipts
+        return carsCollection
+            .doc(carId)
+            .collection('expenses')
+            .doc(expenseId)
+            .collection('receipts')
+            .where('userId', isEqualTo: userId)
+            .snapshots()
+            .map((querySnapshot) {
+          return querySnapshot.docs.map((doc) {
+            return Receipt.fromMap(doc.id, doc.data());
+          }).toList();
+        });
+      }
     });
   }
 
