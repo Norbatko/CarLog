@@ -49,4 +49,4 @@ app.*.map.json
 /android/app/release
 
 # Credentials to Google cloud
-assets/api/*
+assets/api/credentials.json
