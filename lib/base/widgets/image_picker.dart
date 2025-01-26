@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:car_log/base/services/user_service.dart';
 import 'package:car_log/base/widgets/top_snack_bar.dart';
 import 'package:car_log/features/car_expenses/models/expense.dart';
 import 'package:car_log/base/services/car_service.dart';
@@ -19,6 +20,7 @@ class ImagePickerHandler {
   late File _image;
   Uint8List? _imageBytes;
   late String _imageName;
+  final _userService = get<UserService>();
 
   ImagePickerHandler(this.expense, this.api, this.imageSource);
 
@@ -29,7 +31,8 @@ class ImagePickerHandler {
     if (pickedFile != null) {
       _image = File(pickedFile.path);
       _imageBytes = await _image.readAsBytes();
-      _imageName = "${expense.id}/${expense.userId}/${_image.path.hashCode}";
+      _imageName =
+          "${expense.id}/${_userService.currentUser!.id}/${_image.path.hashCode}";
 
       _showProgressDialog(context);
 
@@ -54,7 +57,7 @@ class ImagePickerHandler {
     _receiptService
         .addReceipt(_carService.activeCar.id, expense.id,
             _image.path.hashCode.toString(),
-            userID: expense.userId, date: DateTime.now())
+            userID: _userService.currentUser!.id, date: DateTime.now())
         .listen((_) {});
   }
 
