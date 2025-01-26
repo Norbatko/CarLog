@@ -85,23 +85,27 @@ class _AddNewRideDialogState extends State<AddNewRideDialog> {
           )
         ],
       ),
-      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: [
-        SaveOrDeleteButton(
-          onPressed: () {
-            setState(() {
-              _saveRide();
-            });
-          },
-          saveText: "Add Ride",
-        ),
-        SaveOrDeleteButton(
-          isDeleteButton: true,
-          deleteText: "Cancel",
-          onPressed: () {
-            _clearAllErrorMessages();
-            Navigator.of(context).pop();
-          },
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            SaveOrDeleteButton(
+              onPressed: () {
+                setState(() {
+                  _saveRide();
+                });
+              },
+              saveText: "Add Ride",
+            ),
+            SaveOrDeleteButton(
+              isDeleteButton: true,
+              deleteText: "Cancel",
+              onPressed: () {
+                _clearAllErrorMessages();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         ),
       ],
     );
