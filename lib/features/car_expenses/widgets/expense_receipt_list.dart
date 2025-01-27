@@ -61,7 +61,7 @@ class ExpenseReceiptList extends StatelessWidget {
             onTap: () async {
               var navigator = Navigator.of(context);
               var cloudFileName =
-                  "${currentExpense.id}/${currentExpense.userId}/${receipt.id}";
+                  "${currentExpense.id}/${receipt.userId}/${receipt.id}";
               Uint8List imageBytes = await cloudApi.download(cloudFileName);
               _showImageDialog(navigator.context, imageBytes);
             },
@@ -92,7 +92,7 @@ class ExpenseReceiptList extends StatelessWidget {
                       carService.activeCar.id, currentExpense.id, receipt.id)
                   .listen((_) {});
               cloudApi.deleteFile(
-                  "${currentExpense.id}/${currentExpense.userId}/${receipt.id}");
+                  "${currentExpense.id}/${receipt.userId}/${receipt.id}");
             }),
             children: [
               SlidableAction(
@@ -103,7 +103,7 @@ class ExpenseReceiptList extends StatelessWidget {
                           receipt.id)
                       .listen((_) {});
                   cloudApi.deleteFile(
-                      "${currentExpense.id}/${currentExpense.userId}/${receipt.id}");
+                      "${currentExpense.id}/${receipt.userId}/${receipt.id}");
                 },
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
@@ -139,7 +139,7 @@ class ExpenseReceiptList extends StatelessWidget {
 
   void _downloadFile(
       Expense expense, Receipt receipt, BuildContext context) async {
-    var cloudFileName = "${expense.id}/${expense.userId}/${receipt.id}";
+    var cloudFileName = "${expense.id}/${receipt.userId}/${receipt.id}";
     Uint8List imageBytes = await cloudApi.download(cloudFileName);
 
     String? mimeType = lookupMimeType('', headerBytes: imageBytes);
